@@ -2,188 +2,248 @@
 
 @php
     $title = 'Dashboard Puskesmas Bunar';
-    $heading = 'Dashboard Penjadwalan';
+    $heading = 'Overview';
 @endphp
 
 @section('content')
-    <section class="grid gap-6 xl:grid-cols-[1.4fr_0.9fr]">
-        <div class="flex flex-col gap-6">
-            <div class="pkm-hero relative overflow-hidden rounded-[34px] px-6 py-7 text-white xl:px-8 xl:py-8">
-                <div class="pkm-hero__pattern"></div>
-                <div class="relative z-10 flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
-                    <div class="max-w-2xl">
-                        <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
-                            <i data-lucide="shield-plus" class="size-3.5"></i>
-                            Layanan Kesehatan Terjadwal
-                        </div>
-                        <h2 class="text-3xl font-semibold leading-tight xl:text-4xl">Koordinasi jadwal layanan dan dinas luar dalam satu dashboard yang tenang, rapi, dan mudah dipantau.</h2>
-                        <p class="mt-4 max-w-xl text-sm leading-7 text-white/78 xl:text-base">
-                            Template ini sudah disesuaikan dari aset Midone di folder `public/template` dan diarahkan ke nuansa hijau soft agar lebih sesuai untuk sistem informasi Puskesmas Bunar.
-                        </p>
+    <section class="pkm-dashboard-grid">
+        <div class="pkm-dashboard-main">
+            <div class="pkm-section-head">
+                <div>
+                    <h2>General Report</h2>
+                    <p>Ringkasan cepat penjadwalan layanan dan kegiatan dinas luar Puskesmas Bunar.</p>
+                </div>
+                <button class="pkm-refresh-button" type="button">
+                    <i data-lucide="refresh-cw" class="size-4"></i>
+                    Refresh
+                </button>
+            </div>
+
+            <div class="pkm-metric-grid">
+                <article class="pkm-metric-card">
+                    <div class="pkm-metric-card__icon bg-emerald-100 text-emerald-700">
+                        <i data-lucide="users-round" class="size-5"></i>
                     </div>
-                    <div class="grid grid-cols-2 gap-3 xl:min-w-[320px]">
-                        <div class="rounded-3xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-                            <div class="text-xs uppercase tracking-[0.18em] text-white/70">Layanan Hari Ini</div>
-                            <div class="mt-3 text-3xl font-semibold">12</div>
-                            <div class="mt-1 text-sm text-white/70">5 poli, 7 layanan umum</div>
-                        </div>
-                        <div class="rounded-3xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-                            <div class="text-xs uppercase tracking-[0.18em] text-white/70">Dinas Luar</div>
-                            <div class="mt-3 text-3xl font-semibold">4</div>
-                            <div class="mt-1 text-sm text-white/70">Menunggu verifikasi 2</div>
-                        </div>
+                    <div class="pkm-metric-card__trend is-up">12%</div>
+                    <div class="pkm-metric-card__value">48</div>
+                    <div class="pkm-metric-card__label">Pegawai Aktif</div>
+                </article>
+
+                <article class="pkm-metric-card">
+                    <div class="pkm-metric-card__icon bg-cyan-100 text-cyan-700">
+                        <i data-lucide="calendar-check-2" class="size-5"></i>
+                    </div>
+                    <div class="pkm-metric-card__trend is-up">9%</div>
+                    <div class="pkm-metric-card__value">31</div>
+                    <div class="pkm-metric-card__label">Jadwal Tersusun</div>
+                </article>
+
+                <article class="pkm-metric-card">
+                    <div class="pkm-metric-card__icon bg-amber-100 text-amber-700">
+                        <i data-lucide="briefcase-business" class="size-5"></i>
+                    </div>
+                    <div class="pkm-metric-card__trend is-down">7%</div>
+                    <div class="pkm-metric-card__value">8</div>
+                    <div class="pkm-metric-card__label">Pegawai Dinas Luar</div>
+                </article>
+
+                <article class="pkm-metric-card">
+                    <div class="pkm-metric-card__icon bg-lime-100 text-lime-700">
+                        <i data-lucide="file-check-2" class="size-5"></i>
+                    </div>
+                    <div class="pkm-metric-card__trend is-up">41%</div>
+                    <div class="pkm-metric-card__value">18</div>
+                    <div class="pkm-metric-card__label">Laporan Masuk</div>
+                </article>
+            </div>
+
+            <div class="pkm-hero-panel">
+                <div class="pkm-hero-panel__content">
+                    <span class="pkm-hero-panel__eyebrow">Layanan Kesehatan Terjadwal</span>
+                    <h3>Koordinasi jadwal layanan dan dinas luar dalam satu dashboard yang rapi, fokus, dan nyaman dipantau.</h3>
+                    <p>Nuansa tampilan sudah dirapikan ke arah dashboard admin yang lebih profesional, dengan struktur panel yang lebih jelas dan ritme visual yang lebih tenang.</p>
+                </div>
+                <div class="pkm-hero-panel__stats">
+                    <div>
+                        <span>Layanan Hari Ini</span>
+                        <strong>12</strong>
+                        <small>5 poli, 7 layanan umum</small>
+                    </div>
+                    <div>
+                        <span>Dinas Luar</span>
+                        <strong>4</strong>
+                        <small>2 menunggu verifikasi</small>
                     </div>
                 </div>
             </div>
 
-            <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-                <div class="pkm-card rounded-[28px] p-5">
-                    <div class="pkm-icon bg-emerald-100 text-emerald-700"><i data-lucide="users-round" class="size-5"></i></div>
-                    <div class="mt-5 text-sm text-slate-500">Total Pegawai Aktif</div>
-                    <div class="mt-2 text-3xl font-semibold text-slate-800">48</div>
-                    <div class="mt-2 text-xs text-emerald-700">Terdiri dari medis, administrasi, dan penanggung jawab.</div>
-                </div>
-                <div class="pkm-card rounded-[28px] p-5">
-                    <div class="pkm-icon bg-lime-100 text-lime-700"><i data-lucide="calendar-check-2" class="size-5"></i></div>
-                    <div class="mt-5 text-sm text-slate-500">Jadwal Tersusun</div>
-                    <div class="mt-2 text-3xl font-semibold text-slate-800">31</div>
-                    <div class="mt-2 text-xs text-lime-700">Periode minggu berjalan sudah hampir penuh.</div>
-                </div>
-                <div class="pkm-card rounded-[28px] p-5">
-                    <div class="pkm-icon bg-teal-100 text-teal-700"><i data-lucide="clipboard-list" class="size-5"></i></div>
-                    <div class="mt-5 text-sm text-slate-500">Laporan Masuk</div>
-                    <div class="mt-2 text-3xl font-semibold text-slate-800">18</div>
-                    <div class="mt-2 text-xs text-teal-700">6 laporan menunggu tindak lanjut PJ penjadwalan.</div>
-                </div>
-                <div class="pkm-card rounded-[28px] p-5">
-                    <div class="pkm-icon bg-amber-100 text-amber-700"><i data-lucide="siren" class="size-5"></i></div>
-                    <div class="mt-5 text-sm text-slate-500">Butuh Atensi</div>
-                    <div class="mt-2 text-3xl font-semibold text-slate-800">3</div>
-                    <div class="mt-2 text-xs text-amber-700">Ada benturan jadwal dan dinas luar yang perlu dicek.</div>
-                </div>
-            </div>
-
-            <div class="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-                <div class="pkm-card rounded-[30px] p-6">
-                    <div class="flex flex-col gap-3 border-b border-slate-100 pb-5 xl:flex-row xl:items-center xl:justify-between">
+            <div class="pkm-chart-row">
+                <section class="pkm-card pkm-chart-card pkm-chart-card--wide">
+                    <div class="pkm-card__head">
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-800">Jadwal Layanan Terdekat</h3>
-                            <p class="mt-1 text-sm text-slate-500">Ringkasan penugasan pelayanan dan dinas luar yang akan berjalan.</p>
+                            <h3>Ringkasan Jadwal Bulanan</h3>
+                            <p>Perbandingan beban layanan dan kegiatan lapangan bulan ini.</p>
                         </div>
-                        <button class="inline-flex items-center gap-2 rounded-2xl bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
-                            <i data-lucide="plus" class="size-4"></i>
-                            Tambah Jadwal
-                        </button>
-                    </div>
-
-                    <div class="mt-5 overflow-hidden rounded-[24px] border border-emerald-100/80">
-                        <div class="grid grid-cols-[1.1fr_1fr_0.9fr_0.9fr] bg-emerald-50/80 px-5 py-4 text-xs font-semibold uppercase tracking-[0.15em] text-emerald-800">
-                            <div>Kegiatan</div>
-                            <div>Penugasan</div>
-                            <div>Waktu</div>
-                            <div>Status</div>
-                        </div>
-                        <div class="divide-y divide-slate-100 bg-white">
-                            <div class="grid grid-cols-[1.1fr_1fr_0.9fr_0.9fr] items-center px-5 py-4 text-sm">
-                                <div><div class="font-semibold text-slate-800">Pelayanan Poli Umum</div><div class="mt-1 text-slate-500">Gedung utama lantai 1</div></div>
-                                <div class="text-slate-600">dr. Rina, 2 perawat</div>
-                                <div class="text-slate-600">08.00 - 12.00</div>
-                                <div><span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Terjadwal</span></div>
-                            </div>
-                            <div class="grid grid-cols-[1.1fr_1fr_0.9fr_0.9fr] items-center px-5 py-4 text-sm">
-                                <div><div class="font-semibold text-slate-800">Imunisasi Keliling</div><div class="mt-1 text-slate-500">Posyandu Melati</div></div>
-                                <div class="text-slate-600">Bidan Siska, 1 admin</div>
-                                <div class="text-slate-600">09.00 - 11.30</div>
-                                <div><span class="rounded-full bg-lime-100 px-3 py-1 text-xs font-semibold text-lime-700">Berjalan</span></div>
-                            </div>
-                            <div class="grid grid-cols-[1.1fr_1fr_0.9fr_0.9fr] items-center px-5 py-4 text-sm">
-                                <div><div class="font-semibold text-slate-800">Penyuluhan Gizi</div><div class="mt-1 text-slate-500">Balai warga RW 03</div></div>
-                                <div class="text-slate-600">Ahli Gizi, 1 promkes</div>
-                                <div class="text-slate-600">13.00 - 15.00</div>
-                                <div><span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Perlu Verifikasi</span></div>
-                            </div>
+                        <div class="pkm-card__toolbar">
+                            <span>15 Apr 2026 - 15 Mei 2026</span>
                         </div>
                     </div>
-                </div>
 
-                <div class="pkm-card rounded-[30px] p-6">
-                    <div class="flex items-center justify-between">
+                    <div class="pkm-chart-placeholder pkm-chart-placeholder--line">
+                        <div class="pkm-chart-placeholder__legend">
+                            <span><i></i> Layanan Internal</span>
+                            <span><i class="is-secondary"></i> Dinas Luar</span>
+                        </div>
+                        <div class="pkm-fake-chart">
+                            <div class="pkm-fake-chart__grid"></div>
+                            <div class="pkm-fake-chart__line pkm-fake-chart__line--primary"></div>
+                            <div class="pkm-fake-chart__line pkm-fake-chart__line--secondary"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="pkm-card pkm-chart-card">
+                    <div class="pkm-card__head">
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-800">Agenda Cepat</h3>
-                            <p class="mt-1 text-sm text-slate-500">Aksi yang sering dipakai operator.</p>
+                            <h3>Komposisi Kegiatan</h3>
+                            <p>Layanan vs dinas luar</p>
                         </div>
-                        <div class="rounded-2xl bg-emerald-50 p-3 text-emerald-700"><i data-lucide="sparkles" class="size-5"></i></div>
                     </div>
+                    <div class="pkm-donut-wrap">
+                        <div class="pkm-donut-chart"></div>
+                        <div class="pkm-donut-chart__label">
+                            <strong>73%</strong>
+                            <span>Layanan</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
-                    <div class="mt-5 grid gap-3">
-                        <a href="#" class="pkm-action">
-                            <span class="pkm-action__icon"><i data-lucide="calendar-plus" class="size-4"></i></span>
-                            <span><span class="block font-semibold text-slate-800">Susun Jadwal Layanan</span><span class="block text-sm text-slate-500">Atur pelayanan poli, imunisasi, dan layanan rutin.</span></span>
-                        </a>
-                        <a href="#" class="pkm-action">
-                            <span class="pkm-action__icon"><i data-lucide="briefcase-business" class="size-4"></i></span>
-                            <span><span class="block font-semibold text-slate-800">Verifikasi Dinas Luar</span><span class="block text-sm text-slate-500">Periksa pengajuan kegiatan lapangan pegawai.</span></span>
-                        </a>
-                        <a href="#" class="pkm-action">
-                            <span class="pkm-action__icon"><i data-lucide="file-check-2" class="size-4"></i></span>
-                            <span><span class="block font-semibold text-slate-800">Tinjau Laporan</span><span class="block text-sm text-slate-500">Pantau laporan kegiatan yang sudah masuk.</span></span>
-                        </a>
+            <section class="pkm-card pkm-table-card">
+                <div class="pkm-card__head">
+                    <div>
+                        <h3>Jadwal Layanan Terdekat</h3>
+                        <p>Penugasan yang akan berjalan dalam waktu dekat.</p>
+                    </div>
+                    <a href="#" class="pkm-text-link">Show More</a>
+                </div>
+
+                <div class="pkm-table">
+                    <div class="pkm-table__head">
+                        <span>Kegiatan</span>
+                        <span>Petugas</span>
+                        <span>Waktu</span>
+                        <span>Status</span>
+                    </div>
+                    <div class="pkm-table__row">
+                        <div>
+                            <strong>Pelayanan Poli Umum</strong>
+                            <small>Gedung utama lantai 1</small>
+                        </div>
+                        <div>dr. Rina, 2 perawat</div>
+                        <div>08.00 - 12.00</div>
+                        <div><span class="pkm-pill is-green">Terjadwal</span></div>
+                    </div>
+                    <div class="pkm-table__row">
+                        <div>
+                            <strong>Imunisasi Keliling</strong>
+                            <small>Posyandu Melati</small>
+                        </div>
+                        <div>Bidan Siska, 1 admin</div>
+                        <div>09.00 - 11.30</div>
+                        <div><span class="pkm-pill is-blue">Berjalan</span></div>
+                    </div>
+                    <div class="pkm-table__row">
+                        <div>
+                            <strong>Penyuluhan Gizi</strong>
+                            <small>Balai warga RW 03</small>
+                        </div>
+                        <div>Ahli Gizi, 1 promkes</div>
+                        <div>13.00 - 15.00</div>
+                        <div><span class="pkm-pill is-amber">Perlu Verifikasi</span></div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
 
-        <aside class="flex flex-col gap-6">
-            <div class="pkm-card rounded-[30px] p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold text-slate-800">Status Operasional</h3>
-                        <p class="mt-1 text-sm text-slate-500">Gambaran cepat kondisi hari ini.</p>
-                    </div>
-                    <div class="rounded-2xl bg-emerald-50 p-3 text-emerald-700"><i data-lucide="heart-handshake" class="size-5"></i></div>
-                </div>
-                <div class="mt-6 flex flex-col gap-4">
-                    <div class="pkm-status-row"><span>Pelayanan aktif</span><strong>5 unit</strong></div>
-                    <div class="pkm-status-row"><span>Pegawai dinas luar</span><strong>8 orang</strong></div>
-                    <div class="pkm-status-row"><span>Laporan selesai</span><strong>12 berkas</strong></div>
-                    <div class="pkm-status-row"><span>Verifikasi tertunda</span><strong>2 pengajuan</strong></div>
-                </div>
-            </div>
-
-            <div class="pkm-card rounded-[30px] p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold text-slate-800">Pegawai Siaga</h3>
-                        <p class="mt-1 text-sm text-slate-500">Siap ditugaskan untuk layanan tambahan.</p>
-                    </div>
-                    <a href="#" class="text-sm font-medium text-emerald-700">Lihat semua</a>
+        <aside class="pkm-dashboard-side">
+            <section class="pkm-side-panel">
+                <div class="pkm-side-panel__head">
+                    <h3>Aktivitas Hari Ini</h3>
+                    <span>Live</span>
                 </div>
 
-                <div class="mt-5 flex flex-col gap-4">
-                    @foreach ([['nama' => 'dr. Rina Permata', 'jabatan' => 'Dokter Umum'], ['nama' => 'Siska Anggraini', 'jabatan' => 'Bidan Koordinator'], ['nama' => 'Fauzan Pratama', 'jabatan' => 'Promosi Kesehatan']] as $pegawai)
-                        <div class="flex items-center gap-4 rounded-[24px] border border-slate-100 bg-slate-50/80 p-4">
-                            <div class="flex size-12 items-center justify-center rounded-2xl bg-emerald-100 text-sm font-semibold text-emerald-700">{{ strtoupper(substr($pegawai['nama'], 0, 1)) }}</div>
-                            <div class="min-w-0 flex-1">
-                                <div class="truncate font-semibold text-slate-800">{{ $pegawai['nama'] }}</div>
-                                <div class="truncate text-sm text-slate-500">{{ $pegawai['jabatan'] }}</div>
-                            </div>
-                            <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">Siaga</span>
+                <div class="pkm-activity-list">
+                    <article class="pkm-activity-item">
+                        <div class="pkm-activity-item__avatar">DR</div>
+                        <div class="pkm-activity-item__body">
+                            <strong>dr. Rina Permata</strong>
+                            <small>Poli umum dimulai pukul 08.00</small>
                         </div>
-                    @endforeach
-                </div>
-            </div>
+                        <span class="pkm-activity-item__meta is-positive">+aktif</span>
+                    </article>
 
-            <div class="pkm-card rounded-[30px] p-6">
-                <div class="rounded-[28px] bg-emerald-50 p-5">
-                    <div class="flex items-center gap-3 text-emerald-700">
-                        <i data-lucide="shield-plus" class="size-5"></i>
-                        <h3 class="text-base font-semibold">Tema Sudah Disesuaikan</h3>
-                    </div>
-                    <p class="mt-3 text-sm leading-7 text-emerald-800/80">
-                        Warna default template sudah diarahkan ke spektrum hijau yang lebih lembut, bersih, dan cocok untuk aplikasi kesehatan. Struktur ini siap dilanjutkan ke halaman login, master data, dan modul jadwal.
-                    </p>
+                    <article class="pkm-activity-item">
+                        <div class="pkm-activity-item__avatar">BS</div>
+                        <div class="pkm-activity-item__body">
+                            <strong>Siska Anggraini</strong>
+                            <small>Imunisasi keliling diverifikasi</small>
+                        </div>
+                        <span class="pkm-activity-item__meta is-neutral">09.15</span>
+                    </article>
+
+                    <article class="pkm-activity-item">
+                        <div class="pkm-activity-item__avatar">FP</div>
+                        <div class="pkm-activity-item__body">
+                            <strong>Fauzan Pratama</strong>
+                            <small>Penyuluhan gizi menunggu persetujuan</small>
+                        </div>
+                        <span class="pkm-activity-item__meta is-warning">pending</span>
+                    </article>
+
+                    <article class="pkm-activity-item">
+                        <div class="pkm-activity-item__avatar">AN</div>
+                        <div class="pkm-activity-item__body">
+                            <strong>Ani Nurlaila</strong>
+                            <small>Laporan kegiatan sudah diunggah</small>
+                        </div>
+                        <span class="pkm-activity-item__meta is-positive">done</span>
+                    </article>
                 </div>
-            </div>
+
+                <a href="#" class="pkm-side-panel__button">Lihat Semua Aktivitas</a>
+            </section>
+
+            <section class="pkm-side-summary">
+                <div class="pkm-side-summary__head">
+                    <h3>Agenda Cepat</h3>
+                    <a href="#" class="pkm-text-link">Show More</a>
+                </div>
+
+                <a href="#" class="pkm-quick-action">
+                    <span class="pkm-quick-action__icon"><i data-lucide="calendar-plus" class="size-4"></i></span>
+                    <span>
+                        <strong>Susun Jadwal Layanan</strong>
+                        <small>Atur poli, posyandu, dan kegiatan internal.</small>
+                    </span>
+                </a>
+
+                <a href="#" class="pkm-quick-action">
+                    <span class="pkm-quick-action__icon"><i data-lucide="briefcase-medical" class="size-4"></i></span>
+                    <span>
+                        <strong>Verifikasi Dinas Luar</strong>
+                        <small>Periksa pengajuan kegiatan pegawai lapangan.</small>
+                    </span>
+                </a>
+
+                <a href="#" class="pkm-quick-action">
+                    <span class="pkm-quick-action__icon"><i data-lucide="file-text" class="size-4"></i></span>
+                    <span>
+                        <strong>Tinjau Laporan</strong>
+                        <small>Pantau laporan kegiatan yang sudah masuk.</small>
+                    </span>
+                </a>
+            </section>
         </aside>
     </section>
 @endsection
