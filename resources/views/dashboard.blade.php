@@ -136,31 +136,31 @@
                         <span>Status</span>
                     </div>
                     <div class="pkm-table__row">
-                        <div>
+                        <div data-label="Kegiatan">
                             <strong>Pelayanan Poli Umum</strong>
                             <small>Gedung utama lantai 1</small>
                         </div>
-                        <div>dr. Rina, 2 perawat</div>
-                        <div>08.00 - 12.00</div>
-                        <div><span class="pkm-pill is-green">Terjadwal</span></div>
+                        <div data-label="Petugas">dr. Rina, 2 perawat</div>
+                        <div data-label="Waktu">08.00 - 12.00</div>
+                        <div data-label="Status"><span class="pkm-pill is-green">Terjadwal</span></div>
                     </div>
                     <div class="pkm-table__row">
-                        <div>
+                        <div data-label="Kegiatan">
                             <strong>Imunisasi Keliling</strong>
                             <small>Posyandu Melati</small>
                         </div>
-                        <div>Bidan Siska, 1 admin</div>
-                        <div>09.00 - 11.30</div>
-                        <div><span class="pkm-pill is-blue">Berjalan</span></div>
+                        <div data-label="Petugas">Bidan Siska, 1 admin</div>
+                        <div data-label="Waktu">09.00 - 11.30</div>
+                        <div data-label="Status"><span class="pkm-pill is-blue">Berjalan</span></div>
                     </div>
                     <div class="pkm-table__row">
-                        <div>
+                        <div data-label="Kegiatan">
                             <strong>Penyuluhan Gizi</strong>
                             <small>Balai warga RW 03</small>
                         </div>
-                        <div>Ahli Gizi, 1 promkes</div>
-                        <div>13.00 - 15.00</div>
-                        <div><span class="pkm-pill is-amber">Perlu Verifikasi</span></div>
+                        <div data-label="Petugas">Ahli Gizi, 1 promkes</div>
+                        <div data-label="Waktu">13.00 - 15.00</div>
+                        <div data-label="Status"><span class="pkm-pill is-amber">Perlu Verifikasi</span></div>
                     </div>
                 </div>
             </section>

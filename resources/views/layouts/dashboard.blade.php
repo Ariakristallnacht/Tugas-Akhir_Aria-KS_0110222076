@@ -35,7 +35,7 @@
                             <span class="pkm-brand__title">Bunar Care</span>
                         </span>
                     </a>
-                    <button class="pkm-sidebar__collapse" type="button" aria-label="Toggle menu">
+                    <button class="pkm-sidebar__collapse js-pkm-sidebar-close" type="button" aria-label="Tutup menu">
                         <i data-lucide="chevron-left" class="size-4"></i>
                     </button>
                 </div>
@@ -105,10 +105,14 @@
                     <i data-lucide="move-right" class="size-4 text-white/55"></i>
                 </div>
             </aside>
+            <button class="pkm-sidebar-overlay js-pkm-sidebar-close" type="button" aria-label="Tutup sidebar"></button>
 
             <main class="pkm-main">
                 <header class="pkm-topbar">
-                    <div>
+                    <div class="pkm-topbar__headline">
+                        <button class="pkm-mobile-menu js-pkm-sidebar-open" type="button" aria-label="Buka menu">
+                            <i data-lucide="menu" class="size-5"></i>
+                        </button>
                         <div class="pkm-breadcrumb">
                             <span>Apps</span>
                             <i data-lucide="chevron-right" class="size-4"></i>
@@ -141,6 +145,29 @@
     <script src="{{ asset('template/dist/js/vendors/lucide.js') }}"></script>
     <script src="{{ asset('template/dist/js/components/base/page-loader.js') }}"></script>
     <script src="{{ asset('template/dist/js/components/base/lucide.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const shell = document.querySelector('.pkm-shell');
+            const openButtons = document.querySelectorAll('.js-pkm-sidebar-open');
+            const closeButtons = document.querySelectorAll('.js-pkm-sidebar-close');
+
+            if (!shell) {
+                return;
+            }
+
+            const openSidebar = () => shell.classList.add('pkm-shell--sidebar-open');
+            const closeSidebar = () => shell.classList.remove('pkm-shell--sidebar-open');
+
+            openButtons.forEach((button) => button.addEventListener('click', openSidebar));
+            closeButtons.forEach((button) => button.addEventListener('click', closeSidebar));
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 1280) {
+                    closeSidebar();
+                }
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

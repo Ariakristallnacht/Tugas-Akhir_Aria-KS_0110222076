@@ -253,6 +253,11 @@ body {
     background: #f9fbff;
 }
 
+.pkm-sidebar-overlay,
+.pkm-mobile-menu {
+    display: none;
+}
+
 .pkm-topbar {
     display: flex;
     align-items: flex-start;
@@ -268,6 +273,12 @@ body {
     gap: 8px;
     color: var(--pkm-muted);
     font-size: 0.98rem;
+}
+
+.pkm-topbar__headline {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
 }
 
 .pkm-main__title {
@@ -338,6 +349,18 @@ body {
     border: 1px solid rgba(91, 111, 214, 0.18);
     color: #345f48;
     font-weight: 800;
+}
+
+.pkm-mobile-menu {
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    border: 1px solid var(--pkm-border);
+    background: rgba(255, 255, 255, 0.96);
+    color: var(--pkm-ink);
+    flex-shrink: 0;
 }
 
 .pkm-dashboard-grid {
@@ -908,10 +931,21 @@ body {
 @media (max-width: 1280px) {
     .pkm-shell {
         grid-template-columns: 1fr;
+        min-height: calc(100vh - 40px);
     }
 
     .pkm-sidebar {
-        border-radius: 28px 28px 0 0;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        bottom: 20px;
+        width: min(320px, calc(100vw - 40px));
+        z-index: 60;
+        border-radius: 30px;
+        box-shadow: 0 30px 70px rgba(8, 21, 40, 0.34);
+        transform: translateX(calc(-100% - 24px));
+        transition: transform 220ms ease;
+        overflow-y: auto;
     }
 
     .pkm-dashboard-grid,
@@ -922,6 +956,26 @@ body {
 
     .pkm-hero-panel {
         flex-direction: column;
+    }
+
+    .pkm-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: rgba(15, 23, 42, 0.46);
+        backdrop-filter: blur(4px);
+    }
+
+    .pkm-shell--sidebar-open .pkm-sidebar {
+        transform: translateX(0);
+    }
+
+    .pkm-shell--sidebar-open .pkm-sidebar-overlay {
+        display: block;
+    }
+
+    .pkm-mobile-menu {
+        display: inline-flex;
     }
 }
 
@@ -935,21 +989,48 @@ body {
         border-radius: 26px;
     }
 
+    .pkm-sidebar {
+        top: 12px;
+        left: 12px;
+        bottom: 12px;
+        width: min(320px, calc(100vw - 24px));
+        padding: 22px 16px 16px;
+    }
+
     .pkm-main {
-        padding: 22px 18px 24px;
+        gap: 22px;
+        padding: 18px 14px 20px;
     }
 
     .pkm-topbar {
         flex-direction: column;
+        gap: 16px;
+        padding-bottom: 18px;
     }
 
     .pkm-topbar__actions {
         width: 100%;
         flex-wrap: wrap;
+        justify-content: space-between;
     }
 
     .pkm-topbar__search {
         min-width: 100%;
+        order: 3;
+        padding: 12px 14px;
+    }
+
+    .pkm-topbar__login {
+        padding-inline: 14px;
+    }
+
+    .pkm-topbar__headline {
+        width: 100%;
+    }
+
+    .pkm-breadcrumb {
+        flex-wrap: wrap;
+        font-size: 0.88rem;
     }
 
     .pkm-table__head,
@@ -957,7 +1038,143 @@ body {
         grid-template-columns: 1fr;
     }
 
+    .pkm-table__head {
+        display: none;
+    }
+
+    .pkm-table {
+        gap: 12px;
+        border: 0;
+        background: transparent;
+    }
+
+    .pkm-table__row {
+        gap: 10px;
+        padding: 16px;
+        border: 1px solid var(--pkm-border);
+        border-radius: 18px;
+        box-shadow: 0 10px 28px rgba(58, 78, 113, 0.06);
+    }
+
+    .pkm-table__row > div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .pkm-table__row > div::before {
+        content: attr(data-label);
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #8b9ab0;
+    }
+
     .pkm-hero-panel h3 {
         font-size: 1.9rem;
+    }
+
+    .pkm-hero-panel,
+    .pkm-card,
+    .pkm-side-panel,
+    .pkm-side-summary,
+    .pkm-metric-card {
+        border-radius: 20px;
+    }
+
+    .pkm-hero-panel,
+    .pkm-card,
+    .pkm-side-panel,
+    .pkm-side-summary {
+        padding: 18px;
+    }
+
+    .pkm-metric-card {
+        padding: 18px;
+    }
+
+    .pkm-metric-card__value {
+        margin-top: 22px;
+        font-size: 2rem;
+    }
+
+    .pkm-hero-panel__stats {
+        grid-template-columns: 1fr;
+        min-width: 0;
+    }
+
+    .pkm-chart-row,
+    .pkm-dashboard-grid,
+    .pkm-dashboard-main,
+    .pkm-dashboard-side {
+        gap: 18px;
+    }
+
+    .pkm-fake-chart {
+        height: 220px;
+    }
+
+    .pkm-donut-wrap {
+        min-height: 240px;
+    }
+
+    .pkm-donut-chart {
+        width: 180px;
+        height: 180px;
+    }
+
+    .pkm-donut-chart::after {
+        inset: 22px;
+    }
+
+    .pkm-side-panel__button {
+        min-height: 50px;
+    }
+}
+
+@media (max-width: 640px) {
+    .pkm-brand__title {
+        font-size: 1.55rem;
+    }
+
+    .pkm-main__title {
+        margin-top: 10px;
+        font-size: 1.55rem;
+    }
+
+    .pkm-section-head,
+    .pkm-card__head,
+    .pkm-side-panel__head,
+    .pkm-side-summary__head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pkm-topbar__actions {
+        gap: 10px;
+    }
+
+    .pkm-topbar__icon,
+    .pkm-topbar__avatar,
+    .pkm-mobile-menu {
+        width: 42px;
+        height: 42px;
+    }
+
+    .pkm-hero-panel h3 {
+        font-size: 1.55rem;
+    }
+
+    .pkm-hero-panel p,
+    .pkm-card__head p,
+    .pkm-section-head p {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .pkm-activity-item,
+    .pkm-quick-action {
+        padding: 14px;
     }
 }
