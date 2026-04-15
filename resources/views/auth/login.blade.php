@@ -15,13 +15,13 @@
     <link rel="stylesheet" href="{{ asset('template/dist/css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('template/dist/css/puskesmas-theme.css') }}">
 </head>
-<body>
+<body class="pkm-login-page">
     <div class="page-loader bg-background fixed inset-0 z-[100] flex items-center justify-center transition-opacity">
         <div class="loader-spinner !w-14"></div>
     </div>
 
-    <div class="relative h-screen overflow-hidden bg-primary bg-noise xl:bg-background xl:bg-none before:hidden before:xl:block before:content-[''] before:w-[57%] before:-mt-[28%] before:-mb-[16%] before:-ml-[12%] before:absolute before:inset-y-0 before:left-0 before:transform before:rotate-[6deg] before:bg-primary/[.95] before:bg-noise before:rounded-[35%] after:hidden after:xl:block after:content-[''] after:w-[57%] after:-mt-[28%] after:-mb-[16%] after:-ml-[12%] after:absolute after:inset-y-0 after:left-0 after:transform after:rotate-[6deg] after:border after:bg-accent after:bg-cover after:blur-xl after:rounded-[35%] after:border-[20px] after:border-primary">
-        <div class="p-3 sm:px-8 relative h-full before:hidden before:xl:block before:w-[57%] before:-mt-[20%] before:-mb-[13%] before:-ml-[12%] before:absolute before:inset-y-0 before:left-0 before:transform before:rotate-[-6deg] before:bg-primary/40 before:bg-noise before:border before:border-primary/50 before:opacity-60 before:rounded-[20%]">
+    <div class="pkm-login-shell relative h-screen overflow-hidden xl:bg-none before:hidden before:xl:block before:content-[''] before:w-[57%] before:-mt-[28%] before:-mb-[16%] before:-ml-[12%] before:absolute before:inset-y-0 before:left-0 before:transform before:rotate-[6deg] before:rounded-[35%] after:hidden after:xl:block after:content-[''] after:w-[57%] after:-mt-[28%] after:-mb-[16%] after:-ml-[12%] after:absolute after:inset-y-0 after:left-0 after:transform after:rotate-[6deg] after:border after:bg-cover after:blur-xl after:rounded-[35%] after:border-[20px]">
+        <div class="pkm-login-glow p-3 sm:px-8 relative h-full before:hidden before:xl:block before:w-[57%] before:-mt-[20%] before:-mb-[13%] before:-ml-[12%] before:absolute before:inset-y-0 before:left-0 before:transform before:rotate-[-6deg] before:border before:opacity-60 before:rounded-[20%]">
             <div class="container relative z-10 mx-auto sm:px-20">
                 <div class="block grid-cols-2 gap-4 xl:grid">
                     <div class="hidden min-h-screen flex-col xl:flex">
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="my-10 flex h-screen py-5 xl:my-0 xl:h-auto xl:py-0">
-                        <div class="box relative p-5 before:absolute before:inset-0 before:mx-3 before:-mb-3 before:border before:border-foreground/10 before:bg-background/30 before:shadow-[0px_3px_5px_#0000000b] before:z-[-1] before:rounded-xl after:absolute after:inset-0 after:border after:border-foreground/10 after:bg-background after:shadow-[0px_3px_5px_#0000000b] after:rounded-xl after:z-[-1] after:backdrop-blur-md mx-auto my-auto w-full px-5 py-8 sm:w-3/4 sm:px-8 lg:w-2/4 xl:ml-24 xl:w-auto xl:p-0 xl:before:hidden xl:after:hidden">
+                        <div class="pkm-login-card box relative p-5 before:absolute before:inset-0 before:mx-3 before:-mb-3 before:shadow-[0px_3px_5px_#0000000b] before:z-[-1] before:rounded-xl after:absolute after:inset-0 after:shadow-[0px_3px_5px_#0000000b] after:rounded-xl after:z-[-1] after:backdrop-blur-md mx-auto my-auto w-full px-5 py-8 sm:w-3/4 sm:px-8 lg:w-2/4 xl:ml-24 xl:w-auto xl:p-0 xl:before:hidden xl:after:hidden">
                             <h2 class="text-center text-2xl font-semibold xl:text-left xl:text-3xl">
                                 Sign In
                             </h2>
