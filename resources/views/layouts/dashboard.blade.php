@@ -53,7 +53,7 @@
                 <nav class="pkm-nav">
                     <div class="pkm-nav__group">
                         <div class="pkm-nav__label">General Reports</div>
-                        <a href="{{ route('dashboard') }}" class="pkm-nav__item {{ request()->routeIs('dashboard') ? 'is-active' : '' }}">
+                        <a href="{{ auth()->user()->dashboardPath() }}" class="pkm-nav__item {{ request()->routeIs('admin.dashboard', 'pj.dashboard', 'pegawai.dashboard') ? 'is-active' : '' }}">
                             <span class="pkm-nav__icon"><i data-lucide="layout-dashboard" class="size-4"></i></span>
                             <span>Dashboard</span>
                             <span class="pkm-nav__badge">4</span>
