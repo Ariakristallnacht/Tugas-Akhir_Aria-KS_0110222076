@@ -2,111 +2,104 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login | Puskesmas Bunar</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Halaman login sistem penjadwalan layanan dan dinas luar Puskesmas Bunar.">
+    <meta name="keywords" content="puskesmas, login, dashboard, layanan, dinas luar">
+    <meta name="author" content="Puskesmas Bunar">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <title>Login | Puskesmas Bunar</title>
 
     <link rel="stylesheet" href="{{ asset('template/dist/css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('template/dist/css/puskesmas-theme.css') }}">
 </head>
-<body class="font-['Plus_Jakarta_Sans']">
+<body>
     <div class="page-loader bg-background fixed inset-0 z-[100] flex items-center justify-center transition-opacity">
         <div class="loader-spinner !w-14"></div>
     </div>
 
-    <div class="pkm-login-shell relative min-h-screen overflow-hidden bg-emerald-950">
-        <div class="pkm-login-glow"></div>
-        <div class="container relative z-10 mx-auto px-4 py-6 sm:px-10">
-            <div class="grid min-h-screen gap-6 xl:grid-cols-2 xl:gap-10">
-                <div class="hidden xl:flex xl:flex-col xl:justify-between xl:py-8">
-                    <a class="flex items-center gap-3" href="{{ url('/') }}">
-                        <div class="pkm-logo-shell flex size-12 items-center justify-center rounded-2xl">
-                            <i data-lucide="heart-pulse" class="size-5"></i>
-                        </div>
-                        <div class="text-white">
-                            <div class="text-sm uppercase tracking-[0.22em] text-white/65">Sistem Penjadwalan</div>
-                            <div class="text-xl font-semibold">Puskesmas Bunar</div>
-                        </div>
-                    </a>
+    <div class="relative h-screen overflow-hidden bg-primary bg-noise xl:bg-background xl:bg-none before:hidden before:xl:block before:content-[''] before:w-[57%] before:-mt-[28%] before:-mb-[16%] before:-ml-[12%] before:absolute before:inset-y-0 before:left-0 before:transform before:rotate-[6deg] before:bg-primary/[.95] before:bg-noise before:rounded-[35%] after:hidden after:xl:block after:content-[''] after:w-[57%] after:-mt-[28%] after:-mb-[16%] after:-ml-[12%] after:absolute after:inset-y-0 after:left-0 after:transform after:rotate-[6deg] after:border after:bg-accent after:bg-cover after:blur-xl after:rounded-[35%] after:border-[20px] after:border-primary">
+        <div class="p-3 sm:px-8 relative h-full before:hidden before:xl:block before:w-[57%] before:-mt-[20%] before:-mb-[13%] before:-ml-[12%] before:absolute before:inset-y-0 before:left-0 before:transform before:rotate-[-6deg] before:bg-primary/40 before:bg-noise before:border before:border-primary/50 before:opacity-60 before:rounded-[20%]">
+            <div class="container relative z-10 mx-auto sm:px-20">
+                <div class="block grid-cols-2 gap-4 xl:grid">
+                    <div class="hidden min-h-screen flex-col xl:flex">
+                        <a class="flex items-center pt-10" href="{{ url('/') }}">
+                            <img class="w-6" src="{{ asset('template/dist/images/logo.svg') }}" alt="Puskesmas Bunar">
+                            <span class="ml-3 text-xl font-medium text-white">
+                                Puskesmas <span class="font-light opacity-70">Bunar Care</span>
+                            </span>
+                        </a>
 
-                    <div class="max-w-xl">
-                        <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/75 backdrop-blur">
-                            <i data-lucide="hospital" class="size-3.5"></i>
-                            Layanan Kesehatan Terintegrasi
+                        <div class="my-auto">
+                            <img class="-mt-16 w-1/2" src="{{ asset('template/dist/images/illustration.svg') }}" alt="Ilustrasi layanan kesehatan">
+                            <div class="mt-10 text-4xl font-medium leading-tight text-white">
+                                Akses jadwal layanan dan <br>
+                                dinas luar dalam satu akun.
+                            </div>
+                            <div class="mt-5 max-w-xl text-lg text-white opacity-70">
+                                Masuk ke sistem untuk mengelola jadwal, monitoring, verifikasi kegiatan, dan laporan operasional Puskesmas Bunar.
+                            </div>
                         </div>
-                        <h1 class="mt-6 text-5xl font-semibold leading-tight text-white">Masuk ke sistem layanan dan dinas luar dengan tampilan yang lebih hangat dan profesional.</h1>
-                        <p class="mt-6 text-lg leading-8 text-white/72">
-                            Halaman login ini dibangun dari aset template di `public/template` lalu disesuaikan menjadi nuansa hijau lembut agar lebih selaras dengan karakter aplikasi kesehatan.
-                        </p>
                     </div>
 
-                    <div class="rounded-[32px] border border-white/10 bg-white/8 p-6 text-white backdrop-blur">
-                        <div class="grid grid-cols-3 gap-4">
-                            <div><div class="text-3xl font-semibold">48</div><div class="mt-1 text-sm text-white/70">Pegawai aktif</div></div>
-                            <div><div class="text-3xl font-semibold">12</div><div class="mt-1 text-sm text-white/70">Jadwal hari ini</div></div>
-                            <div><div class="text-3xl font-semibold">4</div><div class="mt-1 text-sm text-white/70">Dinas luar</div></div>
-                        </div>
-                    </div>
-                </div>
+                    <div class="my-10 flex h-screen py-5 xl:my-0 xl:h-auto xl:py-0">
+                        <div class="box relative p-5 before:absolute before:inset-0 before:mx-3 before:-mb-3 before:border before:border-foreground/10 before:bg-background/30 before:shadow-[0px_3px_5px_#0000000b] before:z-[-1] before:rounded-xl after:absolute after:inset-0 after:border after:border-foreground/10 after:bg-background after:shadow-[0px_3px_5px_#0000000b] after:rounded-xl after:z-[-1] after:backdrop-blur-md mx-auto my-auto w-full px-5 py-8 sm:w-3/4 sm:px-8 lg:w-2/4 xl:ml-24 xl:w-auto xl:p-0 xl:before:hidden xl:after:hidden">
+                            <h2 class="text-center text-2xl font-semibold xl:text-left xl:text-3xl">
+                                Sign In
+                            </h2>
+                            <div class="mt-2 text-center opacity-70 xl:hidden">
+                                Masuk ke sistem penjadwalan layanan dan dinas luar Puskesmas Bunar.
+                            </div>
 
-                <div class="flex items-center justify-center py-6 xl:py-10">
-                    <div class="pkm-login-card w-full max-w-[34rem] rounded-[34px] p-6 sm:p-8">
-                        <div class="mb-8 xl:hidden">
-                            <a class="flex items-center gap-3" href="{{ url('/') }}">
-                                <div class="pkm-logo-shell flex size-11 items-center justify-center rounded-2xl">
-                                    <i data-lucide="heart-pulse" class="size-5"></i>
-                                </div>
+                            <form method="POST" action="{{ route('login.store') }}" class="mt-8 flex flex-col gap-5">
+                                @csrf
                                 <div>
-                                    <div class="text-sm uppercase tracking-[0.22em] text-emerald-700/70">Sistem Penjadwalan</div>
-                                    <div class="text-lg font-semibold text-slate-800">Puskesmas Bunar</div>
+                                    <input class="h-10 w-full rounded-md border bg-background ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-foreground placeholder:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/5 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 box block min-w-full px-5 py-6 xl:min-w-[28rem]" type="email" name="email" value="{{ old('email', 'admin@pkmbunar.test') }}" placeholder="Email" required autofocus>
+                                    @error('email')
+                                        <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
-                            </a>
-                        </div>
 
-                        <div class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-emerald-700">
-                            <i data-lucide="shield-check" class="size-3.5"></i>
-                            Akses Pengguna
-                        </div>
-                        <h2 class="mt-5 text-3xl font-semibold text-slate-800">Masuk ke akun Anda</h2>
-                        <p class="mt-3 text-sm leading-7 text-slate-500">
-                            Gunakan email dan kata sandi untuk mengakses dashboard penjadwalan layanan, dinas luar, dan laporan kegiatan.
-                        </p>
+                                <div>
+                                    <input class="h-10 w-full rounded-md border bg-background ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-foreground placeholder:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/5 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 box block min-w-full px-5 py-6 xl:min-w-[28rem]" type="password" name="password" value="password" placeholder="Password" required>
+                                    @error('password')
+                                        <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                        <form method="POST" action="{{ route('login.store') }}" class="mt-8 flex flex-col gap-5">
-                            @csrf
-                            <div>
-                                <label class="mb-2 block text-sm font-medium text-slate-700">Email</label>
-                                <input type="email" name="email" value="{{ old('email', 'admin@pkmbunar.test') }}" class="pkm-input" placeholder="masukkan email" required autofocus>
-                                @error('email')
-                                    <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="mb-2 block text-sm font-medium text-slate-700">Kata sandi</label>
-                                <input type="password" name="password" value="password" class="pkm-input" placeholder="masukkan kata sandi" required>
-                                @error('password')
-                                    <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div class="flex items-center justify-between gap-4 text-sm">
-                                <label class="flex items-center gap-2 text-slate-500">
-                                    <input type="checkbox" name="remember" value="1" class="rounded border-emerald-200 text-emerald-600 focus:ring-emerald-500" @checked(old('remember'))>
-                                    Ingat saya
-                                </label>
-                                <a href="#" class="font-medium text-emerald-700">Lupa kata sandi?</a>
-                            </div>
-                            <button type="submit" class="pkm-primary-button">
-                                <i data-lucide="log-in" class="size-4"></i>
-                                Masuk ke Dashboard
-                            </button>
-                        </form>
+                                <div class="flex text-xs sm:text-sm">
+                                    <div class="mr-auto flex items-center gap-2.5">
+                                        <div class="bg-background border-foreground/70 relative size-4 rounded-sm border">
+                                            <input class="peer relative z-10 size-full cursor-pointer opacity-0" type="checkbox" name="remember" value="1" id="remember-me" @checked(old('remember'))>
+                                            <div class="z-4 bg-foreground invisible absolute inset-0 flex items-center justify-center text-white peer-checked:visible">
+                                                <i data-lucide="check" class="size-4 stroke-[1.5]"></i>
+                                            </div>
+                                        </div>
+                                        <label class="font-medium leading-none opacity-70" for="remember-me">Remember me</label>
+                                    </div>
+                                    <a class="opacity-70" href="#">Forgot Password?</a>
+                                </div>
 
-                        <div class="mt-8 rounded-[24px] bg-emerald-50/80 p-4 text-sm leading-7 text-emerald-800/80">
-                            Akun contoh: `admin@pkmbunar.test`, `pj@pkmbunar.test`, atau `pegawai@pkmbunar.test` dengan kata sandi `password`.
+                                <div class="text-center xl:mt-2 xl:text-left">
+                                    <button type="submit" class="cursor-pointer inline-flex border items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-(--color)/20 border-(--color)/60 text-(--color) hover:bg-(--color)/5 [--color:var(--color-primary)] h-10 login-button box w-full px-4 py-5">
+                                        Login
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="pkm-login-helper mt-6">
+                                <div class="pkm-login-helper__title">Akun contoh</div>
+                                <div>`admin@pkmbunar.test`</div>
+                                <div>`pj@pkmbunar.test`</div>
+                                <div>`pegawai@pkmbunar.test`</div>
+                                <div>Kata sandi: `password`</div>
+                            </div>
+
+                            <div class="mt-8 text-center opacity-70 xl:mt-12 xl:text-left">
+                                Dengan masuk ke sistem ini, Anda menggunakan akses sesuai peran yang telah ditetapkan oleh administrator Puskesmas Bunar.
+                            </div>
                         </div>
                     </div>
                 </div>
