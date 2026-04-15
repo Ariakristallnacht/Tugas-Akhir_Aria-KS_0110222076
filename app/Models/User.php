@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use InvalidArgumentException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -74,5 +75,25 @@ class User extends Authenticatable
     public function laporanKegiatanDiverifikasi(): HasMany
     {
         return $this->hasMany(LaporanKegiatan::class, 'diverifikasi_oleh');
+    }
+
+    public function roleKode(): ?string
+    {
+        return $this->role?->kode;
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->roleKode() === $role;
+    }
+
+    public function dashboardPath(): string
+    {
+        return match ($this->roleKode()) {
+            'admin' => '/admin',
+            'pj_penjadwalan' => '/pj',
+            'pegawai' => '/pegawai',
+            default => throw new InvalidArgumentException('Role pengguna tidak dikenali.'),
+        };
     }
 }

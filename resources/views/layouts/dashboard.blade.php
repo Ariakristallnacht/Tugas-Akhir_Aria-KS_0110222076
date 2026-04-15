@@ -26,7 +26,7 @@
         <div class="pkm-shell">
             <aside class="pkm-sidebar">
                 <div class="pkm-sidebar__brand">
-                    <a class="pkm-brand" href="{{ route('dashboard') }}">
+                    <a class="pkm-brand" href="{{ auth()->check() ? auth()->user()->dashboardPath() : url('/') }}">
                         <span class="pkm-brand__badge">
                             <i data-lucide="heart-pulse" class="size-5"></i>
                         </span>
@@ -131,8 +131,11 @@
                         <button class="pkm-topbar__icon" type="button">
                             <i data-lucide="bell" class="size-4"></i>
                         </button>
-                        <a href="{{ route('login') }}" class="pkm-topbar__login">Login</a>
-                        <div class="pkm-topbar__avatar">AB</div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="pkm-topbar__login">Logout</button>
+                        </form>
+                        <div class="pkm-topbar__avatar">{{ strtoupper(substr(auth()->user()->name ?? 'AB', 0, 2)) }}</div>
                     </div>
                 </header>
 

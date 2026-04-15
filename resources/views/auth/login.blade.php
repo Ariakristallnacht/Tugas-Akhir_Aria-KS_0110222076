@@ -23,7 +23,7 @@
         <div class="container relative z-10 mx-auto px-4 py-6 sm:px-10">
             <div class="grid min-h-screen gap-6 xl:grid-cols-2 xl:gap-10">
                 <div class="hidden xl:flex xl:flex-col xl:justify-between xl:py-8">
-                    <a class="flex items-center gap-3" href="{{ route('dashboard') }}">
+                    <a class="flex items-center gap-3" href="{{ url('/') }}">
                         <div class="pkm-logo-shell flex size-12 items-center justify-center rounded-2xl">
                             <i data-lucide="heart-pulse" class="size-5"></i>
                         </div>
@@ -56,7 +56,7 @@
                 <div class="flex items-center justify-center py-6 xl:py-10">
                     <div class="pkm-login-card w-full max-w-[34rem] rounded-[34px] p-6 sm:p-8">
                         <div class="mb-8 xl:hidden">
-                            <a class="flex items-center gap-3" href="{{ route('dashboard') }}">
+                            <a class="flex items-center gap-3" href="{{ url('/') }}">
                                 <div class="pkm-logo-shell flex size-11 items-center justify-center rounded-2xl">
                                     <i data-lucide="heart-pulse" class="size-5"></i>
                                 </div>
@@ -76,30 +76,37 @@
                             Gunakan email dan kata sandi untuk mengakses dashboard penjadwalan layanan, dinas luar, dan laporan kegiatan.
                         </p>
 
-                        <form class="mt-8 flex flex-col gap-5">
+                        <form method="POST" action="{{ route('login.store') }}" class="mt-8 flex flex-col gap-5">
+                            @csrf
                             <div>
                                 <label class="mb-2 block text-sm font-medium text-slate-700">Email</label>
-                                <input type="email" value="admin@pkmbunar.test" class="pkm-input" placeholder="masukkan email">
+                                <input type="email" name="email" value="{{ old('email', 'admin@pkmbunar.test') }}" class="pkm-input" placeholder="masukkan email" required autofocus>
+                                @error('email')
+                                    <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
+                                @enderror
                             </div>
                             <div>
                                 <label class="mb-2 block text-sm font-medium text-slate-700">Kata sandi</label>
-                                <input type="password" value="password" class="pkm-input" placeholder="masukkan kata sandi">
+                                <input type="password" name="password" value="password" class="pkm-input" placeholder="masukkan kata sandi" required>
+                                @error('password')
+                                    <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
+                                @enderror
                             </div>
                             <div class="flex items-center justify-between gap-4 text-sm">
                                 <label class="flex items-center gap-2 text-slate-500">
-                                    <input type="checkbox" class="rounded border-emerald-200 text-emerald-600 focus:ring-emerald-500">
+                                    <input type="checkbox" name="remember" value="1" class="rounded border-emerald-200 text-emerald-600 focus:ring-emerald-500" @checked(old('remember'))>
                                     Ingat saya
                                 </label>
                                 <a href="#" class="font-medium text-emerald-700">Lupa kata sandi?</a>
                             </div>
-                            <button type="button" class="pkm-primary-button">
+                            <button type="submit" class="pkm-primary-button">
                                 <i data-lucide="log-in" class="size-4"></i>
                                 Masuk ke Dashboard
                             </button>
                         </form>
 
                         <div class="mt-8 rounded-[24px] bg-emerald-50/80 p-4 text-sm leading-7 text-emerald-800/80">
-                            Akun contoh masih statis untuk tahap template. Nanti form ini bisa langsung kita sambungkan ke autentikasi Laravel.
+                            Akun contoh: `admin@pkmbunar.test`, `pj@pkmbunar.test`, atau `pegawai@pkmbunar.test` dengan kata sandi `password`.
                         </div>
                     </div>
                 </div>
