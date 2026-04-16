@@ -16,6 +16,17 @@
     @stack('styles')
 </head>
 <body class="font-['Plus_Jakarta_Sans']">
+    @php
+        $user = auth()->user();
+        $roleCode = $user?->roleKode();
+        $roleLabel = $user?->role?->nama ?? 'Pengguna';
+        $dashboardHeading = match ($roleCode) {
+            'admin' => 'Dashboard Admin',
+            'pj_penjadwalan' => 'Dashboard PJ Penjadwalan',
+            'pegawai' => 'Dashboard Pegawai',
+            default => 'Dashboard',
+        };
+    @endphp
     <div class="page-loader bg-background fixed inset-0 z-[100] flex items-center justify-center transition-opacity">
         <div class="loader-spinner !w-14"></div>
     </div>
@@ -45,62 +56,69 @@
                         <i data-lucide="stethoscope" class="size-5"></i>
                     </div>
                     <div>
-                        <div class="pkm-sidebar__profile-name">Admin Puskesmas</div>
-                        <div class="pkm-sidebar__profile-role">Pengelola penjadwalan layanan</div>
+                        <div class="pkm-sidebar__profile-name">{{ $user?->name ?? 'Pengguna' }}</div>
+                        <div class="pkm-sidebar__profile-role">{{ $roleLabel }}</div>
                     </div>
                 </div>
 
                 <nav class="pkm-nav">
                     <div class="pkm-nav__group">
-                        <div class="pkm-nav__label">General Reports</div>
+                        <div class="pkm-nav__label">Dashboard</div>
                         <a href="{{ auth()->user()->dashboardPath() }}" class="pkm-nav__item {{ request()->routeIs('admin.dashboard', 'pj.dashboard', 'pegawai.dashboard') ? 'is-active' : '' }}">
                             <span class="pkm-nav__icon"><i data-lucide="layout-dashboard" class="size-4"></i></span>
                             <span>Dashboard</span>
-                            <span class="pkm-nav__badge">4</span>
+                            <span class="pkm-nav__badge">Home</span>
                         </a>
+                    </div>
 
-                        <div class="pkm-nav__submenu">
-                            <a href="#" class="pkm-nav__subitem is-active">
-                                <i data-lucide="calendar-days" class="size-4"></i>
-                                <span>Overview 1</span>
+                    @if ($roleCode === 'admin')
+                        <div class="pkm-nav__group">
+                            <div class="pkm-nav__label">Manajemen</div>
+                            <a href="{{ route('admin.monitoring-jadwal') }}" class="pkm-nav__item {{ request()->routeIs('admin.monitoring-jadwal') ? 'is-active' : '' }}">
+                                <span class="pkm-nav__icon"><i data-lucide="calendar-range" class="size-4"></i></span>
+                                <span>Monitoring Jadwal</span>
                             </a>
-                            <a href="#" class="pkm-nav__subitem">
-                                <i data-lucide="activity" class="size-4"></i>
-                                <span>Monitoring</span>
-                            </a>
-                            <a href="#" class="pkm-nav__subitem">
-                                <i data-lucide="briefcase-medical" class="size-4"></i>
-                                <span>Dinas Luar</span>
-                            </a>
-                            <a href="#" class="pkm-nav__subitem">
-                                <i data-lucide="file-check-2" class="size-4"></i>
-                                <span>Laporan</span>
+                            <a href="{{ route('admin.pegawai.index') }}" class="pkm-nav__item {{ request()->routeIs('admin.pegawai.*') ? 'is-active' : '' }}">
+                                <span class="pkm-nav__icon"><i data-lucide="briefcase-business" class="size-4"></i></span>
+                                <span>Kelola Pegawai</span>
                             </a>
                         </div>
-                    </div>
-
-                    <div class="pkm-nav__group">
-                        <div class="pkm-nav__label">Apps</div>
-                        <a href="#" class="pkm-nav__item">
-                            <span class="pkm-nav__icon"><i data-lucide="calendar-range" class="size-4"></i></span>
-                            <span>Jadwal Layanan</span>
-                        </a>
-                        <a href="#" class="pkm-nav__item">
-                            <span class="pkm-nav__icon"><i data-lucide="users" class="size-4"></i></span>
-                            <span>Data Pegawai</span>
-                        </a>
-                        <a href="#" class="pkm-nav__item">
-                            <span class="pkm-nav__icon"><i data-lucide="shield-check" class="size-4"></i></span>
-                            <span>Verifikasi Dinas</span>
-                        </a>
-                    </div>
+                    @elseif ($roleCode === 'pj_penjadwalan')
+                        <div class="pkm-nav__group">
+                            <div class="pkm-nav__label">Operasional</div>
+                            <div class="pkm-nav__submenu">
+                                <a href="#" class="pkm-nav__subitem is-active">
+                                    <i data-lucide="calendar-days" class="size-4"></i>
+                                    <span>Jadwal Layanan</span>
+                                </a>
+                                <a href="#" class="pkm-nav__subitem">
+                                    <i data-lucide="shield-check" class="size-4"></i>
+                                    <span>Verifikasi Dinas</span>
+                                </a>
+                            </div>
+                        </div>
+                    @else
+                        <div class="pkm-nav__group">
+                            <div class="pkm-nav__label">Aktivitas</div>
+                            <div class="pkm-nav__submenu">
+                                <a href="#" class="pkm-nav__subitem is-active">
+                                    <i data-lucide="calendar-range" class="size-4"></i>
+                                    <span>Jadwal Saya</span>
+                                </a>
+                                <a href="#" class="pkm-nav__subitem">
+                                    <i data-lucide="file-check-2" class="size-4"></i>
+                                    <span>Laporan Kegiatan</span>
+                                </a>
+                            </div>
+                        </div>
+                    @endif
                 </nav>
 
                 <div class="pkm-sidebar__footer">
-                    <div class="pkm-sidebar__footer-avatar">A</div>
+                    <div class="pkm-sidebar__footer-avatar">{{ strtoupper(substr($user?->name ?? 'AB', 0, 1)) }}</div>
                     <div class="min-w-0">
-                        <div class="truncate font-semibold text-white">Admin Bunar</div>
-                        <div class="truncate text-sm text-white/60">Administrator</div>
+                        <div class="truncate font-semibold text-white">{{ $user?->name ?? 'Pengguna' }}</div>
+                        <div class="truncate text-sm text-white/60">{{ $roleLabel }}</div>
                     </div>
                     <i data-lucide="move-right" class="size-4 text-white/55"></i>
                 </div>
@@ -116,11 +134,11 @@
                         <div class="pkm-breadcrumb">
                             <span>Apps</span>
                             <i data-lucide="chevron-right" class="size-4"></i>
-                            <span>Dashboards</span>
+                            <span>{{ $roleLabel }}</span>
                             <i data-lucide="chevron-right" class="size-4"></i>
-                            <span>{{ $heading ?? 'Overview' }}</span>
+                            <span>{{ $heading ?? $dashboardHeading }}</span>
                         </div>
-                        <h1 class="pkm-main__title">{{ $heading ?? 'Dashboard Puskesmas Bunar' }}</h1>
+                        <h1 class="pkm-main__title">{{ $heading ?? $dashboardHeading }}</h1>
                     </div>
 
                     <div class="pkm-topbar__actions">

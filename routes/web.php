@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\MonitoringJadwalController;
+use App\Http\Controllers\Admin\PegawaiController as AdminPegawaiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Pegawai\DashboardController as PegawaiDashboardController;
 use App\Http\Controllers\Pj\DashboardController as PjDashboardController;
@@ -27,6 +29,8 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin')
         ->group(function () {
             Route::get('/', AdminDashboardController::class)->name('dashboard');
+            Route::get('/monitoring-jadwal', MonitoringJadwalController::class)->name('monitoring-jadwal');
+            Route::resource('pegawai', AdminPegawaiController::class)->except('show');
         });
 
     Route::prefix('pj')

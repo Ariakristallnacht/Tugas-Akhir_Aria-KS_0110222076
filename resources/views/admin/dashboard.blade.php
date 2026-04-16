@@ -19,7 +19,7 @@
                 <article class="pkm-metric-card">
                     <div class="pkm-metric-card__icon bg-emerald-100 text-emerald-700"><i data-lucide="users-round" class="size-5"></i></div>
                     <div class="pkm-metric-card__trend is-up">12%</div>
-                    <div class="pkm-metric-card__value">48</div>
+                    <div class="pkm-metric-card__value">{{ $totalPegawai }}</div>
                     <div class="pkm-metric-card__label">Pegawai Aktif</div>
                 </article>
                 <article class="pkm-metric-card">
@@ -51,7 +51,7 @@
                 <div class="pkm-hero-panel__stats">
                     <div>
                         <span>Akun Aktif</span>
-                        <strong>27</strong>
+                        <strong>{{ $totalAccounts }}</strong>
                         <small>Termasuk admin, PJ, dan pegawai</small>
                     </div>
                     <div>
@@ -70,20 +70,27 @@
                     <span>Admin</span>
                 </div>
                 <div class="pkm-activity-list">
-                    <article class="pkm-activity-item">
-                        <div class="pkm-activity-item__avatar">AK</div>
+                    <a href="{{ route('admin.monitoring-jadwal') }}" class="pkm-activity-item">
+                        <div class="pkm-activity-item__avatar">MJ</div>
                         <div class="pkm-activity-item__body">
-                            <strong>Kelola Akun</strong>
-                            <small>Atur akun admin, PJ, dan pegawai.</small>
+                            <strong>Monitoring Jadwal</strong>
+                            <small>Lihat jadwal layanan dan dinas luar dalam tampilan list dan kalender.</small>
                         </div>
-                    </article>
-                    <article class="pkm-activity-item">
+                    </a>
+                    <a href="{{ route('admin.pegawai.index') }}" class="pkm-activity-item">
                         <div class="pkm-activity-item__avatar">PG</div>
                         <div class="pkm-activity-item__body">
-                            <strong>Data Pegawai</strong>
-                            <small>Perbarui identitas dan unit kerja pegawai.</small>
+                            <strong>Kelola Pegawai</strong>
+                            <small>Atur data pegawai sekaligus akun login admin, PJ, dan pegawai.</small>
                         </div>
-                    </article>
+                    </a>
+                    <a href="{{ route('admin.pegawai.create') }}" class="pkm-activity-item">
+                        <div class="pkm-activity-item__avatar">TP</div>
+                        <div class="pkm-activity-item__body">
+                            <strong>Tambah Pegawai</strong>
+                            <small>Buat data pegawai baru dan aktifkan akun login bila diperlukan.</small>
+                        </div>
+                    </a>
                 </div>
             </section>
         </aside>
