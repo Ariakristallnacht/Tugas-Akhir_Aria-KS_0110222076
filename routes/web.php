@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MonitoringJadwalController;
+use App\Http\Controllers\Admin\MonitoringLaporanController;
 use App\Http\Controllers\Admin\PegawaiController as AdminPegawaiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Pegawai\DashboardController as PegawaiDashboardController;
@@ -30,6 +31,8 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/', AdminDashboardController::class)->name('dashboard');
             Route::get('/monitoring-jadwal', MonitoringJadwalController::class)->name('monitoring-jadwal');
+            Route::get('/monitoring-laporan', [MonitoringLaporanController::class, 'index'])->name('monitoring-laporan');
+            Route::get('/monitoring-laporan/export/{format}', [MonitoringLaporanController::class, 'export'])->name('monitoring-laporan.export');
             Route::resource('pegawai', AdminPegawaiController::class)->except('show');
         });
 

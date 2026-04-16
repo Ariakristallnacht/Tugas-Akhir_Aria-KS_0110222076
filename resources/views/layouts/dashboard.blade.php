@@ -78,6 +78,10 @@
                                 <span class="pkm-nav__icon"><i data-lucide="calendar-range" class="size-4"></i></span>
                                 <span>Monitoring Jadwal</span>
                             </a>
+                            <a href="{{ route('admin.monitoring-laporan') }}" class="pkm-nav__item {{ request()->routeIs('admin.monitoring-laporan*') ? 'is-active' : '' }}">
+                                <span class="pkm-nav__icon"><i data-lucide="file-spreadsheet" class="size-4"></i></span>
+                                <span>Monitoring Laporan</span>
+                            </a>
                             <a href="{{ route('admin.pegawai.index') }}" class="pkm-nav__item {{ request()->routeIs('admin.pegawai.*') ? 'is-active' : '' }}">
                                 <span class="pkm-nav__icon"><i data-lucide="briefcase-business" class="size-4"></i></span>
                                 <span>Kelola Pegawai</span>

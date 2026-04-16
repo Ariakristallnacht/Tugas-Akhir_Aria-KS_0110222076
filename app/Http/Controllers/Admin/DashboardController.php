@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\LaporanKegiatan;
 use App\Models\Pegawai;
 use App\Models\User;
 use Illuminate\View\View;
@@ -14,6 +15,8 @@ class DashboardController extends Controller
         return view('admin.dashboard', [
             'totalAccounts' => User::count(),
             'totalPegawai' => Pegawai::where('is_aktif', true)->count(),
+            'totalLaporan' => LaporanKegiatan::count(),
+            'laporanMenunggu' => LaporanKegiatan::where('status_verifikasi', 'menunggu')->count(),
         ]);
     }
 }

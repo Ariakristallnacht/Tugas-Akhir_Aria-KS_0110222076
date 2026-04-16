@@ -886,6 +886,14 @@ body {
     justify-content: flex-end;
 }
 
+.pkm-export-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: auto;
+    flex-wrap: wrap;
+}
+
 .pkm-pagination {
     justify-content: space-between;
     margin-top: 18px;
@@ -956,6 +964,39 @@ body {
 .pkm-table--pegawai .pkm-table__head,
 .pkm-table--pegawai .pkm-table__row {
     grid-template-columns: 1.1fr 1fr 0.95fr 0.7fr 0.8fr;
+}
+
+.pkm-table--laporan .pkm-table__head,
+.pkm-table--laporan .pkm-table__row {
+    grid-template-columns: minmax(0, 1.7fr) minmax(180px, 0.95fr) minmax(180px, 0.9fr) minmax(200px, 0.95fr);
+    align-items: start;
+}
+
+.pkm-table--laporan .pkm-table__head {
+    align-items: center;
+}
+
+.pkm-table--laporan .pkm-table__row {
+    padding-block: 22px;
+}
+
+.pkm-table--laporan .pkm-table__row > div {
+    min-width: 0;
+}
+
+.pkm-report-snippet {
+    margin: 12px 0 0;
+    color: #667892;
+    line-height: 1.65;
+    max-width: 42ch;
+}
+
+.pkm-table--laporan .pkm-table__row strong {
+    line-height: 1.4;
+}
+
+.pkm-table--laporan .pkm-table__row small {
+    line-height: 1.55;
 }
 
 .pkm-monitoring-layout {
@@ -1881,6 +1922,11 @@ body {
     .pkm-form-grid,
     .pkm-monitoring-item__grid {
         grid-template-columns: 1fr;
+    }
+
+    .pkm-export-actions {
+        margin-right: 0;
+        width: 100%;
     }
 
     .pkm-field--full {

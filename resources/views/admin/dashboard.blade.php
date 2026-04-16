@@ -31,13 +31,13 @@
                 <article class="pkm-metric-card">
                     <div class="pkm-metric-card__icon bg-amber-100 text-amber-700"><i data-lucide="shield-check" class="size-5"></i></div>
                     <div class="pkm-metric-card__trend is-down">3%</div>
-                    <div class="pkm-metric-card__value">2</div>
+                    <div class="pkm-metric-card__value">{{ $laporanMenunggu }}</div>
                     <div class="pkm-metric-card__label">Butuh Verifikasi</div>
                 </article>
                 <article class="pkm-metric-card">
                     <div class="pkm-metric-card__icon bg-lime-100 text-lime-700"><i data-lucide="file-text" class="size-5"></i></div>
                     <div class="pkm-metric-card__trend is-up">18%</div>
-                    <div class="pkm-metric-card__value">18</div>
+                    <div class="pkm-metric-card__value">{{ $totalLaporan }}</div>
                     <div class="pkm-metric-card__label">Laporan Masuk</div>
                 </article>
             </div>
@@ -82,6 +82,13 @@
                         <div class="pkm-activity-item__body">
                             <strong>Kelola Pegawai</strong>
                             <small>Atur data pegawai sekaligus akun login admin, PJ, dan pegawai.</small>
+                        </div>
+                    </a>
+                    <a href="{{ route('admin.monitoring-laporan') }}" class="pkm-activity-item">
+                        <div class="pkm-activity-item__avatar">LK</div>
+                        <div class="pkm-activity-item__body">
+                            <strong>Monitoring Laporan</strong>
+                            <small>Pantau laporan kegiatan dan unduh dokumen PDF, Excel, atau CSV.</small>
                         </div>
                     </a>
                     <a href="{{ route('admin.pegawai.create') }}" class="pkm-activity-item">
