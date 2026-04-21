@@ -24,12 +24,12 @@
                 <div class="pkm-hero-panel__stats">
                     <div>
                         <span>Jadwal Saya</span>
-                        <strong>3</strong>
-                        <small>Tugas aktif minggu ini</small>
+                        <strong>{{ $upcomingSchedules->count() }}</strong>
+                        <small>Agenda terdekat tersedia</small>
                     </div>
                     <div>
                         <span>Pengajuan</span>
-                        <strong>1</strong>
+                        <strong>{{ $pendingSubmissionCount }}</strong>
                         <small>Masih diproses</small>
                     </div>
                 </div>
@@ -50,12 +50,27 @@
                         <span>Waktu</span>
                         <span>Status</span>
                     </div>
-                    <div class="pkm-table__row">
-                        <div data-label="Kegiatan"><strong>Pelayanan Poli Umum</strong><small>Gedung utama lantai 1</small></div>
-                        <div data-label="Peran">Perawat Pendamping</div>
-                        <div data-label="Waktu">08.00 - 12.00</div>
-                        <div data-label="Status"><span class="pkm-pill is-green">Terjadwal</span></div>
-                    </div>
+                    @forelse ($upcomingSchedules as $schedule)
+                        <div class="pkm-table__row">
+                            <div data-label="Kegiatan">
+                                <strong>{{ $schedule->kegiatan?->nama_kegiatan ?? 'Kegiatan' }}</strong>
+                                <small>{{ $schedule->lokasi }}</small>
+                            </div>
+                            <div data-label="Peran">{{ $schedule->pivot?->peran_tugas ?? 'Petugas' }}</div>
+                            <div data-label="Waktu">
+                                {{ $schedule->tanggal?->translatedFormat('d M Y') }}
+                                <small>{{ ($schedule->waktu_mulai?->format('H:i') ?? '--:--') .' - '. ($schedule->waktu_selesai?->format('H:i') ?? '--:--') }}</small>
+                            </div>
+                            <div data-label="Status"><span class="pkm-pill is-green">{{ ucfirst($schedule->pivot?->status_penugasan ?? 'terjadwal') }}</span></div>
+                        </div>
+                    @empty
+                        <div class="pkm-table__row">
+                            <div data-label="Kegiatan"><strong>Belum ada jadwal terdekat</strong><small>Jadwal layanan akan tampil saat sudah ditetapkan.</small></div>
+                            <div data-label="Peran">-</div>
+                            <div data-label="Waktu">-</div>
+                            <div data-label="Status"><span class="pkm-pill is-amber">Kosong</span></div>
+                        </div>
+                    @endforelse
                 </div>
             </section>
         </div>
@@ -65,14 +80,17 @@
                 <div class="pkm-side-summary__head">
                     <h3>Aksi Saya</h3>
                 </div>
-                <a href="#" class="pkm-quick-action">
+                <a href="{{ route('pegawai.pengajuan-dinas.index') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="briefcase-business" class="size-4"></i></span>
                     <span><strong>Ajukan Dinas Luar</strong><small>Buat pengajuan kegiatan lapangan.</small></span>
                 </a>
-                <a href="#" class="pkm-quick-action">
+                <a href="{{ route('pegawai.dashboard') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="calendar-range" class="size-4"></i></span>
                     <span><strong>Lihat Jadwal</strong><small>Cek tugas layanan dan dinas luar.</small></span>
                 </a>
+                <div class="pkm-side-summary__footnote">
+                    Total pengajuan tercatat: <strong>{{ $submissionCount }}</strong>
+                </div>
             </section>
         </aside>
     </section>

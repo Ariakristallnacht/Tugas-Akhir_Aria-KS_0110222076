@@ -105,13 +105,13 @@
                         <div class="pkm-nav__group">
                             <div class="pkm-nav__label">Aktivitas</div>
                             <div class="pkm-nav__submenu">
-                                <a href="#" class="pkm-nav__subitem is-active">
+                                <a href="{{ route('pegawai.dashboard') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.dashboard') ? 'is-active' : '' }}">
                                     <i data-lucide="calendar-range" class="size-4"></i>
                                     <span>Jadwal Saya</span>
                                 </a>
-                                <a href="#" class="pkm-nav__subitem">
-                                    <i data-lucide="file-check-2" class="size-4"></i>
-                                    <span>Laporan Kegiatan</span>
+                                <a href="{{ route('pegawai.pengajuan-dinas.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.pengajuan-dinas.*') ? 'is-active' : '' }}">
+                                    <i data-lucide="briefcase-business" class="size-4"></i>
+                                    <span>Pengajuan Dinas</span>
                                 </a>
                             </div>
                         </div>

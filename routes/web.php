@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\MonitoringLaporanController;
 use App\Http\Controllers\Admin\PegawaiController as AdminPegawaiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Pegawai\DashboardController as PegawaiDashboardController;
+use App\Http\Controllers\Pegawai\PengajuanDinasController as PegawaiPengajuanDinasController;
 use App\Http\Controllers\Pj\DashboardController as PjDashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,5 +49,6 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:pegawai')
         ->group(function () {
             Route::get('/', PegawaiDashboardController::class)->name('dashboard');
+            Route::resource('pengajuan-dinas', PegawaiPengajuanDinasController::class)->except('show');
         });
 });
