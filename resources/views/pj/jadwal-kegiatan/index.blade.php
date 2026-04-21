@@ -39,8 +39,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2>Menetapkan Jadwal Kegiatan</h2>
-                <p>PJ menyusun layanan poli dengan membaca dinas luar yang sudah disetujui agar tidak terjadi bentrok atau double job antar pegawai.</p>
+                <h2 style="font-weight: bold">Jadwal Kegiatan</h2>
             </div>
             <a href="{{ route('pj.jadwal-kegiatan.create') }}" class="pkm-primary-button">Tambah Jadwal</a>
         </div>
@@ -128,7 +127,6 @@
                     <div class="pkm-card__head">
                         <div>
                             <h3 style="font-weight: bold">Daftar Jadwal</h3>
-                            <p>Daftar ini memadukan jadwal layanan dan dinas luar disetujui agar PJ bisa menyusun penugasan dengan konteks penuh.</p>
                         </div>
                     </div>
 
@@ -209,7 +207,7 @@
                 <section class="pkm-card">
                     <div class="pkm-card__head">
                         <div>
-                            <h3>Kalender Jadwal</h3>
+                            <h3 style="font-weight:bold">Kalender Jadwal</h3>
                             <p>{{ $calendarMonthLabel }}</p>
                         </div>
                     </div>

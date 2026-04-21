@@ -10,8 +10,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2>Monitoring Jadwal Layanan dan Dinas Luar</h2>
-                <p>Admin dapat memantau jadwal yang belum berlangsung, sedang berlangsung, dan sudah berlangsung dalam satu tampilan terpadu.</p>
+                <h2 style="font-weight: bold">Monitoring Jadwal Layanan dan Dinas Luar</h2>
             </div>
         </div>
 
@@ -146,7 +145,7 @@
                 <section class="pkm-card">
                     <div class="pkm-card__head">
                         <div>
-                            <h3>Kalender Jadwal</h3>
+                            <h3 style="font-weight:bold">Kalender Jadwal</h3>
                             <p>{{ $calendarMonthLabel }}</p>
                         </div>
                     </div>

@@ -11,7 +11,6 @@
             <div class="pkm-section-head">
                 <div>
                     <h2>Panel Penjadwalan</h2>
-                    <p>Susun jadwal layanan, verifikasi dinas luar, dan kelola laporan kegiatan.</p>
                 </div>
             </div>
 
@@ -31,6 +30,11 @@
                         <span>Verifikasi</span>
                         <strong>{{ $todaySubmissionCount }}</strong>
                         <small>Pengajuan baru hari ini</small>
+                    </div>
+                    <div>
+                        <span>Laporan</span>
+                        <strong>{{ $reportCount }}</strong>
+                        <small>Laporan kegiatan tercatat</small>
                     </div>
                 </div>
             </div>
@@ -90,6 +94,10 @@
                 <a href="{{ route('pj.verifikasi-pengajuan-dinas.index') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="shield-check" class="size-4"></i></span>
                     <span><strong>Verifikasi Dinas</strong><small>{{ $pendingCount }} pengajuan menunggu tindak lanjut.</small></span>
+                </a>
+                <a href="{{ route('pj.laporan-kegiatan.index') }}" class="pkm-quick-action">
+                    <span class="pkm-quick-action__icon"><i data-lucide="file-pen-line" class="size-4"></i></span>
+                    <span><strong>Buat Laporan</strong><small>Catat hasil pelaksanaan kegiatan.</small></span>
                 </a>
             </section>
         </aside>

@@ -9,8 +9,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2>Kelola Pegawai</h2>
-                <p>Data pegawai dan akun login dikelola dari satu halaman, dengan akun login wajib untuk setiap pegawai.</p>
+                <h2 style="font-weight: bold">Kelola Pegawai</h2>
             </div>
             <a href="{{ route('admin.pegawai.create') }}" class="pkm-primary-button">Tambah Pegawai</a>
         </div>
@@ -38,8 +37,7 @@
         <section class="pkm-card pkm-table-card">
             <div class="pkm-card__head">
                 <div>
-                    <h3>Daftar Pegawai dan Akun</h3>
-                    <p>Admin bisa melihat identitas pegawai sekaligus akun login yang wajib dimiliki tiap pegawai.</p>
+                    <h3 style="font-weight: bold">Daftar Pegawai dan Akun</h3>
                 </div>
             </div>
 

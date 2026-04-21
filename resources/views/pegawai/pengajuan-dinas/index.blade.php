@@ -19,8 +19,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2>Data Pengajuan Dinas Luar</h2>
-                <p>Pegawai dapat melihat riwayat pengajuan pribadi sebelum membuat pengajuan baru untuk kegiatan dinas luar.</p>
+                <h2 style="font-weight: bold">Data Pengajuan Dinas Luar</h2>
             </div>
             <a href="{{ route('pegawai.pengajuan-dinas.create') }}" class="pkm-primary-button">Tambah Pengajuan</a>
         </div>
@@ -53,8 +52,7 @@
         <section class="pkm-card pkm-table-card">
             <div class="pkm-card__head">
                 <div>
-                    <h3>Riwayat Pengajuan Saya</h3>
-                    <p>Pengajuan yang masih berstatus diajukan dapat diubah atau dihapus sebelum diverifikasi PJ penjadwalan.</p>
+                    <h3 style="font-weight:bold">Riwayat Pengajuan Saya</h3>
                 </div>
             </div>
 

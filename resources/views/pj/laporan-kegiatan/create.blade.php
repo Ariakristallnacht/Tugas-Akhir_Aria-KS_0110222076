@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Edit Jadwal Kegiatan | Puskesmas Bunar';
-    $heading = 'Edit Jadwal Kegiatan';
+    $title = 'Tambah Laporan Kegiatan | Puskesmas Bunar';
+    $heading = 'Tambah Laporan Kegiatan';
 @endphp
 
 @section('content')
@@ -10,16 +10,15 @@
         <div class="pkm-card pkm-form-card">
             <div class="pkm-card__head">
                 <div>
-                    <h2>Edit Jadwal Layanan</h2>
+                    <h2>Tambah Laporan Kegiatan</h2>
                 </div>
             </div>
 
             @include('admin.partials.flash')
 
-            <form method="POST" action="{{ route('pj.jadwal-kegiatan.update', $jadwal) }}" class="pkm-form-stack">
+            <form method="POST" action="{{ route('pj.laporan-kegiatan.store') }}" class="pkm-form-stack">
                 @csrf
-                @method('PUT')
-                @include('pj.jadwal-kegiatan._form', ['submitLabel' => 'Simpan Perubahan'])
+                @include('pj.laporan-kegiatan._form', ['submitLabel' => 'Simpan Laporan'])
             </form>
         </div>
     </section>

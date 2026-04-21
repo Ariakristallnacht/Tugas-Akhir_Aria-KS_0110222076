@@ -23,8 +23,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2>Verifikasi Pengajuan Dinas Luar</h2>
-                <p>PJ penjadwalan dapat melihat seluruh pengajuan dinas luar pegawai, memeriksa detail, lalu menyetujui atau menolaknya melalui modal verifikasi.</p>
+                <h2 style="font-weight: bold">Verifikasi Pengajuan Dinas Luar</h2>
             </div>
         </div>
 
@@ -51,8 +50,7 @@
         <section class="pkm-card pkm-table-card">
             <div class="pkm-card__head">
                 <div>
-                    <h3>Daftar Pengajuan Pegawai</h3>
-                    <p>Klik ikon pencil untuk membuka modal verifikasi dan memberikan keputusan pada pengajuan tersebut.</p>
+                    <h3 style="font-weight: bold">Daftar Pengajuan Pegawai</h3>
                 </div>
             </div>
 

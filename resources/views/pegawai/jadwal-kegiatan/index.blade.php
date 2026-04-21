@@ -10,8 +10,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2>Kalender Jadwal Kegiatan Saya</h2>
-                <p>Pegawai dapat melihat jadwal layanan dan dinas luar pribadi dalam tampilan kalender yang terintegrasi.</p>
+                <h2 style="font-weight: bold">Kalender Jadwal Kegiatan</h2>
             </div>
         </div>
 
@@ -84,7 +83,7 @@
                 <section class="pkm-card">
                     <div class="pkm-card__head">
                         <div>
-                            <h3 style="font-weight: bold">Daftar Jadwal Saya</h3>
+                            <h3 style="font-weight: bold">Daftar Jadwal</h3>
                         </div>
                     </div>
 

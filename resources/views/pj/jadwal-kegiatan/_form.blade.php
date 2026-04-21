@@ -183,7 +183,6 @@
             <div class="pkm-field">
                 <label for="tanggal">Tanggal layanan</label>
                 <input id="tanggal" class="pkm-input" type="date" name="tanggal" value="{{ $tanggalValue }}" required>
-                <p class="pkm-helper-note">Saat tanggal diubah, referensi dinas luar dan ketersediaan pegawai akan ikut diperbarui.</p>
             </div>
 
             <div class="pkm-field">
@@ -210,8 +209,8 @@
         <section class="pkm-card">
             <div class="pkm-card__head">
                 <div>
-                    <h3>Penugasan Pegawai</h3>
-                    <p>Pilih pegawai yang benar-benar tersedia agar tidak bentrok dengan dinas luar atau jadwal lain.</p>
+                    <h3 style="font-weight: bold">Penugasan Pegawai</h3>
+                    <br>
                 </div>
                 <button type="button" class="pkm-secondary-button" id="add-assignment-row">Tambah Petugas</button>
             </div>
@@ -285,8 +284,8 @@
         <section class="pkm-card">
             <div class="pkm-card__head">
                 <div>
-                    <h3>Referensi Penjadwalan</h3>
-                    <p>Data ini dipakai PJ untuk memastikan layanan poli tidak bentrok dengan dinas luar.</p>
+                    <h3 style="font-weight:bold">Referensi Penjadwalan</h3>
+                    <br>
                 </div>
                 <span class="pkm-pill is-blue" data-planning-date>{{ $planningContext['selected_date_label'] }}</span>
             </div>
@@ -310,8 +309,8 @@
         <section class="pkm-card">
             <div class="pkm-card__head">
                 <div>
-                    <h3>Dinas Luar Disetujui</h3>
-                    <p>Pegawai berikut sedang dinas luar pada tanggal referensi.</p>
+                    <h3 style="font-weight:bold">Dinas Luar Disetujui</h3>
+                    <br>
                 </div>
             </div>
 
@@ -324,8 +323,7 @@
                     </article>
                 @empty
                     <div class="pkm-empty-state" data-approved-dinas-empty>
-                        <strong>Tidak ada dinas luar disetujui.</strong>
-                        <p>Tanggal ini masih longgar untuk menyusun jadwal layanan.</p>
+                        <p>Tidak ada dinas luar disetujui.</p>
                     </div>
                 @endforelse
             </div>
@@ -334,8 +332,8 @@
         <section class="pkm-card">
             <div class="pkm-card__head">
                 <div>
-                    <h3>Jadwal yang Sudah Ada</h3>
-                    <p>Gunakan daftar ini untuk menghindari double job pada hari yang sama.</p>
+                    <h3 style="font-weight: bold">Jadwal yang Sudah Ada</h3>
+                    <br>
                 </div>
             </div>
 
@@ -348,8 +346,7 @@
                     </article>
                 @empty
                     <div class="pkm-empty-state" data-existing-schedules-empty>
-                        <strong>Belum ada jadwal layanan.</strong>
-                        <p>PJ bisa mulai menyusun layanan pada tanggal ini.</p>
+                        <p>Belum ada jadwal layanan.</p>
                     </div>
                 @endforelse
             </div>

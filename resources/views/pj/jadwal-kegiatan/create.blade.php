@@ -10,8 +10,8 @@
         <div class="pkm-card pkm-form-card">
             <div class="pkm-card__head">
                 <div>
-                    <h2>Susun Jadwal Layanan</h2>
-                    <p>Setelah dinas luar diverifikasi, PJ dapat menyusun layanan poli dengan melihat siapa yang masih tersedia pada tanggal tersebut.</p>
+                    <h2 style="font-weight: bold">Susun Jadwal Layanan</h2>
+                    <br>
                 </div>
             </div>
 
