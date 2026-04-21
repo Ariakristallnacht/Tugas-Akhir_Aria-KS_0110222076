@@ -83,7 +83,7 @@
                 <div class="pkm-side-summary__head">
                     <h3>Aksi Cepat</h3>
                 </div>
-                <a href="#" class="pkm-quick-action">
+                <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="calendar-plus" class="size-4"></i></span>
                     <span><strong>Buat Jadwal</strong><small>Susun jadwal layanan baru.</small></span>
                 </a>

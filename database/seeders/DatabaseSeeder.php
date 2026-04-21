@@ -150,10 +150,17 @@ class DatabaseSeeder extends Seeder
         $pegawaiByName = $pegawaiRecords->mapWithKeys(fn (array $item) => [$item['pegawai']->nama => $item['pegawai']]);
 
         $kegiatanList = collect([
-            ['nama_kegiatan' => 'Pelayanan Poli Umum Pagi', 'jenis' => 'layanan', 'deskripsi' => 'Pelayanan pasien umum pagi hari.'],
-            ['nama_kegiatan' => 'Imunisasi Keliling Posyandu', 'jenis' => 'layanan', 'deskripsi' => 'Pelayanan imunisasi di posyandu wilayah kerja.'],
-            ['nama_kegiatan' => 'Penyuluhan Gizi Balita', 'jenis' => 'layanan', 'deskripsi' => 'Penyuluhan gizi untuk ibu dan balita.'],
-            ['nama_kegiatan' => 'Kunjungan Rumah Lansia', 'jenis' => 'layanan', 'deskripsi' => 'Pendampingan kesehatan lansia di rumah.'],
+            ['nama_kegiatan' => 'Pendaftaran', 'jenis' => 'layanan', 'deskripsi' => 'Layanan awal penerimaan pasien.'],
+            ['nama_kegiatan' => 'PIPP & Skrining Kesehatan BPJS', 'jenis' => 'layanan', 'deskripsi' => 'Layanan pendaftaran BPJS dan skrining kesehatan awal.'],
+            ['nama_kegiatan' => 'Kluster 2 Kesehatan Ibu', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan kesehatan ibu.'],
+            ['nama_kegiatan' => 'Kluster 2 Balita & Anak', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan balita dan anak.'],
+            ['nama_kegiatan' => 'Meja Tensi', 'jenis' => 'layanan', 'deskripsi' => 'Layanan pemeriksaan tanda vital awal.'],
+            ['nama_kegiatan' => 'Kluster 3 Pelayanan Dewasa', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan dewasa.'],
+            ['nama_kegiatan' => 'Layanan Lansia (>60 tahun)', 'jenis' => 'layanan', 'deskripsi' => 'Layanan khusus pasien lansia usia lebih dari 60 tahun.'],
+            ['nama_kegiatan' => 'Kluster 2 & 3 TB (Tuberkulosis)', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan tuberkulosis.'],
+            ['nama_kegiatan' => 'Kluster 5 Pelayanan UGD', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan unit gawat darurat.'],
+            ['nama_kegiatan' => 'Kluster 5 Pelayanan Laboratorium', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan laboratorium.'],
+            ['nama_kegiatan' => 'Apotek', 'jenis' => 'layanan', 'deskripsi' => 'Layanan farmasi dan pengambilan obat.'],
             ['nama_kegiatan' => 'Supervisi Sanitasi Sekolah', 'jenis' => 'dinas_luar', 'deskripsi' => 'Monitoring sanitasi ke sekolah sekitar wilayah puskesmas.'],
             ['nama_kegiatan' => 'Pelacakan Kasus DBD', 'jenis' => 'dinas_luar', 'deskripsi' => 'Investigasi epidemiologi kasus DBD di lapangan.'],
         ])->map(fn (array $data) => Kegiatan::create($data));

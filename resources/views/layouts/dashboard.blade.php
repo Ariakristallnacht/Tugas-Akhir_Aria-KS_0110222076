@@ -95,6 +95,10 @@
                                     <i data-lucide="calendar-days" class="size-4"></i>
                                     <span>Dashboard PJ</span>
                                 </a>
+                                <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.jadwal-kegiatan.*') ? 'is-active' : '' }}">
+                                    <i data-lucide="calendar-plus" class="size-4"></i>
+                                    <span>Jadwal Kegiatan</span>
+                                </a>
                                 <a href="{{ route('pj.verifikasi-pengajuan-dinas.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.verifikasi-pengajuan-dinas.*') ? 'is-active' : '' }}">
                                     <i data-lucide="shield-check" class="size-4"></i>
                                     <span>Verifikasi Dinas</span>
@@ -105,7 +109,7 @@
                         <div class="pkm-nav__group">
                             <div class="pkm-nav__label">Aktivitas</div>
                             <div class="pkm-nav__submenu">
-                                <a href="{{ route('pegawai.dashboard') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.dashboard') ? 'is-active' : '' }}">
+                                <a href="{{ route('pegawai.jadwal-kegiatan') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.jadwal-kegiatan') ? 'is-active' : '' }}">
                                     <i data-lucide="calendar-range" class="size-4"></i>
                                     <span>Jadwal Saya</span>
                                 </a>

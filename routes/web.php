@@ -6,9 +6,11 @@ use App\Http\Controllers\Admin\MonitoringLaporanController;
 use App\Http\Controllers\Admin\PegawaiController as AdminPegawaiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Pegawai\DashboardController as PegawaiDashboardController;
+use App\Http\Controllers\Pegawai\JadwalKegiatanController as PegawaiJadwalKegiatanController;
 use App\Http\Controllers\Pegawai\PengajuanDinasController as PegawaiPengajuanDinasController;
-use App\\Http\\Controllers\\Pj\\DashboardController as PjDashboardController;
-use App\\Http\\Controllers\\Pj\\VerifikasiPengajuanDinasController as PjVerifikasiPengajuanDinasController;
+use App\Http\Controllers\Pj\DashboardController as PjDashboardController;
+use App\Http\Controllers\Pj\JadwalKegiatanController as PjJadwalKegiatanController;
+use App\Http\Controllers\Pj\VerifikasiPengajuanDinasController as PjVerifikasiPengajuanDinasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,6 +45,8 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:pj_penjadwalan')
         ->group(function () {
             Route::get('/', PjDashboardController::class)->name('dashboard');
+            Route::get('/jadwal-kegiatan/referensi-ketersediaan', [PjJadwalKegiatanController::class, 'availability'])->name('jadwal-kegiatan.availability');
+            Route::resource('jadwal-kegiatan', PjJadwalKegiatanController::class)->except('show');
             Route::get('/verifikasi-pengajuan-dinas', [PjVerifikasiPengajuanDinasController::class, 'index'])->name('verifikasi-pengajuan-dinas.index');
             Route::patch('/verifikasi-pengajuan-dinas/{pengajuanDina}', [PjVerifikasiPengajuanDinasController::class, 'update'])->name('verifikasi-pengajuan-dinas.update');
         });
@@ -52,6 +56,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:pegawai')
         ->group(function () {
             Route::get('/', PegawaiDashboardController::class)->name('dashboard');
+            Route::get('/jadwal-kegiatan', PegawaiJadwalKegiatanController::class)->name('jadwal-kegiatan');
             Route::resource('pengajuan-dinas', PegawaiPengajuanDinasController::class)->except('show');
         });
 });

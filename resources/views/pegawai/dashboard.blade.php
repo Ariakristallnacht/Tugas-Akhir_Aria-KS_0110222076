@@ -84,7 +84,7 @@
                     <span class="pkm-quick-action__icon"><i data-lucide="briefcase-business" class="size-4"></i></span>
                     <span><strong>Ajukan Dinas Luar</strong><small>Buat pengajuan kegiatan lapangan.</small></span>
                 </a>
-                <a href="{{ route('pegawai.dashboard') }}" class="pkm-quick-action">
+                <a href="{{ route('pegawai.jadwal-kegiatan') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="calendar-range" class="size-4"></i></span>
                     <span><strong>Lihat Jadwal</strong><small>Cek tugas layanan dan dinas luar.</small></span>
                 </a>
