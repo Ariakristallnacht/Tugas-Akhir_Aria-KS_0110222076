@@ -29,7 +29,7 @@
                     </div>
                     <div>
                         <span>Verifikasi</span>
-                        <strong>2</strong>
+                        <strong>{{ $todaySubmissionCount }}</strong>
                         <small>Pengajuan baru hari ini</small>
                     </div>
                 </div>
@@ -45,23 +45,35 @@
 
                 <div class="pkm-table">
                     <div class="pkm-table__head">
+                        <span>Pegawai</span>
                         <span>Kegiatan</span>
-                        <span>Petugas</span>
-                        <span>Waktu</span>
+                        <span>Tanggal</span>
                         <span>Status</span>
                     </div>
-                    <div class="pkm-table__row">
-                        <div data-label="Kegiatan"><strong>Imunisasi Keliling</strong><small>Posyandu Melati</small></div>
-                        <div data-label="Petugas">Bidan Siska, 1 admin</div>
-                        <div data-label="Waktu">09.00 - 11.30</div>
-                        <div data-label="Status"><span class="pkm-pill is-blue">Berjalan</span></div>
-                    </div>
-                    <div class="pkm-table__row">
-                        <div data-label="Kegiatan"><strong>Penyuluhan Gizi</strong><small>RW 03</small></div>
-                        <div data-label="Petugas">Ahli Gizi, 1 promkes</div>
-                        <div data-label="Waktu">13.00 - 15.00</div>
-                        <div data-label="Status"><span class="pkm-pill is-amber">Menunggu</span></div>
-                    </div>
+                    @forelse ($pendingSubmissions as $submission)
+                        <div class="pkm-table__row">
+                            <div data-label="Pegawai">
+                                <strong>{{ $submission->pegawai?->nama ?? 'Pegawai tidak ditemukan' }}</strong>
+                                <small>{{ $submission->pegawai?->jabatan ?? 'Jabatan tidak tersedia' }}</small>
+                            </div>
+                            <div data-label="Kegiatan">
+                                <strong>{{ \Illuminate\Support\Str::limit($submission->kegiatan, 40) }}</strong>
+                                <small>{{ $submission->tujuan }}</small>
+                            </div>
+                            <div data-label="Waktu">
+                                {{ $submission->tanggal_mulai->translatedFormat('d M Y') }}
+                                <small>{{ $submission->tanggal_selesai->translatedFormat('d M Y') }}</small>
+                            </div>
+                            <div data-label="Status"><span class="pkm-pill is-amber">{{ ucfirst($submission->status) }}</span></div>
+                        </div>
+                    @empty
+                        <div class="pkm-table__row">
+                            <div data-label="Pegawai"><strong>Tidak ada pengajuan menunggu</strong><small>Semua pengajuan sudah ditindaklanjuti.</small></div>
+                            <div data-label="Kegiatan">-</div>
+                            <div data-label="Waktu">-</div>
+                            <div data-label="Status"><span class="pkm-pill is-green">Kosong</span></div>
+                        </div>
+                    @endforelse
                 </div>
             </section>
         </div>
@@ -75,9 +87,9 @@
                     <span class="pkm-quick-action__icon"><i data-lucide="calendar-plus" class="size-4"></i></span>
                     <span><strong>Buat Jadwal</strong><small>Susun jadwal layanan baru.</small></span>
                 </a>
-                <a href="#" class="pkm-quick-action">
+                <a href="{{ route('pj.verifikasi-pengajuan-dinas.index') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="shield-check" class="size-4"></i></span>
-                    <span><strong>Verifikasi Dinas</strong><small>Setujui atau tolak pengajuan.</small></span>
+                    <span><strong>Verifikasi Dinas</strong><small>{{ $pendingCount }} pengajuan menunggu tindak lanjut.</small></span>
                 </a>
             </section>
         </aside>

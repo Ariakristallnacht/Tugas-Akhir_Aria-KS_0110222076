@@ -91,11 +91,11 @@
                         <div class="pkm-nav__group">
                             <div class="pkm-nav__label">Operasional</div>
                             <div class="pkm-nav__submenu">
-                                <a href="#" class="pkm-nav__subitem is-active">
+                                <a href="{{ route('pj.dashboard') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.dashboard') ? 'is-active' : '' }}">
                                     <i data-lucide="calendar-days" class="size-4"></i>
-                                    <span>Jadwal Layanan</span>
+                                    <span>Dashboard PJ</span>
                                 </a>
-                                <a href="#" class="pkm-nav__subitem">
+                                <a href="{{ route('pj.verifikasi-pengajuan-dinas.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.verifikasi-pengajuan-dinas.*') ? 'is-active' : '' }}">
                                     <i data-lucide="shield-check" class="size-4"></i>
                                     <span>Verifikasi Dinas</span>
                                 </a>

@@ -7,7 +7,8 @@ use App\Http\Controllers\Admin\PegawaiController as AdminPegawaiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Pegawai\DashboardController as PegawaiDashboardController;
 use App\Http\Controllers\Pegawai\PengajuanDinasController as PegawaiPengajuanDinasController;
-use App\Http\Controllers\Pj\DashboardController as PjDashboardController;
+use App\\Http\\Controllers\\Pj\\DashboardController as PjDashboardController;
+use App\\Http\\Controllers\\Pj\\VerifikasiPengajuanDinasController as PjVerifikasiPengajuanDinasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -42,6 +43,8 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:pj_penjadwalan')
         ->group(function () {
             Route::get('/', PjDashboardController::class)->name('dashboard');
+            Route::get('/verifikasi-pengajuan-dinas', [PjVerifikasiPengajuanDinasController::class, 'index'])->name('verifikasi-pengajuan-dinas.index');
+            Route::patch('/verifikasi-pengajuan-dinas/{pengajuanDina}', [PjVerifikasiPengajuanDinasController::class, 'update'])->name('verifikasi-pengajuan-dinas.update');
         });
 
     Route::prefix('pegawai')
