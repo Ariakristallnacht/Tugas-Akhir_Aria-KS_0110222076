@@ -18,14 +18,15 @@ class MonitoringJadwalController extends Controller
         $monthDate = $this->parseMonth($calendarMonthInput);
 
         $referenceDate = now()->startOfDay();
+        $defaultDate = $this->resolveDefaultDate($referenceDate);
 
         $dateFrom = $request->filled('date_from')
             ? Carbon::parse($request->string('date_from'))->startOfDay()
-            : now()->startOfDay();
+            : $defaultDate->copy()->startOfDay();
 
         $dateTo = $request->filled('date_to')
             ? Carbon::parse($request->string('date_to'))->endOfDay()
-            : now()->endOfDay();
+            : $defaultDate->copy()->endOfDay();
 
         if ($dateFrom->gt($dateTo)) {
             [$dateFrom, $dateTo] = [$dateTo->copy()->startOfDay(), $dateFrom->copy()->endOfDay()];
@@ -103,6 +104,29 @@ class MonitoringJadwalController extends Controller
         return preg_match('/^\d{4}-\d{2}$/', $value) === 1
             ? Carbon::createFromFormat('Y-m', $value)->startOfMonth()
             : now()->startOfMonth();
+    }
+
+    private function resolveDefaultDate(Carbon $referenceDate): Carbon
+    {
+        if (
+            Jadwal::query()->whereDate('tanggal', $referenceDate->toDateString())->exists()
+            || PengajuanDinas::query()
+                ->whereDate('tanggal_mulai', '<=', $referenceDate->toDateString())
+                ->whereDate('tanggal_selesai', '>=', $referenceDate->toDateString())
+                ->exists()
+        ) {
+            return $referenceDate->copy();
+        }
+
+        $candidates = collect()
+            ->merge(Jadwal::query()->pluck('tanggal')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->merge(PengajuanDinas::query()->pluck('tanggal_mulai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->merge(PengajuanDinas::query()->pluck('tanggal_selesai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->filter()
+            ->sortBy(fn (Carbon $date) => abs($date->diffInDays($referenceDate, false)))
+            ->values();
+
+        return $candidates->first()?->copy() ?? $referenceDate->copy();
     }
 
     private function mapJadwal(Jadwal $jadwal, Carbon $referenceDate): array

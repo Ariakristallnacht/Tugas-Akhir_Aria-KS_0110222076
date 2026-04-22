@@ -23,14 +23,18 @@ class JadwalKegiatanController extends Controller
         $hasDateToFilter = $request->filled('date_to');
 
         $referenceDate = now()->startOfDay();
+        $scope = in_array($request->string('scope')->toString(), ['mine', 'all'], true)
+            ? $request->string('scope')->toString()
+            : 'mine';
+        $defaultDate = $this->resolveDefaultDate($pegawai, $scope, $referenceDate);
 
         $dateFrom = $hasDateFromFilter
             ? Carbon::parse($request->string('date_from'))->startOfDay()
-            : now()->startOfDay();
+            : $defaultDate->copy()->startOfDay();
 
         $dateTo = $hasDateToFilter
             ? Carbon::parse($request->string('date_to'))->endOfDay()
-            : now()->endOfDay();
+            : $defaultDate->copy()->endOfDay();
 
         if ($dateFrom->gt($dateTo)) {
             [$dateFrom, $dateTo] = [$dateTo->copy()->startOfDay(), $dateFrom->copy()->endOfDay()];
@@ -39,10 +43,6 @@ class JadwalKegiatanController extends Controller
         $type = in_array($request->string('type')->toString(), ['all', 'layanan', 'dinas_luar'], true)
             ? $request->string('type')->toString()
             : 'all';
-
-        $scope = in_array($request->string('scope')->toString(), ['mine', 'all'], true)
-            ? $request->string('scope')->toString()
-            : 'mine';
 
         $filteredItems = $this->buildAgendaItems($pegawai, $scope, $dateFrom, $dateTo, $referenceDate)
             ->when($type !== 'all', fn (Collection $collection) => $collection->where('type', $type))
@@ -140,6 +140,52 @@ class JadwalKegiatanController extends Controller
         return preg_match('/^\d{4}-\d{2}$/', $value) === 1
             ? Carbon::createFromFormat('Y-m', $value)->startOfMonth()
             : now()->startOfMonth();
+    }
+
+    private function resolveDefaultDate($pegawai, string $scope, Carbon $referenceDate): Carbon
+    {
+        $hasTodayData = $scope === 'all'
+            ? (
+                Jadwal::query()->whereDate('tanggal', $referenceDate->toDateString())->exists()
+                || PengajuanDinas::query()
+                    ->whereIn('status', ['diajukan', 'disetujui'])
+                    ->whereDate('tanggal_mulai', '<=', $referenceDate->toDateString())
+                    ->whereDate('tanggal_selesai', '>=', $referenceDate->toDateString())
+                    ->exists()
+            )
+            : (
+                $pegawai->jadwal()->whereDate('tanggal', $referenceDate->toDateString())->exists()
+                || PengajuanDinas::query()
+                    ->where('pegawai_id', $pegawai->id)
+                    ->whereIn('status', ['diajukan', 'disetujui'])
+                    ->whereDate('tanggal_mulai', '<=', $referenceDate->toDateString())
+                    ->whereDate('tanggal_selesai', '>=', $referenceDate->toDateString())
+                    ->exists()
+            );
+
+        if ($hasTodayData) {
+            return $referenceDate->copy();
+        }
+
+        $jadwalDates = $scope === 'all'
+            ? Jadwal::query()->pluck('tanggal')
+            : $pegawai->jadwal()->pluck('tanggal');
+
+        $pengajuanQuery = PengajuanDinas::query()->whereIn('status', ['diajukan', 'disetujui']);
+
+        if ($scope !== 'all') {
+            $pengajuanQuery->where('pegawai_id', $pegawai->id);
+        }
+
+        $candidates = collect()
+            ->merge($jadwalDates->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->merge((clone $pengajuanQuery)->pluck('tanggal_mulai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->merge((clone $pengajuanQuery)->pluck('tanggal_selesai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->filter()
+            ->sortBy(fn (Carbon $date) => abs($date->diffInDays($referenceDate, false)))
+            ->values();
+
+        return $candidates->first()?->copy() ?? $referenceDate->copy();
     }
 
     private function mapJadwal(Jadwal $jadwal, Carbon $referenceDate, string $pegawaiName): array
