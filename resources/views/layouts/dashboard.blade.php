@@ -76,7 +76,7 @@
                             <div class="pkm-nav__label">Manajemen</div>
                             <a href="{{ route('admin.monitoring-jadwal') }}" class="pkm-nav__item {{ request()->routeIs('admin.monitoring-jadwal') ? 'is-active' : '' }}">
                                 <span class="pkm-nav__icon"><i data-lucide="calendar-range" class="size-4"></i></span>
-                                <span>Monitoring Jadwal</span>
+                                <span>Jadwal Kegiatan</span>
                             </a>
                             <a href="{{ route('admin.monitoring-laporan') }}" class="pkm-nav__item {{ request()->routeIs('admin.monitoring-laporan*') ? 'is-active' : '' }}">
                                 <span class="pkm-nav__icon"><i data-lucide="file-spreadsheet" class="size-4"></i></span>
@@ -91,10 +91,6 @@
                         <div class="pkm-nav__group">
                             <div class="pkm-nav__label">Operasional</div>
                             <div class="pkm-nav__submenu">
-                                <a href="{{ route('pj.dashboard') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.dashboard') ? 'is-active' : '' }}">
-                                    <i data-lucide="calendar-days" class="size-4"></i>
-                                    <span>Dashboard PJ</span>
-                                </a>
                                 <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.jadwal-kegiatan.*') ? 'is-active' : '' }}">
                                     <i data-lucide="calendar-plus" class="size-4"></i>
                                     <span>Jadwal Kegiatan</span>
@@ -115,7 +111,7 @@
                             <div class="pkm-nav__submenu">
                                 <a href="{{ route('pegawai.jadwal-kegiatan') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.jadwal-kegiatan') ? 'is-active' : '' }}">
                                     <i data-lucide="calendar-range" class="size-4"></i>
-                                    <span>Jadwal Saya</span>
+                                    <span>Jadwal Kegiatan</span>
                                 </a>
                                 <a href="{{ route('pegawai.pengajuan-dinas.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.pengajuan-dinas.*') ? 'is-active' : '' }}">
                                     <i data-lucide="briefcase-business" class="size-4"></i>
@@ -143,21 +139,20 @@
                         <button class="pkm-mobile-menu js-pkm-sidebar-open" type="button" aria-label="Buka menu">
                             <i data-lucide="menu" class="size-5"></i>
                         </button>
-                        <div class="pkm-breadcrumb">
-                            <span>Apps</span>
+                        <div class="pkm-breadcrumb" aria-label="Breadcrumb">
+                            <span class="pkm-breadcrumb__item">Apps</span>
                             <i data-lucide="chevron-right" class="size-4"></i>
-                            <span>{{ $roleLabel }}</span>
+                            <span class="pkm-breadcrumb__item">{{ $roleLabel }}</span>
                             <i data-lucide="chevron-right" class="size-4"></i>
-                            <span>{{ $heading ?? $dashboardHeading }}</span>
+                            <span class="pkm-breadcrumb__item is-current">{{ $heading ?? $dashboardHeading }}</span>
                         </div>
-                        <h1 class="pkm-main__title">{{ $heading ?? $dashboardHeading }}</h1>
                     </div>
 
                     <div class="pkm-topbar__actions">
-                        <div class="pkm-topbar__search">
+                        <form method="GET" action="{{ route('search') }}" class="pkm-topbar__search">
                             <i data-lucide="search" class="size-4 text-slate-400"></i>
-                            <input type="text" placeholder="Cari jadwal, pegawai, atau layanan...">
-                        </div>
+                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari jadwal, pegawai, atau layanan...">
+                        </form>
                         <button class="pkm-topbar__icon" type="button">
                             <i data-lucide="bell" class="size-4"></i>
                         </button>

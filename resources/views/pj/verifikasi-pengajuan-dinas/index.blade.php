@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Verifikasi Pengajuan Dinas Luar | Puskesmas Bunar';
-    $heading = 'Verifikasi Pengajuan Dinas Luar';
+    $title = 'Verifikasi Pengajuan Dinas | Puskesmas Bunar';
+    $heading = 'Verifikasi Pengajuan Dinas';
 @endphp
 
 @push('styles')
@@ -23,7 +23,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2 style="font-weight: bold">Verifikasi Pengajuan Dinas Luar</h2>
+                <h2 style="font-weight: bold">Verifikasi Pengajuan Dinas</h2>
             </div>
         </div>
 
@@ -56,7 +56,7 @@
 
             @if ($submissions->isEmpty())
                 <div class="pkm-empty-state">
-                    <strong>Belum ada pengajuan dinas luar.</strong>
+                    <strong>Belum ada Pengajuan Dinas.</strong>
                     <p>Pengajuan pegawai akan tampil di halaman ini untuk diverifikasi.</p>
                 </div>
             @else
@@ -96,9 +96,9 @@
                                 <span class="pkm-pill {{ $statusClass }}">{{ ucfirst($submission->status) }}</span>
                             </div>
                             <div data-label="Aksi">
-                                <button type="button" class="pkm-text-link inline-flex items-center gap-2" data-open-modal="{{ $modalId }}" aria-label="Verifikasi pengajuan {{ $submission->pegawai?->nama }}">
-                                    <i data-lucide="pencil" class="size-4"></i>
-                                    <span>Edit</span>
+                                <button type="button" class="pkm-text-link" data-open-modal="{{ $modalId }}" aria-label="Verifikasi pengajuan {{ $submission->pegawai?->nama }}">
+                                    <i data-lucide="square-pen" class="size-4"></i>
+                                    <span>Verifikasi</span>
                                 </button>
                             </div>
                         </div>
@@ -108,7 +108,7 @@
                             <div class="pkm-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="{{ $modalId }}-title">
                                 <div class="pkm-modal__head">
                                     <div>
-                                        <h3 id="{{ $modalId }}-title">Verifikasi Pengajuan Dinas Luar</h3>
+                                        <h3 id="{{ $modalId }}-title">Verifikasi Pengajuan Dinas</h3>
                                         <p>{{ $submission->pegawai?->nama ?? 'Pegawai tidak ditemukan' }}</p>
                                     </div>
                                     <button type="button" class="pkm-modal__close" data-modal-close aria-label="Tutup modal verifikasi">
@@ -153,6 +153,19 @@
                                                 <span>Kegiatan</span>
                                                 <strong>{{ $submission->kegiatan }}</strong>
                                             </div>
+                                            <div>
+                                                <span>Bukti surat</span>
+                                                @if ($submission->bukti_surat_path)
+                                                    <strong>
+                                                        <a href="{{ $submission->bukti_surat_url }}" target="_blank" rel="noopener noreferrer" class="pkm-text-link">
+                                                            <i data-lucide="{{ $submission->bukti_surat_is_pdf ? 'file-text' : 'image' }}" class="size-4"></i>
+                                                            <span>{{ $submission->bukti_surat_nama ?? 'Lihat lampiran' }}</span>
+                                                        </a>
+                                                    </strong>
+                                                @else
+                                                    <strong>Tidak ada lampiran</strong>
+                                                @endif
+                                            </div>
                                         </div>
 
                                         @if ($submission->keterangan)
@@ -183,8 +196,14 @@
                                         <input type="hidden" name="pengajuan_id" value="{{ $submission->id }}">
 
                                         <div class="pkm-form-actions">
-                                            <button type="button" class="pkm-secondary-button" data-modal-close>Tutup</button>
-                                            <button type="submit" class="pkm-primary-button">Simpan Verifikasi</button>
+                                            <button type="button" class="pkm-secondary-button" data-modal-close>
+                                                <i data-lucide="x" class="size-4"></i>
+                                                <span>Tutup</span>
+                                            </button>
+                                            <button type="submit" class="pkm-primary-button">
+                                                <i data-lucide="save" class="size-4"></i>
+                                                <span>Simpan Verifikasi</span>
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -197,13 +216,13 @@
                     @if ($submissions->onFirstPage())
                         <span class="pkm-pagination__muted">Sebelumnya</span>
                     @else
-                        <a href="{{ $submissions->previousPageUrl() }}" class="pkm-secondary-button">Sebelumnya</a>
+                        <a href="{{ $submissions->previousPageUrl() }}" class="pkm-secondary-button"><i data-lucide="chevron-left" class="size-4"></i><span>Sebelumnya</span></a>
                     @endif
 
                     <span>Halaman {{ $submissions->currentPage() }} dari {{ $submissions->lastPage() }}</span>
 
                     @if ($submissions->hasMorePages())
-                        <a href="{{ $submissions->nextPageUrl() }}" class="pkm-secondary-button">Berikutnya</a>
+                        <a href="{{ $submissions->nextPageUrl() }}" class="pkm-secondary-button"><span>Berikutnya</span><i data-lucide="chevron-right" class="size-4"></i></a>
                     @else
                         <span class="pkm-pagination__muted">Berikutnya</span>
                     @endif

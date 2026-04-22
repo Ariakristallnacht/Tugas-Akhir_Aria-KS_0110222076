@@ -12,6 +12,7 @@ use App\Http\Controllers\Pj\DashboardController as PjDashboardController;
 use App\Http\Controllers\Pj\JadwalKegiatanController as PjJadwalKegiatanController;
 use App\Http\Controllers\Pj\LaporanKegiatanController as PjLaporanKegiatanController;
 use App\Http\Controllers\Pj\VerifikasiPengajuanDinasController as PjVerifikasiPengajuanDinasController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,6 +30,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::get('/search', SearchController::class)->name('search');
 
     Route::prefix('admin')
         ->name('admin.')

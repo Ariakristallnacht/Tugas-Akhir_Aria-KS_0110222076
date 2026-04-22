@@ -212,7 +212,10 @@
                     <h3 style="font-weight: bold">Penugasan Pegawai</h3>
                     <br>
                 </div>
-                <button type="button" class="pkm-secondary-button" id="add-assignment-row">Tambah Petugas</button>
+                <button type="button" class="pkm-secondary-button" id="add-assignment-row">
+                    <i data-lucide="plus" class="size-4"></i>
+                    <span>Tambah Petugas</span>
+                </button>
             </div>
 
             <div class="pkm-assignment-list" id="assignment-list">
@@ -223,7 +226,10 @@
                     <div class="pkm-assignment-row" data-assignment-row>
                         <div class="pkm-assignment-row__head">
                             <strong>Petugas {{ $index + 1 }}</strong>
-                            <button type="button" class="pkm-danger-button" data-remove-assignment>Hapus</button>
+                            <button type="button" class="pkm-danger-button" data-remove-assignment>
+                                <i data-lucide="trash-2" class="size-4"></i>
+                                <span>Hapus</span>
+                            </button>
                         </div>
 
                         <div class="pkm-form-grid">
@@ -355,15 +361,24 @@
 </div>
 
 <div class="pkm-form-actions">
-    <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-secondary-button">Kembali</a>
-    <button type="submit" class="pkm-primary-button">{{ $submitLabel }}</button>
+    <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-secondary-button">
+        <i data-lucide="arrow-left" class="size-4"></i>
+        <span>Kembali</span>
+    </a>
+    <button type="submit" class="pkm-primary-button">
+        <i data-lucide="save" class="size-4"></i>
+        <span>{{ $submitLabel }}</span>
+    </button>
 </div>
 
 <template id="assignment-template">
     <div class="pkm-assignment-row" data-assignment-row>
         <div class="pkm-assignment-row__head">
             <strong data-assignment-title>Petugas</strong>
-            <button type="button" class="pkm-danger-button" data-remove-assignment>Hapus</button>
+            <button type="button" class="pkm-danger-button" data-remove-assignment>
+                <i data-lucide="trash-2" class="size-4"></i>
+                <span>Hapus</span>
+            </button>
         </div>
 
         <div class="pkm-form-grid">

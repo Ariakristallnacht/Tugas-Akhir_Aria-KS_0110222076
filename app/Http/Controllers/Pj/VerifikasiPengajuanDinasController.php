@@ -43,6 +43,6 @@ class VerifikasiPengajuanDinasController extends Controller
 
         return redirect()
             ->route('pj.verifikasi-pengajuan-dinas.index')
-            ->with('success', 'Verifikasi pengajuan dinas luar berhasil disimpan.');
+            ->with('success', 'Verifikasi Pengajuan Dinas berhasil disimpan.');
     }
 }

@@ -108,6 +108,12 @@
 </div>
 
 <div class="pkm-form-actions">
-    <a href="{{ route('admin.pegawai.index') }}" class="pkm-secondary-button">Kembali</a>
-    <button type="submit" class="pkm-primary-button">{{ $submitLabel }}</button>
+    <a href="{{ route('admin.pegawai.index') }}" class="pkm-secondary-button">
+        <i data-lucide="arrow-left" class="size-4"></i>
+        <span>Kembali</span>
+    </a>
+    <button type="submit" class="pkm-primary-button">
+        <i data-lucide="save" class="size-4"></i>
+        <span>{{ $submitLabel }}</span>
+    </button>
 </div>

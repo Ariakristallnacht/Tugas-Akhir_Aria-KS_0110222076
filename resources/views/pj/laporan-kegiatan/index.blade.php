@@ -12,25 +12,6 @@
                 grid-template-columns: repeat(4, minmax(0, 1fr));
             }
         }
-
-        .pkm-report-action {
-            border: 0;
-            background: transparent;
-            box-shadow: none;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-        }
-
-        .pkm-report-action.is-danger {
-            color: #c25a53;
-        }
-
-        .pkm-report-action.is-edit {
-            color: var(--pkm-primary);
-        }
     </style>
 @endpush
 
@@ -40,7 +21,10 @@
             <div>
                 <h2  style="font-weight: bold">Membuat Laporan Kegiatan</h2>
             </div>
-            <a href="{{ route('pj.laporan-kegiatan.create') }}" class="pkm-primary-button">Tambah Laporan</a>
+            <a href="{{ route('pj.laporan-kegiatan.create') }}" class="pkm-primary-button">
+                <i data-lucide="plus" class="size-4"></i>
+                <span>Tambah Laporan</span>
+            </a>
         </div>
 
         @include('admin.partials.flash')
@@ -107,12 +91,12 @@
 
                 <div class="pkm-form-actions">
                     <div class="pkm-export-actions">
-                        <a href="{{ route('pj.laporan-kegiatan.export', ['format' => 'pdf'] + request()->query()) }}" class="pkm-secondary-button">Unduh PDF</a>
-                        <a href="{{ route('pj.laporan-kegiatan.export', ['format' => 'xls'] + request()->query()) }}" class="pkm-secondary-button">Unduh Excel</a>
-                        <a href="{{ route('pj.laporan-kegiatan.export', ['format' => 'csv'] + request()->query()) }}" class="pkm-secondary-button">Unduh CSV</a>
+                        <a href="{{ route('pj.laporan-kegiatan.export', ['format' => 'pdf'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh PDF</span></a>
+                        <a href="{{ route('pj.laporan-kegiatan.export', ['format' => 'xls'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh Excel</span></a>
+                        <a href="{{ route('pj.laporan-kegiatan.export', ['format' => 'csv'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh CSV</span></a>
                     </div>
-                    <a href="{{ route('pj.laporan-kegiatan.index') }}" class="pkm-secondary-button">Reset</a>
-                    <button type="submit" class="pkm-primary-button">Terapkan Filter</button>
+                    <a href="{{ route('pj.laporan-kegiatan.index') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
+                    <button type="submit" class="pkm-primary-button"><i data-lucide="funnel" class="size-4"></i><span>Terapkan Filter</span></button>
                 </div>
             </form>
         </section>
@@ -156,14 +140,14 @@
                             </div>
                             <div data-label="Aksi">
                                 <div class="pkm-row-actions">
-                                    <a href="{{ route('pj.laporan-kegiatan.edit', $report) }}" class="pkm-report-action is-edit">
+                                    <a href="{{ route('pj.laporan-kegiatan.edit', $report) }}" class="pkm-text-link">
                                         <i data-lucide="pencil" class="size-4"></i>
                                         <span>Edit</span>
                                     </a>
                                     <form method="POST" action="{{ route('pj.laporan-kegiatan.destroy', $report) }}" onsubmit="return confirm('Hapus laporan kegiatan ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="pkm-report-action is-danger">
+                                        <button type="submit" class="pkm-danger-button">
                                             <i data-lucide="trash-2" class="size-4"></i>
                                             <span>Hapus</span>
                                         </button>
@@ -178,13 +162,13 @@
                     @if ($reports->onFirstPage())
                         <span class="pkm-pagination__muted">Sebelumnya</span>
                     @else
-                        <a href="{{ $reports->previousPageUrl() }}" class="pkm-secondary-button">Sebelumnya</a>
+                        <a href="{{ $reports->previousPageUrl() }}" class="pkm-secondary-button"><i data-lucide="chevron-left" class="size-4"></i><span>Sebelumnya</span></a>
                     @endif
 
                     <span>Halaman {{ $reports->currentPage() }} dari {{ $reports->lastPage() }}</span>
 
                     @if ($reports->hasMorePages())
-                        <a href="{{ $reports->nextPageUrl() }}" class="pkm-secondary-button">Berikutnya</a>
+                        <a href="{{ $reports->nextPageUrl() }}" class="pkm-secondary-button"><span>Berikutnya</span><i data-lucide="chevron-right" class="size-4"></i></a>
                     @else
                         <span class="pkm-pagination__muted">Berikutnya</span>
                     @endif

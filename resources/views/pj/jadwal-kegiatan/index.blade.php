@@ -20,18 +20,6 @@
             gap: 14px;
             margin-top: 16px;
         }
-
-        .pkm-monitoring-item__delete {
-            border: 0;
-            background: transparent;
-            box-shadow: none;
-            padding: 0;
-            color: #c25a53;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-        }
     </style>
 @endpush
 
@@ -41,7 +29,10 @@
             <div>
                 <h2 style="font-weight: bold">Jadwal Kegiatan</h2>
             </div>
-            <a href="{{ route('pj.jadwal-kegiatan.create') }}" class="pkm-primary-button">Tambah Jadwal</a>
+            <a href="{{ route('pj.jadwal-kegiatan.create') }}" class="pkm-primary-button">
+                <i data-lucide="plus" class="size-4"></i>
+                <span>Tambah Jadwal</span>
+            </a>
         </div>
 
         @include('admin.partials.flash')
@@ -109,8 +100,8 @@
                         </div>
 
                         <div class="pkm-form-actions">
-                            <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-secondary-button">Reset</a>
-                            <button type="submit" class="pkm-primary-button">Terapkan Filter</button>
+                            <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
+                            <button type="submit" class="pkm-primary-button"><i data-lucide="funnel" class="size-4"></i><span>Terapkan Filter</span></button>
                         </div>
                     </form>
                 </section>
@@ -171,7 +162,7 @@
                                     @if ($item['edit_url'] || $item['delete_url'])
                                         <div class="pkm-monitoring-item__actions">
                                             @if ($item['edit_url'])
-                                                <a href="{{ $item['edit_url'] }}" class="pkm-text-link inline-flex items-center gap-2">
+                                                <a href="{{ $item['edit_url'] }}" class="pkm-text-link">
                                                     <i data-lucide="pencil" class="size-4"></i>
                                                     <span>Edit</span>
                                                 </a>
@@ -180,7 +171,7 @@
                                                 <form method="POST" action="{{ $item['delete_url'] }}" onsubmit="return confirm('Hapus jadwal kegiatan ini?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="pkm-monitoring-item__delete">
+                                                    <button type="submit" class="pkm-danger-button">
                                                         <i data-lucide="trash-2" class="size-4"></i>
                                                         <span>Hapus</span>
                                                     </button>
@@ -208,7 +199,7 @@
                             <p>{{ $calendarMonthLabel }}</p>
                         </div>
                         <div class="flex items-center gap-3">
-                            <a href="{{ route('pj.jadwal-kegiatan.index', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['current_month']])) }}" class="pkm-secondary-button">Bulan Ini</a>
+                            <a href="{{ route('pj.jadwal-kegiatan.index', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['current_month']])) }}" class="pkm-secondary-button"><i data-lucide="calendar-days" class="size-4"></i><span>Bulan Ini</span></a>
                             <a href="{{ route('pj.jadwal-kegiatan.index', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['next_month']])) }}" class="pkm-topbar__icon" aria-label="Bulan berikutnya">
                                 <i data-lucide="chevron-right" class="size-4"></i>
                             </a>
@@ -381,7 +372,7 @@
                                 ${item.reference_note ? `<p>${escapeHtml(item.reference_note)}</p>` : ''}
                                 ${item.edit_url ? `
                                     <div class="pkm-monitoring-item__actions">
-                                        <a href="${escapeHtml(item.edit_url)}" class="pkm-text-link inline-flex items-center gap-2">
+                                        <a href="${escapeHtml(item.edit_url)}" class="pkm-text-link">
                                             <i data-lucide="pencil" class="size-4"></i>
                                             <span>Edit</span>
                                         </a>

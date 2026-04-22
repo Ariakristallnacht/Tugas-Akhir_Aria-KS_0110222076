@@ -11,7 +11,10 @@
             <div>
                 <h2 style="font-weight: bold">Kelola Pegawai</h2>
             </div>
-            <a href="{{ route('admin.pegawai.create') }}" class="pkm-primary-button">Tambah Pegawai</a>
+            <a href="{{ route('admin.pegawai.create') }}" class="pkm-primary-button">
+                <i data-lucide="plus" class="size-4"></i>
+                <span>Tambah Pegawai</span>
+            </a>
         </div>
 
         @include('admin.partials.flash')
@@ -82,11 +85,17 @@
                             </div>
                             <div data-label="Aksi">
                                 <div class="pkm-row-actions">
-                                    <a href="{{ route('admin.pegawai.edit', $pegawai) }}" class="pkm-text-link">Edit</a>
+                                    <a href="{{ route('admin.pegawai.edit', $pegawai) }}" class="pkm-text-link">
+                                        <i data-lucide="pencil" class="size-4"></i>
+                                        <span>Edit</span>
+                                    </a>
                                     <form method="POST" action="{{ route('admin.pegawai.destroy', $pegawai) }}" onsubmit="return confirm('Hapus data pegawai ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="pkm-danger-button">Hapus</button>
+                                        <button type="submit" class="pkm-danger-button">
+                                            <i data-lucide="trash-2" class="size-4"></i>
+                                            <span>Hapus</span>
+                                        </button>
                                     </form>
                                 </div>
                             </div>
@@ -98,13 +107,19 @@
                     @if ($pegawaiList->onFirstPage())
                         <span class="pkm-pagination__muted">Sebelumnya</span>
                     @else
-                        <a href="{{ $pegawaiList->previousPageUrl() }}" class="pkm-secondary-button">Sebelumnya</a>
+                        <a href="{{ $pegawaiList->previousPageUrl() }}" class="pkm-secondary-button">
+                            <i data-lucide="chevron-left" class="size-4"></i>
+                            <span>Sebelumnya</span>
+                        </a>
                     @endif
 
                     <span>Halaman {{ $pegawaiList->currentPage() }} dari {{ $pegawaiList->lastPage() }}</span>
 
                     @if ($pegawaiList->hasMorePages())
-                        <a href="{{ $pegawaiList->nextPageUrl() }}" class="pkm-secondary-button">Berikutnya</a>
+                        <a href="{{ $pegawaiList->nextPageUrl() }}" class="pkm-secondary-button">
+                            <span>Berikutnya</span>
+                            <i data-lucide="chevron-right" class="size-4"></i>
+                        </a>
                     @else
                         <span class="pkm-pagination__muted">Berikutnya</span>
                     @endif

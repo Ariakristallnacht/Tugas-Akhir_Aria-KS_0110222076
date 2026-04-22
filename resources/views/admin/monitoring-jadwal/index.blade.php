@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Monitoring Jadwal | Puskesmas Bunar';
-    $heading = 'Monitoring Jadwal';
+    $title = 'Jadwal Kegiatan | Puskesmas Bunar';
+    $heading = 'Jadwal Kegiatan';
     $weekdayLabels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
 @endphp
 
@@ -10,7 +10,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2 style="font-weight: bold">Kalender Jadwal Kegiatan</h2>
+                <h2 style="font-weight: bold">Jadwal Kegiatan</h2>
             </div>
         </div>
 
@@ -72,8 +72,8 @@
                         </div>
 
                         <div class="pkm-form-actions">
-                            <a href="{{ route('admin.monitoring-jadwal') }}" class="pkm-secondary-button">Reset</a>
-                            <button type="submit" class="pkm-primary-button">Terapkan Filter</button>
+                            <a href="{{ route('admin.monitoring-jadwal') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
+                            <button type="submit" class="pkm-primary-button"><i data-lucide="funnel" class="size-4"></i><span>Terapkan Filter</span></button>
                         </div>
                     </form>
                 </section>
@@ -146,7 +146,7 @@
                             <p>{{ $calendarMonthLabel }}</p>
                         </div>
                         <div class="flex items-center gap-3">
-                            <a href="{{ route('admin.monitoring-jadwal', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['current_month']])) }}" class="pkm-secondary-button">Bulan Ini</a>
+                            <a href="{{ route('admin.monitoring-jadwal', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['current_month']])) }}" class="pkm-secondary-button"><i data-lucide="calendar-days" class="size-4"></i><span>Bulan Ini</span></a>
                             <a href="{{ route('admin.monitoring-jadwal', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['next_month']])) }}" class="pkm-topbar__icon" aria-label="Bulan berikutnya">
                                 <i data-lucide="chevron-right" class="size-4"></i>
                             </a>

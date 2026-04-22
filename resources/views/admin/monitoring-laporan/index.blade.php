@@ -70,12 +70,12 @@
 
                 <div class="pkm-form-actions">
                     <div class="pkm-export-actions">
-                        <a href="{{ route('admin.monitoring-laporan.export', ['format' => 'pdf'] + request()->query()) }}" class="pkm-secondary-button">Unduh PDF</a>
-                        <a href="{{ route('admin.monitoring-laporan.export', ['format' => 'xls'] + request()->query()) }}" class="pkm-secondary-button">Unduh Excel</a>
-                        <a href="{{ route('admin.monitoring-laporan.export', ['format' => 'csv'] + request()->query()) }}" class="pkm-secondary-button">Unduh CSV</a>
+                        <a href="{{ route('admin.monitoring-laporan.export', ['format' => 'pdf'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh PDF</span></a>
+                        <a href="{{ route('admin.monitoring-laporan.export', ['format' => 'xls'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh Excel</span></a>
+                        <a href="{{ route('admin.monitoring-laporan.export', ['format' => 'csv'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh CSV</span></a>
                     </div>
-                    <a href="{{ route('admin.monitoring-laporan') }}" class="pkm-secondary-button">Reset</a>
-                    <button type="submit" class="pkm-primary-button">Terapkan Filter</button>
+                    <a href="{{ route('admin.monitoring-laporan') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
+                    <button type="submit" class="pkm-primary-button"><i data-lucide="funnel" class="size-4"></i><span>Terapkan Filter</span></button>
                 </div>
             </form>
         </section>
@@ -84,14 +84,13 @@
             <div class="pkm-card__head">
                 <div>
                     <h3 style="font-weight: bold">Daftar Laporan</h3>
-                    <p>{{ $reports->total() }} laporan ditemukan pada rentang filter yang dipilih.</p>
+                    <br>
                 </div>
             </div>
 
             @if ($reports->isEmpty())
                 <div class="pkm-empty-state">
                     <strong>Belum ada laporan kegiatan pada filter ini.</strong>
-                    <p>Ubah rentang tanggal atau kata kunci pencarian untuk melihat data lain.</p>
                 </div>
             @else
                 <div class="pkm-table pkm-table--laporan">
@@ -129,13 +128,13 @@
                     @if ($reports->onFirstPage())
                         <span class="pkm-pagination__muted">Sebelumnya</span>
                     @else
-                        <a href="{{ $reports->previousPageUrl() }}" class="pkm-secondary-button">Sebelumnya</a>
+                        <a href="{{ $reports->previousPageUrl() }}" class="pkm-secondary-button"><i data-lucide="chevron-left" class="size-4"></i><span>Sebelumnya</span></a>
                     @endif
 
                     <span>Halaman {{ $reports->currentPage() }} dari {{ $reports->lastPage() }}</span>
 
                     @if ($reports->hasMorePages())
-                        <a href="{{ $reports->nextPageUrl() }}" class="pkm-secondary-button">Berikutnya</a>
+                        <a href="{{ $reports->nextPageUrl() }}" class="pkm-secondary-button"><span>Berikutnya</span><i data-lucide="chevron-right" class="size-4"></i></a>
                     @else
                         <span class="pkm-pagination__muted">Berikutnya</span>
                     @endif

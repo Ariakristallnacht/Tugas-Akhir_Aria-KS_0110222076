@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Pengajuan Dinas Luar | Puskesmas Bunar';
-    $heading = 'Pengajuan Dinas Luar';
+    $title = 'Pengajuan Dinas | Puskesmas Bunar';
+    $heading = 'Pengajuan Dinas';
 @endphp
 
 @push('styles')
@@ -19,9 +19,12 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2 style="font-weight: bold">Data Pengajuan Dinas Luar</h2>
+                <h2 style="font-weight: bold">Data Pengajuan Dinas</h2>
             </div>
-            <a href="{{ route('pegawai.pengajuan-dinas.create') }}" class="pkm-primary-button">Tambah Pengajuan</a>
+            <a href="{{ route('pegawai.pengajuan-dinas.create') }}" class="pkm-primary-button">
+                <i data-lucide="plus" class="size-4"></i>
+                <span>Tambah Pengajuan</span>
+            </a>
         </div>
 
         @include('admin.partials.flash')
@@ -58,7 +61,7 @@
 
             @if ($submissions->isEmpty())
                 <div class="pkm-empty-state">
-                    <strong>Belum ada pengajuan dinas luar.</strong>
+                    <strong>Belum ada Pengajuan Dinas.</strong>
                     <p>Buat pengajuan pertama agar PJ penjadwalan bisa menyesuaikan jadwal layanan.</p>
                 </div>
             @else
@@ -101,11 +104,17 @@
                             <div data-label="Aksi">
                                 <div class="pkm-row-actions">
                                     @if ($isEditable)
-                                        <a href="{{ route('pegawai.pengajuan-dinas.edit', $submission) }}" class="pkm-text-link">Edit</a>
-                                        <form method="POST" action="{{ route('pegawai.pengajuan-dinas.destroy', $submission) }}" onsubmit="return confirm('Hapus pengajuan dinas luar ini?')">
+                                        <a href="{{ route('pegawai.pengajuan-dinas.edit', $submission) }}" class="pkm-text-link">
+                                            <i data-lucide="pencil" class="size-4"></i>
+                                            <span>Edit</span>
+                                        </a>
+                                        <form method="POST" action="{{ route('pegawai.pengajuan-dinas.destroy', $submission) }}" onsubmit="return confirm('Hapus Pengajuan Dinas ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="pkm-danger-button">Hapus</button>
+                                            <button type="submit" class="pkm-danger-button">
+                                                <i data-lucide="trash-2" class="size-4"></i>
+                                                <span>Hapus</span>
+                                            </button>
                                         </form>
                                     @else
                                         <span class="pkm-pagination__muted">Terkunci</span>
@@ -120,13 +129,19 @@
                     @if ($submissions->onFirstPage())
                         <span class="pkm-pagination__muted">Sebelumnya</span>
                     @else
-                        <a href="{{ $submissions->previousPageUrl() }}" class="pkm-secondary-button">Sebelumnya</a>
+                        <a href="{{ $submissions->previousPageUrl() }}" class="pkm-secondary-button">
+                            <i data-lucide="chevron-left" class="size-4"></i>
+                            <span>Sebelumnya</span>
+                        </a>
                     @endif
 
                     <span>Halaman {{ $submissions->currentPage() }} dari {{ $submissions->lastPage() }}</span>
 
                     @if ($submissions->hasMorePages())
-                        <a href="{{ $submissions->nextPageUrl() }}" class="pkm-secondary-button">Berikutnya</a>
+                        <a href="{{ $submissions->nextPageUrl() }}" class="pkm-secondary-button">
+                            <span>Berikutnya</span>
+                            <i data-lucide="chevron-right" class="size-4"></i>
+                        </a>
                     @else
                         <span class="pkm-pagination__muted">Berikutnya</span>
                     @endif

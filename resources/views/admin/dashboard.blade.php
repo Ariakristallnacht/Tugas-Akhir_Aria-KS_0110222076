@@ -73,7 +73,7 @@
                     <a href="{{ route('admin.monitoring-jadwal') }}" class="pkm-activity-item">
                         <div class="pkm-activity-item__avatar">MJ</div>
                         <div class="pkm-activity-item__body">
-                            <strong>Monitoring Jadwal</strong>
+                            <strong>Jadwal Kegiatan</strong>
                             <small>Lihat jadwal layanan dan dinas luar dalam tampilan list dan kalender.</small>
                         </div>
                     </a>

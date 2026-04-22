@@ -7,6 +7,7 @@ use App\Models\Pegawai;
 use App\Models\PengajuanDinas;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -46,10 +47,15 @@ class PengajuanDinasController extends Controller
     {
         $pegawai = $this->pegawai();
         $validated = $this->validateRequest($request);
+        unset($validated['bukti_surat'], $validated['bukti_surat_existing']);
+        $buktiSurat = $this->storeBuktiSurat($request);
 
         PengajuanDinas::create($validated + [
             'pegawai_id' => $pegawai->id,
             'tanggal_pengajuan' => now()->toDateString(),
+            'bukti_surat_path' => $buktiSurat['path'] ?? null,
+            'bukti_surat_nama' => $buktiSurat['name'] ?? null,
+            'bukti_surat_mime' => $buktiSurat['mime'] ?? null,
             'status' => 'diajukan',
             'diverifikasi_oleh' => null,
             'diverifikasi_at' => null,
@@ -58,7 +64,7 @@ class PengajuanDinasController extends Controller
 
         return redirect()
             ->route('pegawai.pengajuan-dinas.index')
-            ->with('success', 'Pengajuan dinas luar berhasil dikirim.');
+            ->with('success', 'Pengajuan Dinas berhasil dikirim.');
     }
 
     public function edit(PengajuanDinas $pengajuanDina): View
@@ -83,8 +89,17 @@ class PengajuanDinasController extends Controller
         }
 
         $validated = $this->validateRequest($request);
+        unset($validated['bukti_surat'], $validated['bukti_surat_existing']);
+        $buktiSurat = $this->storeBuktiSurat($request);
+
+        if ($buktiSurat && $pengajuanDina->bukti_surat_path) {
+            Storage::disk('public')->delete($pengajuanDina->bukti_surat_path);
+        }
 
         $pengajuanDina->update($validated + [
+            'bukti_surat_path' => $buktiSurat['path'] ?? $pengajuanDina->bukti_surat_path,
+            'bukti_surat_nama' => $buktiSurat['name'] ?? $pengajuanDina->bukti_surat_nama,
+            'bukti_surat_mime' => $buktiSurat['mime'] ?? $pengajuanDina->bukti_surat_mime,
             'status' => 'diajukan',
             'diverifikasi_oleh' => null,
             'diverifikasi_at' => null,
@@ -93,7 +108,7 @@ class PengajuanDinasController extends Controller
 
         return redirect()
             ->route('pegawai.pengajuan-dinas.index')
-            ->with('success', 'Pengajuan dinas luar berhasil diperbarui.');
+            ->with('success', 'Pengajuan Dinas berhasil diperbarui.');
     }
 
     public function destroy(PengajuanDinas $pengajuanDina): RedirectResponse
@@ -106,11 +121,15 @@ class PengajuanDinasController extends Controller
                 ->with('error', 'Pengajuan yang sudah diverifikasi tidak dapat dihapus.');
         }
 
+        if ($pengajuanDina->bukti_surat_path) {
+            Storage::disk('public')->delete($pengajuanDina->bukti_surat_path);
+        }
+
         $pengajuanDina->delete();
 
         return redirect()
             ->route('pegawai.pengajuan-dinas.index')
-            ->with('success', 'Pengajuan dinas luar berhasil dihapus.');
+            ->with('success', 'Pengajuan Dinas berhasil dihapus.');
     }
 
     private function validateRequest(Request $request): array
@@ -121,8 +140,26 @@ class PengajuanDinasController extends Controller
             'tujuan' => ['required', 'string', 'max:200'],
             'kegiatan' => ['required', 'string'],
             'keterangan' => ['nullable', 'string'],
+            'bukti_surat' => ['required_without:bukti_surat_existing', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120'],
+            'bukti_surat_existing' => ['nullable', 'string'],
             'status' => ['nullable', Rule::in(['diajukan'])],
         ]);
+    }
+
+    private function storeBuktiSurat(Request $request): ?array
+    {
+        if (! $request->hasFile('bukti_surat')) {
+            return null;
+        }
+
+        $file = $request->file('bukti_surat');
+        $path = $file->store('pengajuan-dinas/bukti-surat', 'public');
+
+        return [
+            'path' => $path,
+            'name' => $file->getClientOriginalName(),
+            'mime' => $file->getClientMimeType(),
+        ];
     }
 
     private function ensureOwnedByCurrentPegawai(PengajuanDinas $pengajuan): void

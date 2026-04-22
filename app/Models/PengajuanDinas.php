@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class PengajuanDinas extends Model
 {
@@ -20,6 +21,9 @@ class PengajuanDinas extends Model
         'tujuan',
         'kegiatan',
         'keterangan',
+        'bukti_surat_path',
+        'bukti_surat_nama',
+        'bukti_surat_mime',
         'status',
         'diverifikasi_oleh',
         'diverifikasi_at',
@@ -44,5 +48,24 @@ class PengajuanDinas extends Model
     public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'diverifikasi_oleh');
+    }
+
+    public function getBuktiSuratUrlAttribute(): ?string
+    {
+        if (! $this->bukti_surat_path) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->bukti_surat_path);
+    }
+
+    public function getHasBuktiSuratAttribute(): bool
+    {
+        return filled($this->bukti_surat_path);
+    }
+
+    public function getBuktiSuratIsPdfAttribute(): bool
+    {
+        return $this->bukti_surat_mime === 'application/pdf';
     }
 }

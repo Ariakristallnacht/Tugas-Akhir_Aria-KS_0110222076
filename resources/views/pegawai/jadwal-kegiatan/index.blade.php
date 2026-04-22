@@ -63,15 +63,15 @@
                             <div class="pkm-field">
                                 <label for="scope">Cakupan jadwal</label>
                                 <select id="scope" class="pkm-input" name="scope">
-                                    <option value="mine" @selected($filters['scope'] === 'mine')>Jadwal saya</option>
+                                    <option value="mine" @selected($filters['scope'] === 'mine')>Jadwal Kegiatan</option>
                                     <option value="all" @selected($filters['scope'] === 'all')>Jadwal semuanya</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="pkm-form-actions">
-                            <a href="{{ route('pegawai.jadwal-kegiatan') }}" class="pkm-secondary-button">Reset</a>
-                            <button type="submit" class="pkm-primary-button">Terapkan Filter</button>
+                            <a href="{{ route('pegawai.jadwal-kegiatan') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
+                            <button type="submit" class="pkm-primary-button"><i data-lucide="funnel" class="size-4"></i><span>Terapkan Filter</span></button>
                         </div>
                     </form>
                 </section>
@@ -80,13 +80,14 @@
                     <div class="pkm-card__head">
                         <div>
                             <h3 style="font-weight: bold">Daftar Jadwal</h3>
+                            <br>
                         </div>
                     </div>
 
                     @if ($items->isEmpty())
                         <div class="pkm-empty-state">
                             <strong>Tidak ada agenda pada rentang ini.</strong>
-                            <p>Coba ubah rentang tanggal atau jenis kegiatan yang dipilih.</p>
+    
                         </div>
                     @else
                         <div class="pkm-monitoring-items">
@@ -144,7 +145,7 @@
                             <p>{{ $calendarMonthLabel }}</p>
                         </div>
                         <div class="flex items-center gap-3">
-                            <a href="{{ route('pegawai.jadwal-kegiatan', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['current_month']])) }}" class="pkm-secondary-button">Bulan Ini</a>
+                            <a href="{{ route('pegawai.jadwal-kegiatan', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['current_month']])) }}" class="pkm-secondary-button"><i data-lucide="calendar-days" class="size-4"></i><span>Bulan Ini</span></a>
                             <a href="{{ route('pegawai.jadwal-kegiatan', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['next_month']])) }}" class="pkm-topbar__icon" aria-label="Bulan berikutnya">
                                 <i data-lucide="chevron-right" class="size-4"></i>
                             </a>

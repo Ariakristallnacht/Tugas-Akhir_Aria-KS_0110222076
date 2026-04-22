@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Tambah Pengajuan Dinas Luar | Puskesmas Bunar';
-    $heading = 'Tambah Pengajuan Dinas Luar';
+    $title = 'Tambah Pengajuan Dinas| Puskesmas Bunar';
+    $heading = 'Tambah Pengajuan Dinas';
 @endphp
 
 @section('content')
@@ -10,14 +10,14 @@
         <div class="pkm-card pkm-form-card">
             <div class="pkm-card__head">
                 <div>
-                    <h2>Buat Pengajuan Dinas Luar</h2>
-                    <p>Isi jadwal dan tujuan kegiatan lapangan agar PJ penjadwalan dapat menyesuaikan layanan.</p>
+                    <h2 style="font-weight:bold">Buat Pengajuan Dinas</h2>
+                    <br>
                 </div>
             </div>
 
             @include('admin.partials.flash')
 
-            <form method="POST" action="{{ route('pegawai.pengajuan-dinas.store') }}" class="pkm-form-stack">
+            <form method="POST" action="{{ route('pegawai.pengajuan-dinas.store') }}" class="pkm-form-stack" enctype="multipart/form-data">
                 @csrf
                 @include('pegawai.pengajuan-dinas._form', ['submitLabel' => 'Kirim Pengajuan'])
             </form>

@@ -50,11 +50,11 @@ class JadwalKegiatanController extends Controller
 
         $dateFrom = $request->filled('date_from')
             ? Carbon::parse($request->string('date_from'))->startOfDay()
-            : $monthDate->copy()->startOfMonth();
+            : now()->startOfDay();
 
         $dateTo = $request->filled('date_to')
             ? Carbon::parse($request->string('date_to'))->endOfDay()
-            : $monthDate->copy()->endOfMonth();
+            : now()->endOfDay();
 
         if ($dateFrom->gt($dateTo)) {
             [$dateFrom, $dateTo] = [$dateTo->copy()->startOfDay(), $dateFrom->copy()->endOfDay()];

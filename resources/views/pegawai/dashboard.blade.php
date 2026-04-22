@@ -23,7 +23,7 @@
                 </div>
                 <div class="pkm-hero-panel__stats">
                     <div>
-                        <span>Jadwal Saya</span>
+                        <span>Jadwal Kegiatan</span>
                         <strong>{{ $upcomingSchedules->count() }}</strong>
                         <small>Agenda terdekat tersedia</small>
                     </div>
@@ -38,7 +38,7 @@
             <section class="pkm-card pkm-table-card">
                 <div class="pkm-card__head">
                     <div>
-                        <h3>Jadwal Saya</h3>
+                        <h3>Jadwal Kegiatan</h3>
                         <p>Penugasan terdekat yang perlu diperhatikan.</p>
                     </div>
                 </div>
