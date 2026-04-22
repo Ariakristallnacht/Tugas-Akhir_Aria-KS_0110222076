@@ -14,12 +14,10 @@ class MonitoringJadwalController extends Controller
 {
     public function __invoke(Request $request): View
     {
-        $monthInput = $request->string('month')->toString() ?: now()->format('Y-m');
-        $monthDate = $this->parseMonth($monthInput);
+        $calendarMonthInput = $request->string('calendar_month')->toString() ?: now()->format('Y-m');
+        $monthDate = $this->parseMonth($calendarMonthInput);
 
-        $referenceDate = $request->filled('reference_date')
-            ? Carbon::parse($request->string('reference_date'))->startOfDay()
-            : now()->startOfDay();
+        $referenceDate = now()->startOfDay();
 
         $dateFrom = $request->filled('date_from')
             ? Carbon::parse($request->string('date_from'))->startOfDay()
@@ -72,12 +70,12 @@ class MonitoringJadwalController extends Controller
             ->when($phase !== 'all', fn (Collection $collection) => $collection->where('phase', $phase))
             ->values();
 
+        $calendarQuery = $request->except('calendar_month');
+
         return view('admin.monitoring-jadwal.index', [
             'filters' => [
-                'month' => $monthDate->format('Y-m'),
                 'date_from' => $dateFrom->toDateString(),
                 'date_to' => $dateTo->toDateString(),
-                'reference_date' => $referenceDate->toDateString(),
                 'type' => $type,
                 'phase' => $phase,
             ],
@@ -90,6 +88,13 @@ class MonitoringJadwalController extends Controller
             'items' => $filteredItems,
             'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $items, $referenceDate),
             'calendarMonthLabel' => $monthDate->translatedFormat('F Y'),
+            'calendarFilters' => [
+                'month' => $monthDate->format('Y-m'),
+                'previous_month' => $monthDate->copy()->subMonth()->format('Y-m'),
+                'next_month' => $monthDate->copy()->addMonth()->format('Y-m'),
+                'current_month' => now()->format('Y-m'),
+                'query' => $calendarQuery,
+            ],
         ]);
     }
 

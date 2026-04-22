@@ -10,7 +10,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2 style="font-weight: bold">Monitoring Jadwal Layanan dan Dinas Luar</h2>
+                <h2 style="font-weight: bold">Kalender Jadwal Kegiatan</h2>
             </div>
         </div>
 
@@ -37,21 +37,13 @@
                 <section class="pkm-card">
                     <div class="pkm-card__head">
                         <div>
-                            <h3 style="font-weight: bold">Filter Monitoring</h3>
+                            <h3 style="font-weight: bold">Filter Jadwal</h3>
                             <br>
                         </div>
                     </div>
 
                     <form method="GET" action="{{ route('admin.monitoring-jadwal') }}" class="pkm-monitoring-filter">
                         <div class="pkm-form-grid">
-                            <div class="pkm-field">
-                                <label for="month">Bulan kalender</label>
-                                <input id="month" class="pkm-input" type="month" name="month" value="{{ $filters['month'] }}">
-                            </div>
-                            <div class="pkm-field">
-                                <label for="reference_date">Tanggal acuan status</label>
-                                <input id="reference_date" class="pkm-input" type="date" name="reference_date" value="{{ $filters['reference_date'] }}">
-                            </div>
                             <div class="pkm-field">
                                 <label for="date_from">Tanggal awal</label>
                                 <input id="date_from" class="pkm-input" type="date" name="date_from" value="{{ $filters['date_from'] }}">
@@ -95,8 +87,8 @@
 
                     @if ($items->isEmpty())
                         <div class="pkm-empty-state">
-                            <strong>Tidak ada jadwal pada rentang ini.</strong>
-                            <p>Coba ubah bulan, rentang tanggal, atau status monitoring yang dipilih.</p>
+                            <strong>Tidak ada agenda pada rentang ini.</strong>
+                            <p>Coba ubah rentang tanggal atau status monitoring yang dipilih.</p>
                         </div>
                     @else
                         <div class="pkm-monitoring-items">
@@ -126,7 +118,7 @@
                                             <strong>{{ $item['time_label'] }}</strong>
                                         </div>
                                         <div>
-                                            <span>Petugas</span>
+                                            <span>Pegawai</span>
                                             <strong>{{ $item['people'] }}</strong>
                                         </div>
                                     </div>
@@ -144,9 +136,20 @@
             <aside class="pkm-monitoring-calendar">
                 <section class="pkm-card">
                     <div class="pkm-card__head">
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('admin.monitoring-jadwal', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['previous_month']])) }}" class="pkm-topbar__icon" aria-label="Bulan sebelumnya">
+                                <i data-lucide="chevron-left" class="size-4"></i>
+                            </a>
+                        </div>
                         <div>
-                            <h3 style="font-weight:bold">Kalender Jadwal</h3>
+                            <h3>Kalender Kegiatan</h3>
                             <p>{{ $calendarMonthLabel }}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('admin.monitoring-jadwal', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['current_month']])) }}" class="pkm-secondary-button">Bulan Ini</a>
+                            <a href="{{ route('admin.monitoring-jadwal', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['next_month']])) }}" class="pkm-topbar__icon" aria-label="Bulan berikutnya">
+                                <i data-lucide="chevron-right" class="size-4"></i>
+                            </a>
                         </div>
                     </div>
 
@@ -190,7 +193,7 @@
                                                 @foreach ($day['preview_items'] as $preview)
                                                     <div
                                                         class="pkm-calendar__item {{ $preview['type'] === 'layanan' ? 'is-layanan' : 'is-dinas' }}"
-                                                        title="{{ $preview['title'] }} - PJ {{ $preview['people'] }}"
+                                                        title="{{ $preview['title'] }} - {{ $preview['people'] }}"
                                                     >
                                                         {{ $preview['pj_initials'] }}
                                                     </div>
@@ -280,7 +283,7 @@
 
                     modalDate.textContent = dateLabel;
                     modalSummary.innerHTML = total > 0
-                        ? '<span class="pkm-pill is-blue">' + total + ' jadwal</span><small>Pilih tanggal ini untuk melihat rincian layanan dan dinas luar.</small>'
+                        ? '<span class="pkm-pill is-blue">' + total + ' agenda</span><small>Pilih tanggal ini untuk melihat rincian jadwal layanan dan dinas luar.</small>'
                         : '<span class="pkm-pill is-amber">Tidak ada jadwal</span><small>Belum ada kegiatan yang tercatat pada tanggal ini.</small>';
 
                     modalBody.innerHTML = items.length > 0
@@ -300,7 +303,7 @@
                                         <strong>${escapeHtml(item.time_label)}</strong>
                                     </div>
                                     <div>
-                                        <span>Petugas</span>
+                                        <span>Pegawai</span>
                                         <strong>${escapeHtml(item.people)}</strong>
                                     </div>
                                     <div>

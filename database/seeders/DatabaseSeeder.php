@@ -434,6 +434,8 @@ class DatabaseSeeder extends Seeder
                 }
             }
         });
+
+        $this->call(MarchAprilJadwalSeeder::class);
     }
 
     private function resetApplicationTables(): void

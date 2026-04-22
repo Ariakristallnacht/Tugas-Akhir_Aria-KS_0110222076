@@ -43,12 +43,10 @@ class JadwalKegiatanController extends Controller
 
     public function index(Request $request): View
     {
-        $monthInput = $request->string('month')->toString() ?: now()->format('Y-m');
-        $monthDate = $this->parseMonth($monthInput);
+        $calendarMonthInput = $request->string('calendar_month')->toString() ?: now()->format('Y-m');
+        $monthDate = $this->parseMonth($calendarMonthInput);
 
-        $referenceDate = $request->filled('reference_date')
-            ? Carbon::parse($request->string('reference_date'))->startOfDay()
-            : now()->startOfDay();
+        $referenceDate = now()->startOfDay();
 
         $dateFrom = $request->filled('date_from')
             ? Carbon::parse($request->string('date_from'))->startOfDay()
@@ -96,12 +94,12 @@ class JadwalKegiatanController extends Controller
             ? Carbon::parse($request->string('planning_date'))->startOfDay()
             : now()->startOfDay();
 
+        $calendarQuery = $request->except('calendar_month');
+
         return view('pj.jadwal-kegiatan.index', [
             'filters' => [
-                'month' => $monthDate->format('Y-m'),
                 'date_from' => $dateFrom->toDateString(),
                 'date_to' => $dateTo->toDateString(),
-                'reference_date' => $referenceDate->toDateString(),
                 'planning_date' => $planningDate->toDateString(),
                 'type' => $type,
                 'phase' => $phase,
@@ -116,6 +114,13 @@ class JadwalKegiatanController extends Controller
             'items' => $items,
             'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $items, $referenceDate),
             'calendarMonthLabel' => $monthDate->translatedFormat('F Y'),
+            'calendarFilters' => [
+                'month' => $monthDate->format('Y-m'),
+                'previous_month' => $monthDate->copy()->subMonth()->format('Y-m'),
+                'next_month' => $monthDate->copy()->addMonth()->format('Y-m'),
+                'current_month' => now()->format('Y-m'),
+                'query' => $calendarQuery,
+            ],
             'planningContext' => $this->buildPlanningContext($planningDate),
         ]);
     }

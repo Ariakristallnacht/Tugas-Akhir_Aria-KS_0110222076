@@ -45,10 +45,6 @@
                     <form method="GET" action="{{ route('pegawai.jadwal-kegiatan') }}" class="pkm-monitoring-filter">
                         <div class="pkm-form-grid">
                             <div class="pkm-field">
-                                <label for="reference_date">Tanggal acuan status</label>
-                                <input id="reference_date" class="pkm-input" type="date" name="reference_date" value="{{ $filters['reference_date'] }}">
-                            </div>
-                            <div class="pkm-field">
                                 <label for="date_from">Tanggal awal</label>
                                 <input id="date_from" class="pkm-input" type="date" name="date_from" value="{{ $filters['date_from'] }}">
                             </div>
@@ -90,7 +86,7 @@
                     @if ($items->isEmpty())
                         <div class="pkm-empty-state">
                             <strong>Tidak ada agenda pada rentang ini.</strong>
-                            <p>Coba ubah bulan, rentang tanggal, atau jenis kegiatan yang dipilih.</p>
+                            <p>Coba ubah rentang tanggal atau jenis kegiatan yang dipilih.</p>
                         </div>
                     @else
                         <div class="pkm-monitoring-items">

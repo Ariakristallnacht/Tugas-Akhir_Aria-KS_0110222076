@@ -22,9 +22,7 @@ class JadwalKegiatanController extends Controller
         $hasDateFromFilter = $request->filled('date_from');
         $hasDateToFilter = $request->filled('date_to');
 
-        $referenceDate = $request->filled('reference_date')
-            ? Carbon::parse($request->string('reference_date'))->startOfDay()
-            : now()->startOfDay();
+        $referenceDate = now()->startOfDay();
 
         $dateFrom = $hasDateFromFilter
             ? Carbon::parse($request->string('date_from'))->startOfDay()
@@ -64,7 +62,6 @@ class JadwalKegiatanController extends Controller
             'filters' => [
                 'date_from' => $dateFrom->toDateString(),
                 'date_to' => $dateTo->toDateString(),
-                'reference_date' => $referenceDate->toDateString(),
                 'type' => $type,
                 'scope' => $scope,
             ],
