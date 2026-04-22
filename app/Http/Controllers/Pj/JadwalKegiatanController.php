@@ -47,7 +47,7 @@ class JadwalKegiatanController extends Controller
         $monthDate = $this->parseMonth($calendarMonthInput);
 
         $referenceDate = now()->startOfDay();
-        $defaultDate = $this->resolveDefaultDate($referenceDate);
+        $defaultDate = $this->resolveDefaultDate($referenceDate, $monthDate);
 
         $dateFrom = $request->filled('date_from')
             ? Carbon::parse($request->string('date_from'))->startOfDay()
@@ -244,28 +244,52 @@ class JadwalKegiatanController extends Controller
             ->values();
     }
 
-    private function resolveDefaultDate(Carbon $referenceDate): Carbon
+    private function resolveDefaultDate(Carbon $referenceDate, Carbon $monthDate): Carbon
     {
-        if (
-            Jadwal::query()->whereDate('tanggal', $referenceDate->toDateString())->exists()
-            || PengajuanDinas::query()
-                ->where('status', 'disetujui')
-                ->whereDate('tanggal_mulai', '<=', $referenceDate->toDateString())
-                ->whereDate('tanggal_selesai', '>=', $referenceDate->toDateString())
-                ->exists()
-        ) {
+        $monthStart = $monthDate->copy()->startOfMonth();
+        $monthEnd = $monthDate->copy()->endOfMonth();
+
+        if ($referenceDate->betweenIncluded($monthStart, $monthEnd) && $this->hasAgendaOnDate($referenceDate)) {
             return $referenceDate->copy();
         }
 
-        $candidates = collect()
-            ->merge(Jadwal::query()->pluck('tanggal')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
-            ->merge(PengajuanDinas::query()->where('status', 'disetujui')->pluck('tanggal_mulai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
-            ->merge(PengajuanDinas::query()->where('status', 'disetujui')->pluck('tanggal_selesai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
-            ->filter()
+        $monthCandidates = $this->agendaCandidates()
+            ->filter(fn (Carbon $date) => $date->betweenIncluded($monthStart, $monthEnd))
+            ->values();
+
+        if ($monthCandidates->isNotEmpty()) {
+            return $monthCandidates
+                ->sortBy(fn (Carbon $date) => abs($date->diffInDays($referenceDate, false)))
+                ->first()
+                ->copy();
+        }
+
+        $candidates = $this->agendaCandidates()
             ->sortBy(fn (Carbon $date) => abs($date->diffInDays($referenceDate, false)))
             ->values();
 
         return $candidates->first()?->copy() ?? $referenceDate->copy();
+    }
+
+    private function hasAgendaOnDate(Carbon $date): bool
+    {
+        return Jadwal::query()->whereDate('tanggal', $date->toDateString())->exists()
+            || PengajuanDinas::query()
+                ->where('status', 'disetujui')
+                ->whereDate('tanggal_mulai', '<=', $date->toDateString())
+                ->whereDate('tanggal_selesai', '>=', $date->toDateString())
+                ->exists();
+    }
+
+    private function agendaCandidates(): Collection
+    {
+        return collect()
+            ->merge(Jadwal::query()->pluck('tanggal')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->merge(PengajuanDinas::query()->where('status', 'disetujui')->pluck('tanggal_mulai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->merge(PengajuanDinas::query()->where('status', 'disetujui')->pluck('tanggal_selesai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->filter()
+            ->unique(fn (Carbon $date) => $date->toDateString())
+            ->values();
     }
 
     private function validateRequest(Request $request, ?Jadwal $jadwal = null): array
