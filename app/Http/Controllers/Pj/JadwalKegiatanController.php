@@ -69,27 +69,19 @@ class JadwalKegiatanController extends Controller
             ? $request->string('phase')->toString()
             : 'all';
 
-        $jadwalItems = Jadwal::with(['kegiatan', 'pegawai'])
-            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
-            ->orderBy('tanggal')
-            ->orderBy('waktu_mulai')
-            ->get()
-            ->map(fn (Jadwal $jadwal) => $this->mapJadwal($jadwal, $referenceDate));
+        $rangeItems = $this->buildAgendaItems($dateFrom, $dateTo, $referenceDate);
 
-        $approvedDinasItems = PengajuanDinas::with('pegawai')
-            ->where('status', 'disetujui')
-            ->whereDate('tanggal_mulai', '<=', $dateTo->toDateString())
-            ->whereDate('tanggal_selesai', '>=', $dateFrom->toDateString())
-            ->orderBy('tanggal_mulai')
-            ->get()
-            ->map(fn (PengajuanDinas $pengajuan) => $this->mapPengajuanDinas($pengajuan, $referenceDate));
-
-        $items = $jadwalItems
-            ->concat($approvedDinasItems)
+        $items = $rangeItems
             ->when($type !== 'all', fn (Collection $collection) => $collection->where('type', $type))
             ->when($phase !== 'all', fn (Collection $collection) => $collection->where('phase', $phase))
             ->sortBy(fn (array $item) => sprintf('%02d-%010d-%s', $item['phase_order'], $item['start_sort'], $item['key']))
             ->values();
+
+        $calendarItems = $this->buildAgendaItems(
+            $monthDate->copy()->startOfMonth(),
+            $monthDate->copy()->endOfMonth(),
+            $referenceDate
+        );
 
         $planningDate = $request->filled('planning_date')
             ? Carbon::parse($request->string('planning_date'))->startOfDay()
@@ -110,10 +102,10 @@ class JadwalKegiatanController extends Controller
                 'upcoming' => $items->where('phase', 'upcoming')->count(),
                 'ongoing' => $items->where('phase', 'ongoing')->count(),
                 'completed' => $items->where('phase', 'completed')->count(),
-                'approved_dinas' => $approvedDinasItems->count(),
+                'approved_dinas' => $rangeItems->where('type', 'dinas_luar')->count(),
             ],
             'items' => $items,
-            'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $items, $referenceDate),
+            'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $calendarItems, $referenceDate),
             'calendarMonthLabel' => $monthDate->translatedFormat('F Y'),
             'calendarFilters' => [
                 'month' => $monthDate->format('Y-m'),
@@ -227,6 +219,29 @@ class JadwalKegiatanController extends Controller
         return redirect()
             ->route('pj.jadwal-kegiatan.index')
             ->with('success', 'Jadwal kegiatan berhasil dihapus.');
+    }
+
+    private function buildAgendaItems(Carbon $dateFrom, Carbon $dateTo, Carbon $referenceDate): Collection
+    {
+        $jadwalItems = Jadwal::with(['kegiatan', 'pegawai'])
+            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->orderBy('tanggal')
+            ->orderBy('waktu_mulai')
+            ->get()
+            ->map(fn (Jadwal $jadwal) => $this->mapJadwal($jadwal, $referenceDate));
+
+        $approvedDinasItems = PengajuanDinas::with('pegawai')
+            ->where('status', 'disetujui')
+            ->whereDate('tanggal_mulai', '<=', $dateTo->toDateString())
+            ->whereDate('tanggal_selesai', '>=', $dateFrom->toDateString())
+            ->orderBy('tanggal_mulai')
+            ->get()
+            ->map(fn (PengajuanDinas $pengajuan) => $this->mapPengajuanDinas($pengajuan, $referenceDate));
+
+        return $jadwalItems
+            ->concat($approvedDinasItems)
+            ->sortBy(fn (array $item) => sprintf('%02d-%010d-%s', $item['phase_order'], $item['start_sort'], $item['key']))
+            ->values();
     }
 
     private function resolveDefaultDate(Carbon $referenceDate): Carbon

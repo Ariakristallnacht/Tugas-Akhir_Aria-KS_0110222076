@@ -40,36 +40,18 @@ class MonitoringJadwalController extends Controller
             ? $request->string('phase')->toString()
             : 'all';
 
-        $jadwalItems = Jadwal::with(['kegiatan', 'pegawai'])
-            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
-            ->orderBy('tanggal')
-            ->orderBy('waktu_mulai')
-            ->get()
-            ->map(fn (Jadwal $jadwal) => $this->mapJadwal($jadwal, $referenceDate));
-
-        $dinasItems = PengajuanDinas::with('pegawai')
-            ->where(function ($query) use ($dateFrom, $dateTo) {
-                $query->whereDate('tanggal_mulai', '<=', $dateTo->toDateString())
-                    ->whereDate('tanggal_selesai', '>=', $dateFrom->toDateString());
-            })
-            ->orderBy('tanggal_mulai')
-            ->orderBy('tanggal_selesai')
-            ->get()
-            ->map(fn (PengajuanDinas $dinas) => $this->mapDinas($dinas, $referenceDate));
-
-        $items = $jadwalItems
-            ->concat($dinasItems)
-            ->sortBy([
-                ['phase_order', 'asc'],
-                ['start_sort', 'asc'],
-                ['title', 'asc'],
-            ])
-            ->values();
+        $items = $this->buildAgendaItems($dateFrom, $dateTo, $referenceDate);
 
         $filteredItems = $items
             ->when($type !== 'all', fn (Collection $collection) => $collection->where('type', $type))
             ->when($phase !== 'all', fn (Collection $collection) => $collection->where('phase', $phase))
             ->values();
+
+        $calendarItems = $this->buildAgendaItems(
+            $monthDate->copy()->startOfMonth(),
+            $monthDate->copy()->endOfMonth(),
+            $referenceDate
+        );
 
         $calendarQuery = $request->except('calendar_month');
 
@@ -87,7 +69,7 @@ class MonitoringJadwalController extends Controller
                 'completed' => $items->where('phase', 'completed')->count(),
             ],
             'items' => $filteredItems,
-            'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $items, $referenceDate),
+            'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $calendarItems, $referenceDate),
             'calendarMonthLabel' => $monthDate->translatedFormat('F Y'),
             'calendarFilters' => [
                 'month' => $monthDate->format('Y-m'),
@@ -104,6 +86,35 @@ class MonitoringJadwalController extends Controller
         return preg_match('/^\d{4}-\d{2}$/', $value) === 1
             ? Carbon::createFromFormat('Y-m', $value)->startOfMonth()
             : now()->startOfMonth();
+    }
+
+    private function buildAgendaItems(Carbon $dateFrom, Carbon $dateTo, Carbon $referenceDate): Collection
+    {
+        $jadwalItems = Jadwal::with(['kegiatan', 'pegawai'])
+            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->orderBy('tanggal')
+            ->orderBy('waktu_mulai')
+            ->get()
+            ->map(fn (Jadwal $jadwal) => $this->mapJadwal($jadwal, $referenceDate));
+
+        $dinasItems = PengajuanDinas::with('pegawai')
+            ->where(function ($query) use ($dateFrom, $dateTo) {
+                $query->whereDate('tanggal_mulai', '<=', $dateTo->toDateString())
+                    ->whereDate('tanggal_selesai', '>=', $dateFrom->toDateString());
+            })
+            ->orderBy('tanggal_mulai')
+            ->orderBy('tanggal_selesai')
+            ->get()
+            ->map(fn (PengajuanDinas $dinas) => $this->mapDinas($dinas, $referenceDate));
+
+        return $jadwalItems
+            ->concat($dinasItems)
+            ->sortBy([
+                ['phase_order', 'asc'],
+                ['start_sort', 'asc'],
+                ['title', 'asc'],
+            ])
+            ->values();
     }
 
     private function resolveDefaultDate(Carbon $referenceDate): Carbon
