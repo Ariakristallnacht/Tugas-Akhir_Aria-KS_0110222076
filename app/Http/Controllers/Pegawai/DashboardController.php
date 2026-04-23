@@ -16,6 +16,8 @@ class DashboardController extends Controller
         $upcomingSchedules = collect();
         $submissionCount = 0;
         $pendingSubmissionCount = 0;
+        $approvedSubmissionCount = 0;
+        $todayScheduleCount = 0;
 
         if ($pegawai) {
             $upcomingSchedules = $pegawai->jadwal()
@@ -30,12 +32,20 @@ class DashboardController extends Controller
             $pendingSubmissionCount = PengajuanDinas::where('pegawai_id', $pegawai->id)
                 ->where('status', 'diajukan')
                 ->count();
+            $approvedSubmissionCount = PengajuanDinas::where('pegawai_id', $pegawai->id)
+                ->where('status', 'disetujui')
+                ->count();
+            $todayScheduleCount = $pegawai->jadwal()
+                ->whereDate('tanggal', $today)
+                ->count();
         }
 
         return view('pegawai.dashboard', [
             'upcomingSchedules' => $upcomingSchedules,
             'submissionCount' => $submissionCount,
             'pendingSubmissionCount' => $pendingSubmissionCount,
+            'approvedSubmissionCount' => $approvedSubmissionCount,
+            'todayScheduleCount' => $todayScheduleCount,
         ]);
     }
 }

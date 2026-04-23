@@ -5,41 +5,52 @@
     $heading = 'Dashboard Pegawai';
 @endphp
 
+@push('styles')
+    <style>
+        @media (min-width: 1280px) {
+            .pkm-management-summary--single-row {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
     <section class="pkm-dashboard-grid">
         <div class="pkm-dashboard-main">
             <div class="pkm-section-head">
                 <div>
-                    <h2>Informasi Tugas</h2>
-                    <p>Lihat jadwal layanan, status dinas luar, dan ringkasan kegiatan pribadi.</p>
+                    <h2 style="font-weight: bold">Dashboard Pegawai</h2>
                 </div>
             </div>
 
-            <div class="pkm-hero-panel">
-                <div class="pkm-hero-panel__content">
-                    <span class="pkm-hero-panel__eyebrow">Akses Pegawai</span>
-                    <h3>Akses cepat untuk melihat jadwal dinas, mengajukan kegiatan luar, dan memantau tugas harian.</h3>
-                    <p>Semua informasi penting pegawai disederhanakan agar mudah dipakai dari desktop maupun mobile.</p>
-                </div>
-                <div class="pkm-hero-panel__stats">
-                    <div>
-                        <span>Jadwal Kegiatan</span>
-                        <strong>{{ $upcomingSchedules->count() }}</strong>
-                        <small>Agenda terdekat tersedia</small>
-                    </div>
-                    <div>
-                        <span>Pengajuan</span>
-                        <strong>{{ $pendingSubmissionCount }}</strong>
-                        <small>Masih diproses</small>
-                    </div>
-                </div>
+            <div class="pkm-management-summary pkm-management-summary--single-row">
+                <article class="pkm-metric-card">
+                    <div class="pkm-metric-card__icon bg-cyan-100 text-cyan-700"><i data-lucide="calendar-range" class="size-5"></i></div>
+                    <div class="pkm-metric-card__value">{{ $todayScheduleCount }}</div>
+                    <div class="pkm-metric-card__label">Jadwal Hari Ini</div>
+                </article>
+                <article class="pkm-metric-card">
+                    <div class="pkm-metric-card__icon bg-amber-100 text-amber-700"><i data-lucide="clock-3" class="size-5"></i></div>
+                    <div class="pkm-metric-card__value">{{ $pendingSubmissionCount }}</div>
+                    <div class="pkm-metric-card__label">Menunggu Verifikasi</div>
+                </article>
+                <article class="pkm-metric-card">
+                    <div class="pkm-metric-card__icon bg-emerald-100 text-emerald-700"><i data-lucide="badge-check" class="size-5"></i></div>
+                    <div class="pkm-metric-card__value">{{ $approvedSubmissionCount }}</div>
+                    <div class="pkm-metric-card__label">Pengajuan Disetujui</div>
+                </article>
+                <article class="pkm-metric-card">
+                    <div class="pkm-metric-card__icon bg-lime-100 text-lime-700"><i data-lucide="briefcase-business" class="size-5"></i></div>
+                    <div class="pkm-metric-card__value">{{ $submissionCount }}</div>
+                    <div class="pkm-metric-card__label">Total Pengajuan</div>
+                </article>
             </div>
 
             <section class="pkm-card pkm-table-card">
                 <div class="pkm-card__head">
                     <div>
-                        <h3>Jadwal Kegiatan</h3>
-                        <p>Penugasan terdekat yang perlu diperhatikan.</p>
+                        <h3 style="font-weight: bold">Fokus Saya</h3>
                     </div>
                 </div>
 
@@ -78,18 +89,22 @@
         <aside class="pkm-dashboard-side">
             <section class="pkm-side-summary">
                 <div class="pkm-side-summary__head">
-                    <h3>Aksi Saya</h3>
+                    <h3 style="font-weight: bold">Aksi Cepat</h3>
                 </div>
                 <a href="{{ route('pegawai.pengajuan-dinas.index') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="briefcase-business" class="size-4"></i></span>
-                    <span><strong>Ajukan Dinas Luar</strong><small>Buat pengajuan kegiatan lapangan.</small></span>
+                    <span><strong>Pengajuan Dinas</strong><small>Lihat dan kelola pengajuan dinas luar Anda.</small></span>
+                </a>
+                <a href="{{ route('pegawai.pengajuan-dinas.create') }}" class="pkm-quick-action">
+                    <span class="pkm-quick-action__icon"><i data-lucide="file-plus-2" class="size-4"></i></span>
+                    <span><strong>Buat Pengajuan</strong><small>Ajukan kegiatan lapangan baru dengan lebih cepat.</small></span>
                 </a>
                 <a href="{{ route('pegawai.jadwal-kegiatan') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="calendar-range" class="size-4"></i></span>
-                    <span><strong>Lihat Jadwal</strong><small>Cek tugas layanan dan dinas luar.</small></span>
+                    <span><strong>Lihat Jadwal</strong><small>Cek tugas layanan dan agenda dinas terdekat.</small></span>
                 </a>
                 <div class="pkm-side-summary__footnote">
-                    Total pengajuan tercatat: <strong>{{ $submissionCount }}</strong>
+                    Agenda terdekat tercatat: <strong>{{ $upcomingSchedules->count() }}</strong>
                 </div>
             </section>
         </aside>
