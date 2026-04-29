@@ -1611,18 +1611,13 @@ body {
 }
 
 .pkm-login-shell {
-    background:
-        radial-gradient(circle at 12% 18%, rgba(107, 193, 145, 0.22), transparent 18%),
-        radial-gradient(circle at 86% 14%, rgba(126, 148, 240, 0.22), transparent 22%),
-        linear-gradient(135deg, #1d3551 0%, #245b47 55%, #21465b 100%);
+    background: #ffffff;
 }
 
 .pkm-login-glow {
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(circle at 20% 30%, rgba(214, 245, 226, 0.12), transparent 18%),
-        radial-gradient(circle at 80% 20%, rgba(160, 229, 191, 0.1), transparent 15%);
+    background: transparent;
 }
 
 .pkm-login-page .pkm-login-shell::before {
@@ -1646,21 +1641,23 @@ body {
 }
 
 .pkm-login-page .pkm-login-card {
+    background: #ffffff;
+    border: 1px solid rgba(221, 230, 239, 0.95);
+    border-radius: 1.75rem;
     color: var(--pkm-ink);
+    box-shadow: 0 28px 60px rgba(20, 41, 74, 0.12);
 }
 
 .pkm-login-page .pkm-login-card::before {
-    border: 1px solid rgba(219, 228, 239, 0.72);
-    background: rgba(255, 255, 255, 0.38);
-    box-shadow: 0 18px 34px rgba(24, 37, 66, 0.1);
+    border: 1px solid rgba(221, 230, 239, 0.72);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 18px 34px rgba(24, 37, 66, 0.08);
 }
 
 .pkm-login-page .pkm-login-card::after {
     border: 1px solid rgba(219, 228, 239, 0.92);
-    background:
-        radial-gradient(circle at top right, rgba(91, 111, 214, 0.08), transparent 22%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(247, 250, 255, 0.96));
-    box-shadow: 0 24px 54px rgba(17, 28, 74, 0.14);
+    background: #ffffff;
+    box-shadow: 0 24px 54px rgba(17, 28, 74, 0.1);
 }
 
 .pkm-login-page h2 {
@@ -1674,7 +1671,7 @@ body {
 
 .pkm-login-page input.box {
     border: 1px solid rgba(219, 228, 239, 0.98);
-    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    background: #ffffff;
     color: #334968;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
@@ -1684,21 +1681,21 @@ body {
 }
 
 .pkm-login-page input.box:focus {
-    border-color: rgba(91, 111, 214, 0.35);
+    border-color: rgba(74, 142, 103, 0.5);
     box-shadow:
-        0 0 0 4px rgba(91, 111, 214, 0.08),
-        0 10px 24px rgba(53, 85, 173, 0.08);
+        0 0 0 4px rgba(74, 142, 103, 0.12),
+        0 10px 24px rgba(46, 98, 67, 0.1);
 }
 
 .pkm-login-page .login-button {
-    border: 1px solid rgba(58, 118, 84, 0.2);
-    background: linear-gradient(135deg, #4a8e67, #5b6fd6);
+    border: 1px solid rgba(58, 118, 84, 0.18);
+    background: #4a8e67;
     color: #fff;
-    box-shadow: 0 18px 36px rgba(45, 80, 140, 0.18);
+    box-shadow: 0 18px 36px rgba(46, 98, 67, 0.2);
 }
 
 .pkm-login-page .login-button:hover {
-    background: linear-gradient(135deg, #43815d, #5264c1);
+    background: #3f7f5b;
     color: #fff;
 }
 
@@ -1710,14 +1707,12 @@ body {
 
 .pkm-login-page .peer:checked ~ div,
 .pkm-login-page .peer-checked\:visible {
-    background: linear-gradient(135deg, #4a8e67, #5b6fd6);
+    background: #4a8e67;
 }
 
 .pkm-login-page .pkm-login-helper {
     border: 1px solid rgba(219, 228, 239, 0.9);
-    background:
-        radial-gradient(circle at top right, rgba(91, 111, 214, 0.08), transparent 22%),
-        #f8fbff;
+    background: #f8fbf9;
     color: #4d607c;
 }
 
