@@ -17,8 +17,32 @@
         .pkm-monitoring-item__actions {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 10px;
             margin-top: 16px;
+            flex-wrap: nowrap;
+        }
+
+        .pkm-monitoring-item__actions form {
+            margin: 0;
+        }
+
+        .pkm-action-button-sm {
+            padding: 0.55rem 0.9rem;
+            gap: 0.45rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        .pkm-action-button-sm i {
+            width: 0.9rem;
+            height: 0.9rem;
+        }
+
+        @media (max-width: 640px) {
+            .pkm-monitoring-item__actions {
+                overflow-x: auto;
+                padding-bottom: 2px;
+            }
         }
     </style>
 @endpush
@@ -110,13 +134,13 @@
                     <div class="pkm-card__head">
                         <div>
                             <h3 style="font-weight: bold">Daftar Jadwal</h3>
+                            <br>
                         </div>
                     </div>
 
                     @if ($items->isEmpty())
                         <div class="pkm-empty-state">
                             <strong>Tidak ada jadwal pada rentang ini.</strong>
-                            <p>Coba ubah rentang tanggal atau status penjadwalan yang dipilih.</p>
                         </div>
                     @else
                         <div class="pkm-monitoring-items">
@@ -162,7 +186,7 @@
                                     @if ($item['edit_url'] || $item['delete_url'])
                                         <div class="pkm-monitoring-item__actions">
                                             @if ($item['edit_url'])
-                                                <a href="{{ $item['edit_url'] }}" class="pkm-text-link">
+                                                <a href="{{ $item['edit_url'] }}" class="pkm-text-link pkm-action-button-sm">
                                                     <i data-lucide="pencil" class="size-4"></i>
                                                     <span>Edit</span>
                                                 </a>
@@ -171,7 +195,7 @@
                                                 <form method="POST" action="{{ $item['delete_url'] }}" onsubmit="return confirm('Hapus jadwal kegiatan ini?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="pkm-danger-button">
+                                                    <button type="submit" class="pkm-danger-button pkm-action-button-sm">
                                                         <i data-lucide="trash-2" class="size-4"></i>
                                                         <span>Hapus</span>
                                                     </button>
@@ -372,7 +396,7 @@
                                 ${item.reference_note ? `<p>${escapeHtml(item.reference_note)}</p>` : ''}
                                 ${item.edit_url ? `
                                     <div class="pkm-monitoring-item__actions">
-                                        <a href="${escapeHtml(item.edit_url)}" class="pkm-text-link">
+                                        <a href="${escapeHtml(item.edit_url)}" class="pkm-text-link pkm-action-button-sm">
                                             <i data-lucide="pencil" class="size-4"></i>
                                             <span>Edit</span>
                                         </a>

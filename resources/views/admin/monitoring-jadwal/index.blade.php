@@ -82,13 +82,13 @@
                     <div class="pkm-card__head">
                         <div>
                             <h3 style="font-weight: bold">Daftar Jadwal</h3>
+                            <br>
                         </div>
                     </div>
 
                     @if ($items->isEmpty())
                         <div class="pkm-empty-state">
                             <strong>Tidak ada agenda pada rentang ini.</strong>
-                            <p>Coba ubah rentang tanggal atau status monitoring yang dipilih.</p>
                         </div>
                     @else
                         <div class="pkm-monitoring-items">
@@ -142,7 +142,7 @@
                             </a>
                         </div>
                         <div>
-                            <h3>Kalender Kegiatan</h3>
+                            <h3 style="font-weight: bold">Kalender Kegiatan</h3>
                             <p>{{ $calendarMonthLabel }}</p>
                         </div>
                         <div class="flex items-center gap-3">

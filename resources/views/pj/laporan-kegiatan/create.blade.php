@@ -10,7 +10,8 @@
         <div class="pkm-card pkm-form-card">
             <div class="pkm-card__head">
                 <div>
-                    <h2>Tambah Laporan Kegiatan</h2>
+                    <h2 style="font-weight: bold">Tambah Laporan Kegiatan</h2>
+                    <br>
                 </div>
             </div>
 

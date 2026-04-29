@@ -1770,7 +1770,7 @@ body {
 }
 
 .pkm-login-page .xl\:flex .my-auto .mt-10.text-4xl {
-    max-width: 12ch;
+    max-width: fit-content;
     text-wrap: balance;
 }
 

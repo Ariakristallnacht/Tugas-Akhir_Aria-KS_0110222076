@@ -105,14 +105,13 @@
             <div class="pkm-card__head">
                 <div>
                     <h3 style="font-weight: bold">Daftar Laporan Kegiatan</h3>
-                    <p>{{ $reports->total() }} laporan ditemukan pada filter yang dipilih.</p>
+                    <br>
                 </div>
             </div>
 
             @if ($reports->isEmpty())
                 <div class="pkm-empty-state">
                     <strong>Belum ada laporan kegiatan.</strong>
-                    <p>Buat laporan pertama dari jadwal layanan yang telah berjalan.</p>
                 </div>
             @else
                 <div class="pkm-table pkm-table--laporan">

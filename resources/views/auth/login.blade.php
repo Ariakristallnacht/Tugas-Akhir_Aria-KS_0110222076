@@ -35,11 +35,11 @@
                         <div class="my-auto">
                             <img class="-mt-16 w-1/2" src="{{ asset('template/dist/images/illustration.svg') }}" alt="Ilustrasi layanan kesehatan">
                             <div class="mt-10 text-4xl font-medium leading-tight text-white">
-                                Akses jadwal layanan dan <br>
-                                dinas luar dalam satu akun.
+                                Kelola jadwal layanan dan <br>
+                                dinas luar dalam satu sistem.
                             </div>
                             <div class="mt-5 max-w-xl text-lg text-white opacity-70">
-                                Masuk ke sistem untuk mengelola jadwal, monitoring, verifikasi kegiatan, dan laporan operasional Puskesmas Bunar.
+                                Kelola jadwal, monitoring, verifikasi, dan laporan operasional Puskesmas Bunar dalam satu sistem.
                             </div>
                         </div>
                     </div>
@@ -88,18 +88,6 @@
                                     </button>
                                 </div>
                             </form>
-
-                            <div class="pkm-login-helper mt-6">
-                                <div class="pkm-login-helper__title">Akun contoh</div>
-                                <div>`admin@pkmbunar.test`</div>
-                                <div>`pj@pkmbunar.test`</div>
-                                <div>`pegawai@pkmbunar.test`</div>
-                                <div>Kata sandi: `password`</div>
-                            </div>
-
-                            <div class="mt-8 text-center opacity-70 xl:mt-12 xl:text-left">
-                                Dengan masuk ke sistem ini, Anda menggunakan akses sesuai peran yang telah ditetapkan oleh administrator Puskesmas Bunar.
-                            </div>
                         </div>
                     </div>
                 </div>

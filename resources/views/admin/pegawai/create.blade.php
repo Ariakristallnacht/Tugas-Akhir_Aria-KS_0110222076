@@ -9,8 +9,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2>Tambah Pegawai</h2>
-                <p>Buat data pegawai baru sekaligus akun login, karena setiap pegawai wajib memiliki akses akun.</p>
+                <h2 style="font-weight: bold">Tambah Pegawai</h2>
             </div>
         </div>
 
@@ -19,8 +18,8 @@
         <section class="pkm-card">
             <div class="pkm-card__head">
                 <div>
-                    <h3>Form Pegawai dan Akun</h3>
-                    <p>Lengkapi identitas dasar, email login, role, dan password dalam satu form.</p>
+                    <h3 style="font-weight: bold">Form Pegawai dan Akun</h3>
+                    <br>
                 </div>
             </div>
 
