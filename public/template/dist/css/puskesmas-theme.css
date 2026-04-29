@@ -1615,6 +1615,7 @@ body {
         radial-gradient(circle at 92% 50%, rgba(79, 115, 96, 0.08), transparent 16%),
         linear-gradient(90deg, #f6faf7 0%, #ffffff 62%, #ffffff 100%);
     box-shadow: inset -36px 0 90px rgba(51, 78, 64, 0.06);
+    position: relative;
 }
 
 .pkm-login-glow {
@@ -1635,6 +1636,25 @@ body {
         radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.16), transparent 16%),
         radial-gradient(circle at 82% 18%, rgba(174, 229, 196, 0.16), transparent 18%),
         linear-gradient(180deg, rgba(126, 176, 147, 0.14), rgba(58, 124, 93, 0.1));
+}
+
+.pkm-login-page .pkm-login-shell > .pkm-login-glow::after {
+    content: "";
+    position: absolute;
+    right: -3.5rem;
+    bottom: -5.5rem;
+    width: 18rem;
+    height: 28rem;
+    border-radius: 42% 0 0 0;
+    background:
+        linear-gradient(180deg, rgba(232, 236, 242, 0.9) 0%, rgba(210, 217, 226, 0.68) 100%);
+    box-shadow:
+        -28px -18px 48px rgba(121, 128, 141, 0.18),
+        inset 0 0 30px rgba(255, 255, 255, 0.55);
+    transform: skewY(-6deg);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.95;
 }
 
 .pkm-login-page .pkm-login-glow::before {
