@@ -1611,7 +1611,10 @@ body {
 }
 
 .pkm-login-shell {
-    background: #ffffff;
+    background:
+        radial-gradient(circle at 92% 50%, rgba(79, 115, 96, 0.08), transparent 16%),
+        linear-gradient(90deg, #f6faf7 0%, #ffffff 62%, #ffffff 100%);
+    box-shadow: inset -36px 0 90px rgba(51, 78, 64, 0.06);
 }
 
 .pkm-login-glow {
@@ -1630,8 +1633,8 @@ body {
     border-color: rgba(42, 124, 88, 0.38);
     background:
         radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.16), transparent 16%),
-        radial-gradient(circle at 82% 18%, rgba(146, 177, 255, 0.2), transparent 18%),
-        linear-gradient(180deg, rgba(93, 126, 232, 0.2), rgba(58, 124, 93, 0.12));
+        radial-gradient(circle at 82% 18%, rgba(174, 229, 196, 0.16), transparent 18%),
+        linear-gradient(180deg, rgba(126, 176, 147, 0.14), rgba(58, 124, 93, 0.1));
 }
 
 .pkm-login-page .pkm-login-glow::before {
@@ -1646,8 +1649,9 @@ body {
     border-radius: 2rem;
     color: var(--pkm-ink);
     box-shadow:
-        0 30px 80px rgba(20, 41, 74, 0.1),
-        0 10px 24px rgba(74, 142, 103, 0.08);
+        0 34px 86px rgba(20, 41, 74, 0.09),
+        0 14px 30px rgba(74, 142, 103, 0.08),
+        -24px 0 48px rgba(39, 63, 52, 0.06);
 }
 
 .pkm-login-page .pkm-login-card::before {
@@ -1670,8 +1674,26 @@ body {
 }
 
 .pkm-login-page .opacity-70 {
-    color: #7d8ca3;
+    color: #7b8ca0;
     opacity: 1;
+}
+
+.pkm-login-page .xl\:flex .text-white {
+    color: #ffffff;
+}
+
+.pkm-login-page .xl\:flex .text-white.opacity-70,
+.pkm-login-page .xl\:flex .font-light.opacity-70 {
+    color: rgba(232, 244, 237, 0.72);
+}
+
+.pkm-login-page .xl\:flex .mt-10.text-4xl {
+    color: #ffffff;
+    text-shadow: 0 8px 26px rgba(17, 39, 31, 0.2);
+}
+
+.pkm-login-page .xl\:flex .mt-5 {
+    color: rgba(228, 241, 233, 0.78);
 }
 
 .pkm-login-page input.box {
@@ -1741,6 +1763,10 @@ body {
     .pkm-login-page .pkm-login-card {
         min-width: 31rem;
         padding: 2.5rem 2.25rem;
+    }
+
+    .pkm-login-page .pkm-login-shell {
+        overflow: hidden;
     }
 }
 
