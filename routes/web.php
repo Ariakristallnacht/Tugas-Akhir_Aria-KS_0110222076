@@ -10,6 +10,7 @@ use App\Http\Controllers\Pegawai\JadwalKegiatanController as PegawaiJadwalKegiat
 use App\Http\Controllers\Pegawai\PengajuanDinasController as PegawaiPengajuanDinasController;
 use App\Http\Controllers\Pj\DashboardController as PjDashboardController;
 use App\Http\Controllers\Pj\JadwalKegiatanController as PjJadwalKegiatanController;
+use App\Http\Controllers\Pj\KegiatanController as PjKegiatanController;
 use App\Http\Controllers\Pj\LaporanKegiatanController as PjLaporanKegiatanController;
 use App\Http\Controllers\Pj\VerifikasiPengajuanDinasController as PjVerifikasiPengajuanDinasController;
 use App\Http\Controllers\SearchController;
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', PjDashboardController::class)->name('dashboard');
             Route::get('/jadwal-kegiatan/referensi-ketersediaan', [PjJadwalKegiatanController::class, 'availability'])->name('jadwal-kegiatan.availability');
             Route::resource('jadwal-kegiatan', PjJadwalKegiatanController::class)->except('show');
+            Route::resource('kegiatan', PjKegiatanController::class)->except('show');
             Route::get('/laporan-kegiatan/export/{format}', [PjLaporanKegiatanController::class, 'export'])->name('laporan-kegiatan.export');
             Route::resource('laporan-kegiatan', PjLaporanKegiatanController::class)->except('show');
             Route::get('/verifikasi-pengajuan-dinas', [PjVerifikasiPengajuanDinasController::class, 'index'])->name('verifikasi-pengajuan-dinas.index');

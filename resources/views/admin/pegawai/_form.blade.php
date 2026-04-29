@@ -2,8 +2,8 @@
 
 <div class="pkm-form-grid">
     <div class="pkm-field">
-        <label for="nip">NIP</label>
-        <input id="nip" class="pkm-input" type="text" name="nip" value="{{ old('nip', $pegawai->nip ?? '') }}" required>
+        <label for="nip">NIP <small>(opsional)</small></label>
+        <input id="nip" class="pkm-input" type="text" name="nip" value="{{ old('nip', $pegawai->nip ?? '') }}">
         @error('nip')
             <small>{{ $message }}</small>
         @enderror
@@ -61,8 +61,7 @@
         <div class="pkm-account-block">
             <div class="pkm-account-block__head">
                 <div>
-                    <strong>Akun Login</strong>
-                    <p>Setiap pegawai wajib memiliki akun login untuk mengakses sistem.</p>
+                    <h3 style="font-weight: bold">Akun Login</h3>
                 </div>
             </div>
 

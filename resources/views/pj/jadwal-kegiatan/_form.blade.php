@@ -18,6 +18,7 @@
 
     $groupedKegiatanOptions = collect($kegiatanOptions)
         ->groupBy(fn ($kegiatan) => str_contains(mb_strtolower($kegiatan->nama_kegiatan), 'kluster')
+            || str_contains(mb_strtolower($kegiatan->nama_kegiatan), 'klaster')
             ? 'Poli Layanan'
             : 'Layanan Lainnya');
 @endphp
@@ -329,7 +330,7 @@
                     </article>
                 @empty
                     <div class="pkm-empty-state" data-approved-dinas-empty>
-                        <p>Tidak ada dinas luar disetujui.</p>
+                        <strong>Tidak ada dinas luar disetujui.</strong>
                     </div>
                 @endforelse
             </div>

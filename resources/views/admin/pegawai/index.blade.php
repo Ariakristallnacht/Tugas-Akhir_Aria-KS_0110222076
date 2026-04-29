@@ -63,7 +63,7 @@
                         <div class="pkm-table__row">
                             <div data-label="Pegawai">
                                 <strong>{{ $pegawai->nama }}</strong>
-                                <small>{{ $pegawai->nip }}</small>
+                                <small>{{ $pegawai->nip ?: 'NIP belum diisi' }}</small>
                             </div>
                             <div data-label="Jabatan">
                                 <strong>{{ $pegawai->jabatan }}</strong>

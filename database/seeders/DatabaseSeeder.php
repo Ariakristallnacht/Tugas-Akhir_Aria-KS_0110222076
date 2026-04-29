@@ -151,16 +151,17 @@ class DatabaseSeeder extends Seeder
 
         $kegiatanList = collect([
             ['nama_kegiatan' => 'Pendaftaran', 'jenis' => 'layanan', 'deskripsi' => 'Layanan awal penerimaan pasien.'],
-            ['nama_kegiatan' => 'PIPP & Skrining Kesehatan BPJS', 'jenis' => 'layanan', 'deskripsi' => 'Layanan pendaftaran BPJS dan skrining kesehatan awal.'],
+            ['nama_kegiatan' => 'Skrining Kesehatan BPJS / CKG', 'jenis' => 'layanan', 'deskripsi' => 'Layanan skrining kesehatan BPJS dan CKG.'],
+            ['nama_kegiatan' => 'PIPP', 'jenis' => 'layanan', 'deskripsi' => 'Layanan PIPP Puskesmas Bunar.'],
             ['nama_kegiatan' => 'Kluster 2 Kesehatan Ibu', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan kesehatan ibu.'],
             ['nama_kegiatan' => 'Kluster 2 Balita & Anak', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan balita dan anak.'],
             ['nama_kegiatan' => 'Meja Tensi', 'jenis' => 'layanan', 'deskripsi' => 'Layanan pemeriksaan tanda vital awal.'],
             ['nama_kegiatan' => 'Kluster 3 Pelayanan Dewasa', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan dewasa.'],
-            ['nama_kegiatan' => 'Layanan Lansia (>60 tahun)', 'jenis' => 'layanan', 'deskripsi' => 'Layanan khusus pasien lansia usia lebih dari 60 tahun.'],
+            ['nama_kegiatan' => 'Klaster 3 Layanan Lansia', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan kesehatan lansia.'],
             ['nama_kegiatan' => 'Kluster 2 & 3 TB (Tuberkulosis)', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan tuberkulosis.'],
             ['nama_kegiatan' => 'Kluster 5 Pelayanan UGD', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan unit gawat darurat.'],
             ['nama_kegiatan' => 'Kluster 5 Pelayanan Laboratorium', 'jenis' => 'layanan', 'deskripsi' => 'Poli layanan laboratorium.'],
-            ['nama_kegiatan' => 'Apotek', 'jenis' => 'layanan', 'deskripsi' => 'Layanan farmasi dan pengambilan obat.'],
+            ['nama_kegiatan' => 'Klaster 5 Apotek', 'jenis' => 'layanan', 'deskripsi' => 'Layanan farmasi dan pengambilan obat.'],
             ['nama_kegiatan' => 'Supervisi Sanitasi Sekolah', 'jenis' => 'dinas_luar', 'deskripsi' => 'Monitoring sanitasi ke sekolah sekitar wilayah puskesmas.'],
             ['nama_kegiatan' => 'Pelacakan Kasus DBD', 'jenis' => 'dinas_luar', 'deskripsi' => 'Investigasi epidemiologi kasus DBD di lapangan.'],
         ])->map(fn (array $data) => Kegiatan::create($data));
@@ -173,7 +174,7 @@ class DatabaseSeeder extends Seeder
 
         $jadwalList = collect([
             [
-                'kegiatan' => 'Pelayanan Poli Umum Pagi',
+                'kegiatan' => 'Kluster 3 Pelayanan Dewasa',
                 'creator_id' => $pjUser->id,
                 'tanggal' => $today->copy()->subDays(6),
                 'waktu_mulai' => '08:00:00',
@@ -187,7 +188,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'kegiatan' => 'Imunisasi Keliling Posyandu',
+                'kegiatan' => 'Kluster 2 Balita & Anak',
                 'creator_id' => $pjUser->id,
                 'tanggal' => $today->copy()->subDays(2),
                 'waktu_mulai' => '09:00:00',
@@ -201,7 +202,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'kegiatan' => 'Penyuluhan Gizi Balita',
+                'kegiatan' => 'PIPP',
                 'creator_id' => $pjUser->id,
                 'tanggal' => $today->copy()->subDay(),
                 'waktu_mulai' => '13:00:00',
@@ -215,7 +216,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'kegiatan' => 'Pelayanan Poli Umum Pagi',
+                'kegiatan' => 'Kluster 3 Pelayanan Dewasa',
                 'creator_id' => $pjUser->id,
                 'tanggal' => $today->copy(),
                 'waktu_mulai' => '08:00:00',
@@ -229,7 +230,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'kegiatan' => 'Kunjungan Rumah Lansia',
+                'kegiatan' => 'Klaster 3 Layanan Lansia',
                 'creator_id' => $adminUser->id,
                 'tanggal' => $today->copy(),
                 'waktu_mulai' => '14:00:00',
@@ -271,7 +272,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'kegiatan' => 'Imunisasi Keliling Posyandu',
+                'kegiatan' => 'Kluster 2 Balita & Anak',
                 'creator_id' => $pjUser->id,
                 'tanggal' => $today->copy()->addDays(7),
                 'waktu_mulai' => '09:00:00',

@@ -87,6 +87,10 @@
                     <span class="pkm-quick-action__icon"><i data-lucide="shield-check" class="size-4"></i></span>
                     <span><strong>Verifikasi Dinas</strong><small>{{ $pendingCount }} pengajuan menunggu tindak lanjut.</small></span>
                 </a>
+                <a href="{{ route('pj.kegiatan.index') }}" class="pkm-quick-action">
+                    <span class="pkm-quick-action__icon"><i data-lucide="folders" class="size-4"></i></span>
+                    <span><strong>Kelola Layanan</strong><small>Atur layanan poli yang dipakai penjadwalan.</small></span>
+                </a>
                 <a href="{{ route('pj.laporan-kegiatan.index') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="file-pen-line" class="size-4"></i></span>
                     <span><strong>Buat Laporan</strong><small>Catat hasil pelaksanaan kegiatan.</small></span>

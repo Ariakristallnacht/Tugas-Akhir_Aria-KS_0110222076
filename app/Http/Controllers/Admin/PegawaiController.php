@@ -33,7 +33,7 @@ class PegawaiController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'nip' => ['required', 'string', 'max:30', 'unique:pegawai,nip'],
+            'nip' => ['nullable', 'string', 'max:30', 'unique:pegawai,nip'],
             'nama' => ['required', 'string', 'max:100'],
             'jabatan' => ['required', 'string', 'max:100'],
             'unit_kerja' => ['required', 'string', 'max:100'],
@@ -48,7 +48,7 @@ class PegawaiController extends Controller
         $validated['is_aktif'] = $request->boolean('is_aktif');
 
         $pegawai = Pegawai::create([
-            'nip' => $validated['nip'],
+            'nip' => $validated['nip'] ?? null,
             'nama' => $validated['nama'],
             'jabatan' => $validated['jabatan'],
             'unit_kerja' => $validated['unit_kerja'],
@@ -81,7 +81,7 @@ class PegawaiController extends Controller
     public function update(Request $request, Pegawai $pegawai): RedirectResponse
     {
         $validated = $request->validate([
-            'nip' => ['required', 'string', 'max:30', Rule::unique('pegawai', 'nip')->ignore($pegawai->id)],
+            'nip' => ['nullable', 'string', 'max:30', Rule::unique('pegawai', 'nip')->ignore($pegawai->id)],
             'nama' => ['required', 'string', 'max:100'],
             'jabatan' => ['required', 'string', 'max:100'],
             'unit_kerja' => ['required', 'string', 'max:100'],
@@ -99,7 +99,7 @@ class PegawaiController extends Controller
         ]);
 
         $pegawai->update([
-            'nip' => $validated['nip'],
+            'nip' => $validated['nip'] ?? null,
             'nama' => $validated['nama'],
             'jabatan' => $validated['jabatan'],
             'unit_kerja' => $validated['unit_kerja'],

@@ -99,6 +99,10 @@
                                     <i data-lucide="shield-check" class="size-4"></i>
                                     <span>Verifikasi Dinas</span>
                                 </a>
+                                <a href="{{ route('pj.kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.kegiatan.*') ? 'is-active' : '' }}">
+                                    <i data-lucide="folders" class="size-4"></i>
+                                    <span>Kelola Layanan</span>
+                                </a>
                                 <a href="{{ route('pj.laporan-kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.laporan-kegiatan.*') ? 'is-active' : '' }}">
                                     <i data-lucide="file-pen-line" class="size-4"></i>
                                     <span>Laporan Kegiatan</span>

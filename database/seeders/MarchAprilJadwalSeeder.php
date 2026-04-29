@@ -20,9 +20,14 @@ class MarchAprilJadwalSeeder extends Seeder
 
     private const LAYANAN = [
         [
-            'nama_kegiatan' => 'PIPP & Skrining Kesehatan BPJS',
-            'deskripsi' => 'Layanan pendaftaran BPJS dan skrining kesehatan awal.',
+            'nama_kegiatan' => 'Skrining Kesehatan BPJS / CKG',
+            'deskripsi' => 'Layanan skrining kesehatan BPJS dan CKG.',
             'lokasi' => 'Lobby Pendaftaran',
+        ],
+        [
+            'nama_kegiatan' => 'PIPP',
+            'deskripsi' => 'Layanan PIPP Puskesmas Bunar.',
+            'lokasi' => 'Meja PIPP',
         ],
         [
             'nama_kegiatan' => 'Kluster 2 Kesehatan Ibu',
@@ -45,8 +50,8 @@ class MarchAprilJadwalSeeder extends Seeder
             'lokasi' => 'Poli Dewasa',
         ],
         [
-            'nama_kegiatan' => 'Layanan Lansia (>60 tahun)',
-            'deskripsi' => 'Layanan khusus pasien lansia usia lebih dari 60 tahun.',
+            'nama_kegiatan' => 'Klaster 3 Layanan Lansia',
+            'deskripsi' => 'Poli layanan kesehatan lansia.',
             'lokasi' => 'Poli Lansia',
         ],
         [
@@ -65,7 +70,7 @@ class MarchAprilJadwalSeeder extends Seeder
             'lokasi' => 'Laboratorium',
         ],
         [
-            'nama_kegiatan' => 'Apotek',
+            'nama_kegiatan' => 'Klaster 5 Apotek',
             'deskripsi' => 'Layanan farmasi dan pengambilan obat.',
             'lokasi' => 'Apotek',
         ],

@@ -20,27 +20,6 @@ use Illuminate\View\View;
 
 class JadwalKegiatanController extends Controller
 {
-    private const DEFAULT_LAYANAN = [
-        'PIPP & Skrining Kesehatan BPJS',
-        'Kluster 2 Kesehatan Ibu',
-        'Kluster 2 Balita & Anak',
-        'Meja Tensi',
-        'Kluster 3 Pelayanan Dewasa',
-        'Layanan Lansia (>60 tahun)',
-        'Kluster 2 & 3 TB (Tuberkulosis)',
-        'Kluster 5 Pelayanan UGD',
-        'Kluster 5 Pelayanan Laboratorium',
-        'Apotek',
-    ];
-
-    private const EXCLUDED_LAYANAN = [
-        'Pendaftaran',
-        'Pelayanan Poli Umum Pagi',
-        'Imunisasi Keliling Posyandu',
-        'Penyuluhan Gizi Balita',
-        'Kunjungan Rumah Lansia',
-    ];
-
     public function index(Request $request): View
     {
         $calendarMonthInput = $request->string('calendar_month')->toString() ?: now()->format('Y-m');
@@ -396,14 +375,11 @@ class JadwalKegiatanController extends Controller
 
     private function formOptions(): array
     {
-        $this->ensureDefaultLayanan();
-
         return [
             'kegiatanOptions' => Kegiatan::where('jenis', 'layanan')
                 ->where('is_aktif', true)
-                ->whereNotIn('nama_kegiatan', self::EXCLUDED_LAYANAN)
+                ->orderBy('nama_kegiatan')
                 ->get()
-                ->sortBy(fn (Kegiatan $kegiatan) => $this->layananOrder($kegiatan->nama_kegiatan))
                 ->values(),
             'pegawaiOptions' => Pegawai::where('is_aktif', true)->orderBy('nama')->get(),
             'statusOptions' => [
@@ -523,29 +499,6 @@ class JadwalKegiatanController extends Controller
             ],
             'availability_map' => $availabilityMap,
         ];
-    }
-
-    private function ensureDefaultLayanan(): void
-    {
-        foreach (self::DEFAULT_LAYANAN as $namaLayanan) {
-            Kegiatan::firstOrCreate(
-                ['nama_kegiatan' => $namaLayanan],
-                [
-                    'jenis' => 'layanan',
-                    'deskripsi' => str_contains(mb_strtolower($namaLayanan), 'kluster')
-                        ? 'Poli layanan Puskesmas Bunar.'
-                        : 'Layanan penunjang Puskesmas Bunar.',
-                    'is_aktif' => true,
-                ]
-            );
-        }
-    }
-
-    private function layananOrder(string $namaKegiatan): int
-    {
-        $position = array_search($namaKegiatan, self::DEFAULT_LAYANAN, true);
-
-        return $position === false ? 999 : $position;
     }
 
     private function parseMonth(string $value): Carbon
