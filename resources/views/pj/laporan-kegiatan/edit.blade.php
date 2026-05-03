@@ -16,7 +16,7 @@
 
             @include('admin.partials.flash')
 
-            <form method="POST" action="{{ route('pj.laporan-kegiatan.update', $report) }}" class="pkm-form-stack">
+            <form method="POST" action="{{ route('pj.laporan-kegiatan.update', $report) }}" class="pkm-form-stack" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 @include('pj.laporan-kegiatan._form', ['submitLabel' => 'Simpan Perubahan'])

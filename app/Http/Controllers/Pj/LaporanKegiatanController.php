@@ -12,6 +12,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -80,8 +81,14 @@ class LaporanKegiatanController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->validateRequest($request);
+        unset($validated['dokumen_laporan'], $validated['dokumen_laporan_existing']);
+        $dokumenLaporan = $this->storeDokumenLaporan($request);
 
-        LaporanKegiatan::create($validated);
+        LaporanKegiatan::create($validated + [
+            'dokumen_laporan_path' => $dokumenLaporan['path'] ?? null,
+            'dokumen_laporan_nama' => $dokumenLaporan['name'] ?? null,
+            'dokumen_laporan_mime' => $dokumenLaporan['mime'] ?? null,
+        ]);
 
         return redirect()
             ->route('pj.laporan-kegiatan.index')
@@ -99,8 +106,18 @@ class LaporanKegiatanController extends Controller
     public function update(Request $request, LaporanKegiatan $laporanKegiatan): RedirectResponse
     {
         $validated = $this->validateRequest($request, $laporanKegiatan);
+        unset($validated['dokumen_laporan'], $validated['dokumen_laporan_existing']);
+        $dokumenLaporan = $this->storeDokumenLaporan($request);
 
-        $laporanKegiatan->update($validated);
+        if ($dokumenLaporan && $laporanKegiatan->dokumen_laporan_path) {
+            Storage::disk('public')->delete($laporanKegiatan->dokumen_laporan_path);
+        }
+
+        $laporanKegiatan->update($validated + [
+            'dokumen_laporan_path' => $dokumenLaporan['path'] ?? $laporanKegiatan->dokumen_laporan_path,
+            'dokumen_laporan_nama' => $dokumenLaporan['name'] ?? $laporanKegiatan->dokumen_laporan_nama,
+            'dokumen_laporan_mime' => $dokumenLaporan['mime'] ?? $laporanKegiatan->dokumen_laporan_mime,
+        ]);
 
         return redirect()
             ->route('pj.laporan-kegiatan.index')
@@ -110,6 +127,10 @@ class LaporanKegiatanController extends Controller
     public function destroy(LaporanKegiatan $laporanKegiatan): RedirectResponse
     {
         try {
+            if ($laporanKegiatan->dokumen_laporan_path) {
+                Storage::disk('public')->delete($laporanKegiatan->dokumen_laporan_path);
+            }
+
             $laporanKegiatan->delete();
         } catch (QueryException) {
             return redirect()
@@ -160,6 +181,8 @@ class LaporanKegiatanController extends Controller
             'pegawai_id' => ['required', 'exists:pegawai,id'],
             'tanggal' => ['required', 'date'],
             'laporan' => ['required', 'string'],
+            'dokumen_laporan' => ['required_without:dokumen_laporan_existing', 'file', 'mimes:pdf', 'max:10240'],
+            'dokumen_laporan_existing' => ['nullable', 'string'],
         ]);
 
         $jadwal = Jadwal::with('pegawai')->findOrFail($validated['jadwal_id']);
@@ -176,6 +199,22 @@ class LaporanKegiatanController extends Controller
         $validated['diverifikasi_at'] = $report?->diverifikasi_at;
 
         return $validated;
+    }
+
+    private function storeDokumenLaporan(Request $request): ?array
+    {
+        if (! $request->hasFile('dokumen_laporan')) {
+            return null;
+        }
+
+        $file = $request->file('dokumen_laporan');
+        $path = $file->store('laporan-kegiatan/dokumen', 'public');
+
+        return [
+            'path' => $path,
+            'name' => $file->getClientOriginalName(),
+            'mime' => $file->getClientMimeType(),
+        ];
     }
 
     private function buildQuery(array $filters, Carbon $dateFrom, Carbon $dateTo)

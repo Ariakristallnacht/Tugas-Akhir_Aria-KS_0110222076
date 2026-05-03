@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class LaporanKegiatan extends Model
 {
@@ -17,6 +18,9 @@ class LaporanKegiatan extends Model
         'pegawai_id',
         'tanggal',
         'laporan',
+        'dokumen_laporan_path',
+        'dokumen_laporan_nama',
+        'dokumen_laporan_mime',
         'status_verifikasi',
         'diverifikasi_oleh',
         'diverifikasi_at',
@@ -44,5 +48,24 @@ class LaporanKegiatan extends Model
     public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'diverifikasi_oleh');
+    }
+
+    public function getDokumenLaporanUrlAttribute(): ?string
+    {
+        if (! $this->dokumen_laporan_path) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->dokumen_laporan_path);
+    }
+
+    public function getHasDokumenLaporanAttribute(): bool
+    {
+        return filled($this->dokumen_laporan_path);
+    }
+
+    public function getDokumenLaporanIsPdfAttribute(): bool
+    {
+        return $this->dokumen_laporan_mime === 'application/pdf';
     }
 }

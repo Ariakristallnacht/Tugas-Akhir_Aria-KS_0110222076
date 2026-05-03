@@ -20,6 +20,21 @@
         .pkm-report-hint span + span {
             margin-top: 4px;
         }
+
+        .pkm-file-input {
+            padding: 0.45rem 0.7rem;
+        }
+
+        .pkm-file-input::file-selector-button {
+            margin-right: 0.95rem;
+            padding: 0.7rem 1rem;
+            border-right: 1px solid rgba(93, 143, 112, 0.24);
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            background: rgba(226, 239, 232, 0.9);
+            color: var(--pkm-primary-strong);
+            font-weight: 600;
+        }
     </style>
 @endpush
 
@@ -58,6 +73,26 @@
     <div class="pkm-field pkm-field--full">
         <label for="laporan">Isi laporan kegiatan</label>
         <textarea id="laporan" class="pkm-input" name="laporan" rows="8" placeholder="Jelaskan hasil kegiatan, capaian layanan, hambatan, dan tindak lanjut." required>{{ old('laporan', $report->laporan) }}</textarea>
+    </div>
+
+    <div class="pkm-field pkm-field--full">
+        <label for="dokumen_laporan">Dokumen laporan PDF</label>
+        <input id="dokumen_laporan" class="pkm-input pkm-file-input" type="file" name="dokumen_laporan" accept=".pdf,application/pdf">
+        <input type="hidden" name="dokumen_laporan_existing" value="{{ $report->dokumen_laporan_path }}">
+        @if ($report->dokumen_laporan_path)
+            <small style="display: block; margin-top: 8px;">
+                File saat ini:
+                <a href="{{ $report->dokumen_laporan_url }}" target="_blank" rel="noopener noreferrer" class="pkm-text-link" style="padding: 0; background: transparent;">
+                    <i data-lucide="file-text" class="size-4"></i>
+                    <span>{{ $report->dokumen_laporan_nama ?? 'Lihat dokumen laporan' }}</span>
+                </a>
+            </small>
+        @else
+            <small style="display: block; margin-top: 8px;">Unggah file PDF laporan kegiatan. Maksimal 10 MB.</small>
+        @endif
+        @error('dokumen_laporan')
+            <small>{{ $message }}</small>
+        @enderror
     </div>
 
     <div class="pkm-field pkm-field--full">

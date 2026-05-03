@@ -5,6 +5,48 @@
     $heading = 'Monitoring Laporan Kegiatan';
 @endphp
 
+@push('styles')
+    <style>
+        .pkm-report-table-head {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 18px;
+            width: 100%;
+        }
+
+        .pkm-report-search-inline {
+            width: min(420px, 100%);
+            margin-left: auto;
+        }
+
+        .pkm-report-search-inline label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #60748f;
+        }
+
+        .pkm-table--monitoring-laporan .pkm-table__head,
+        .pkm-table--monitoring-laporan .pkm-table__row {
+            grid-template-columns: minmax(0, 1.55fr) minmax(180px, 0.9fr) minmax(180px, 0.82fr) minmax(180px, 0.85fr) minmax(140px, 0.68fr);
+        }
+
+        @media (max-width: 1023px) {
+            .pkm-report-table-head {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .pkm-report-search-inline {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
@@ -58,18 +100,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="pkm-field pkm-field--full">
-                        <label for="search">Cari laporan</label>
-                        <input id="search" class="pkm-input" type="text" name="search" value="{{ $filters['search'] }}" placeholder="Cari nama pegawai, kegiatan, lokasi, atau isi laporan">
-                    </div>
                 </div>
 
                 <div class="pkm-form-actions">
-                    <div class="pkm-export-actions">
-                        <a href="{{ route('admin.monitoring-laporan.export', ['format' => 'pdf'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh PDF</span></a>
-                        <a href="{{ route('admin.monitoring-laporan.export', ['format' => 'xls'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh Excel</span></a>
-                        <a href="{{ route('admin.monitoring-laporan.export', ['format' => 'csv'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh CSV</span></a>
-                    </div>
                     <a href="{{ route('admin.monitoring-laporan') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
                     <button type="submit" class="pkm-primary-button"><i data-lucide="funnel" class="size-4"></i><span>Terapkan Filter</span></button>
                 </div>
@@ -78,9 +111,17 @@
 
         <section class="pkm-card pkm-table-card">
             <div class="pkm-card__head">
-                <div>
-                    <h3 style="font-weight: bold">Daftar Laporan</h3>
-                    <br>
+                <div class="pkm-report-table-head">
+                    <div>
+                        <h3 style="font-weight: bold">Daftar Laporan</h3>
+                    </div>
+                    <form method="GET" action="{{ route('admin.monitoring-laporan') }}" class="pkm-report-search-inline">
+                        <label for="table-search">Cari laporan</label>
+                        <input type="hidden" name="date_from" value="{{ $filters['date_from'] }}">
+                        <input type="hidden" name="date_to" value="{{ $filters['date_to'] }}">
+                        <input type="hidden" name="pegawai_id" value="{{ $filters['pegawai_id'] }}">
+                        <input id="table-search" class="pkm-input" type="text" name="search" value="{{ $filters['search'] }}" placeholder="Cari nama pegawai, kegiatan, lokasi, atau isi laporan">
+                    </form>
                 </div>
             </div>
 
@@ -89,12 +130,13 @@
                     <strong>Belum ada laporan kegiatan pada filter ini.</strong>
                 </div>
             @else
-                <div class="pkm-table pkm-table--laporan">
+                <div class="pkm-table pkm-table--laporan pkm-table--monitoring-laporan">
                     <div class="pkm-table__head">
                         <span>Laporan</span>
                         <span>Pelaksana</span>
                         <span>Jadwal</span>
                         <span>Waktu Dibuat</span>
+                        <span>Lihat Laporan</span>
                     </div>
 
                     @foreach ($reports as $report)
@@ -115,6 +157,18 @@
                             <div data-label="Waktu Dibuat">
                                 <strong>{{ $report->created_at?->translatedFormat('d M Y H:i') ?? '-' }}</strong>
                                 <small>Terakhir diperbarui: {{ $report->updated_at?->translatedFormat('d M Y H:i') ?? '-' }}</small>
+                            </div>
+                            <div data-label="Lihat Laporan">
+                                @if ($report->dokumen_laporan_url)
+                                    <a href="{{ $report->dokumen_laporan_url }}" target="_blank" rel="noopener noreferrer" class="pkm-text-link">
+                                        <i data-lucide="file-text" class="size-4"></i>
+                                        <span>Lihat PDF</span>
+                                    </a>
+                                    <small>{{ $report->dokumen_laporan_nama ?? 'Dokumen laporan' }}</small>
+                                @else
+                                    <strong>Belum diunggah</strong>
+                                    <small>PJ belum mengunggah file PDF.</small>
+                                @endif
                             </div>
                         </div>
                     @endforeach

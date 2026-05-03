@@ -17,7 +17,7 @@
 
             @include('admin.partials.flash')
 
-            <form method="POST" action="{{ route('pj.laporan-kegiatan.store') }}" class="pkm-form-stack">
+            <form method="POST" action="{{ route('pj.laporan-kegiatan.store') }}" class="pkm-form-stack" enctype="multipart/form-data">
                 @csrf
                 @include('pj.laporan-kegiatan._form', ['submitLabel' => 'Simpan Laporan'])
             </form>
