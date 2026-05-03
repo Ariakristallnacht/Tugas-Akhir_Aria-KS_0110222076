@@ -1061,6 +1061,22 @@ body {
     gap: 20px;
 }
 
+.pkm-monitoring-filter .pkm-form-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: stretch;
+    gap: 14px;
+    flex-wrap: nowrap;
+}
+
+.pkm-monitoring-filter .pkm-form-actions > .pkm-primary-button,
+.pkm-monitoring-filter .pkm-form-actions > .pkm-secondary-button {
+    flex: 0 0 auto;
+    min-width: 170px;
+    min-height: 52px;
+    padding: 0.95rem 1.25rem;
+}
+
 .pkm-monitoring-list > .pkm-card:last-child,
 .pkm-monitoring-calendar > .pkm-card {
     height: 100%;
@@ -2108,6 +2124,11 @@ body {
         flex: 1 1 220px;
     }
 
+    .pkm-monitoring-filter .pkm-form-actions > .pkm-primary-button,
+    .pkm-monitoring-filter .pkm-form-actions > .pkm-secondary-button {
+        min-width: 0;
+    }
+
     .pkm-field--full {
         grid-column: auto;
     }
@@ -2189,6 +2210,18 @@ body {
 
     .pkm-row-actions {
         gap: 8px;
+    }
+
+    .pkm-monitoring-filter .pkm-form-actions {
+        flex-direction: row;
+        align-items: stretch;
+        justify-content: flex-end;
+    }
+
+    .pkm-monitoring-filter .pkm-form-actions > .pkm-primary-button,
+    .pkm-monitoring-filter .pkm-form-actions > .pkm-secondary-button {
+        flex: 1 1 0;
+        min-width: 0;
     }
 
     .pkm-table__row > [data-label="Aksi"] .pkm-row-actions {

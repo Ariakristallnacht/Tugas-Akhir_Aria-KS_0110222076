@@ -140,7 +140,7 @@ class PengajuanDinasController extends Controller
             'tujuan' => ['required', 'string', 'max:200'],
             'kegiatan' => ['required', 'string'],
             'keterangan' => ['nullable', 'string'],
-            'bukti_surat' => ['required_without:bukti_surat_existing', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120'],
+            'bukti_surat' => ['file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120'],
             'bukti_surat_existing' => ['nullable', 'string'],
             'status' => ['nullable', Rule::in(['diajukan'])],
         ]);

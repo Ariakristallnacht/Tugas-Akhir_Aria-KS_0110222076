@@ -48,12 +48,14 @@ class JadwalKegiatanController extends Controller
             ->when($type !== 'all', fn (Collection $collection) => $collection->where('type', $type))
             ->values();
 
-        $calendarItems = $this->buildAgendaItems(
-            $pegawai,
-            'mine',
-            $calendarMonth->copy()->startOfMonth(),
-            $calendarMonth->copy()->endOfMonth(),
-            $referenceDate
+        $calendarItems = $this->filterCalendarItems(
+            $this->buildAgendaItems(
+                $pegawai,
+                'mine',
+                $calendarMonth->copy()->startOfMonth(),
+                $calendarMonth->copy()->endOfMonth(),
+                $referenceDate
+            )
         );
 
         $calendarQuery = $request->except('calendar_month');
@@ -379,6 +381,29 @@ class JadwalKegiatanController extends Controller
             ->map(fn (string $part) => mb_strtoupper(mb_substr($part, 0, 1)));
 
         return $parts->isNotEmpty() ? $parts->implode('') : 'PG';
+    }
+
+    private function filterCalendarItems(Collection $items): Collection
+    {
+        return $items
+            ->filter(function (array $item) {
+                $status = strtolower((string) ($item['meta_status'] ?? ''));
+
+                if (($item['phase'] ?? null) !== 'completed') {
+                    return false;
+                }
+
+                if (($item['type'] ?? null) === 'layanan') {
+                    return in_array($status, ['selesai', 'hadir'], true);
+                }
+
+                if (($item['type'] ?? null) === 'dinas_luar') {
+                    return $status === 'disetujui';
+                }
+
+                return false;
+            })
+            ->values();
     }
 
     private function buildCalendarWeeks(Carbon $monthDate, Collection $items, Carbon $referenceDate): array

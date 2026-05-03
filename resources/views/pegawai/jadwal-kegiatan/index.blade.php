@@ -52,19 +52,12 @@
                                 <label for="date_to">Tanggal akhir</label>
                                 <input id="date_to" class="pkm-input" type="date" name="date_to" value="{{ $filters['date_to'] }}">
                             </div>
-                            <div class="pkm-field">
+                            <div class="pkm-field pkm-field--full">
                                 <label for="type">Jenis kegiatan</label>
                                 <select id="type" class="pkm-input" name="type">
                                     <option value="all" @selected($filters['type'] === 'all')>Semua</option>
                                     <option value="layanan" @selected($filters['type'] === 'layanan')>Jadwal layanan</option>
                                     <option value="dinas_luar" @selected($filters['type'] === 'dinas_luar')>Dinas luar</option>
-                                </select>
-                            </div>
-                            <div class="pkm-field">
-                                <label for="scope">Cakupan jadwal</label>
-                                <select id="scope" class="pkm-input" name="scope">
-                                    <option value="mine" @selected($filters['scope'] === 'mine')>Jadwal Kegiatan</option>
-                                    <option value="all" @selected($filters['scope'] === 'all')>Jadwal semuanya</option>
                                 </select>
                             </div>
                         </div>
@@ -114,7 +107,7 @@
                                             <strong>{{ $item['time_label'] }}</strong>
                                         </div>
                                         <div>
-                                            <span>{{ $filters['scope'] === 'all' ? 'Pegawai' : 'Pegawai' }}</span>
+                                            <span>Pegawai</span>
                                             <strong>{{ $item['people'] }}</strong>
                                         </div>
                                     </div>
@@ -273,7 +266,7 @@
 
                     modalDate.textContent = dateLabel;
                     modalSummary.innerHTML = total > 0
-                        ? '<span class="pkm-pill is-blue">' + total + ' agenda</span><small>Pilih tanggal ini untuk melihat rincian jadwal layanan dan dinas luar Anda.</small>'
+                        ? '<span class="pkm-pill is-blue">' + total + ' agenda</span><small></small>'
                         : '<span class="pkm-pill is-amber">Tidak ada jadwal</span><small>Belum ada kegiatan yang tercatat pada tanggal ini.</small>';
 
                     modalBody.innerHTML = items.length > 0
