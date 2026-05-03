@@ -5,6 +5,38 @@
     $heading = 'Data Pegawai';
 @endphp
 
+@push('styles')
+    <style>
+        @media (min-width: 1024px) {
+            .pkm-table--pegawai-directory .pkm-table__head,
+            .pkm-table--pegawai-directory .pkm-table__row {
+                grid-template-columns:
+                    minmax(0, 1.1fr)
+                    minmax(220px, 0.95fr)
+                    minmax(260px, 1.08fr)
+                    minmax(110px, 0.45fr)
+                    minmax(190px, 0.7fr);
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__head > :nth-child(4),
+            .pkm-table--pegawai-directory .pkm-table__head > :nth-child(5),
+            .pkm-table--pegawai-directory .pkm-table__row > :nth-child(4),
+            .pkm-table--pegawai-directory .pkm-table__row > :nth-child(5) {
+                justify-self: center;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row > :nth-child(5) {
+                width: 100%;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row > [data-label="Aksi"] .pkm-row-actions {
+                justify-content: center;
+                flex-wrap: nowrap;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
@@ -50,7 +82,7 @@
                     <p>Tambahkan pegawai baru untuk mulai membangun data operasional.</p>
                 </div>
             @else
-                <div class="pkm-table pkm-table--pegawai">
+                <div class="pkm-table pkm-table--pegawai pkm-table--pegawai-directory">
                     <div class="pkm-table__head">
                         <span>Pegawai</span>
                         <span>Jabatan</span>
