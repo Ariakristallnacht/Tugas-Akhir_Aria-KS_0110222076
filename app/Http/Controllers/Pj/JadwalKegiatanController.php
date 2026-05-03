@@ -533,6 +533,8 @@ class JadwalKegiatanController extends Controller
             'phase_label' => $this->phaseLabel($phase),
             'phase_order' => $this->phaseOrder($phase),
             'meta_status' => ucfirst($jadwal->status),
+            'status_label' => ucfirst($jadwal->status),
+            'status_class' => $this->statusClass($jadwal->status),
             'start_date' => $startDate->copy(),
             'end_date' => $endDate->copy(),
             'start_sort' => $startDate->copy()->setTimeFromTimeString($jadwal->waktu_mulai?->format('H:i:s') ?? '00:00:00')->timestamp,
@@ -566,6 +568,8 @@ class JadwalKegiatanController extends Controller
             'phase_label' => $this->phaseLabel($phase),
             'phase_order' => $this->phaseOrder($phase),
             'meta_status' => 'Disetujui',
+            'status_label' => 'Disetujui',
+            'status_class' => $this->statusClass('disetujui'),
             'start_date' => $startDate->copy(),
             'end_date' => $endDate->copy(),
             'start_sort' => $startDate->timestamp,
@@ -605,6 +609,15 @@ class JadwalKegiatanController extends Controller
             'upcoming' => 1,
             'completed' => 2,
             default => 3,
+        };
+    }
+
+    private function statusClass(string $status): string
+    {
+        return match ($status) {
+            'berjalan', 'selesai', 'disetujui', 'hadir' => 'is-green',
+            'terjadwal', 'dijadwalkan', 'diajukan' => 'is-blue',
+            default => 'is-amber',
         };
     }
 

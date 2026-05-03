@@ -153,10 +153,7 @@
                                             <small>{{ $item['subtitle'] }}</small>
                                         </div>
                                         <div class="pkm-monitoring-item__badges">
-                                            <span class="pkm-pill {{ $item['phase'] === 'ongoing' ? 'is-green' : ($item['phase'] === 'upcoming' ? 'is-blue' : 'is-amber') }}">
-                                                {{ $item['phase_label'] }}
-                                            </span>
-                                            <span class="pkm-monitoring-item__meta">{{ $item['meta_status'] }}</span>
+                                            <span class="pkm-pill {{ $item['status_class'] }}">{{ $item['status_label'] }}</span>
                                         </div>
                                     </div>
 
@@ -320,12 +317,6 @@
                 return;
             }
 
-            const phaseClassMap = {
-                ongoing: 'is-green',
-                upcoming: 'is-blue',
-                completed: 'is-amber',
-            };
-
             const typeClassMap = {
                 layanan: 'is-layanan',
                 dinas_luar: 'is-dinas',
@@ -372,7 +363,7 @@
                                         <strong>${escapeHtml(item.title)}</strong>
                                         <small>${escapeHtml(item.subtitle ?? '-')}</small>
                                     </div>
-                                    <span class="pkm-pill ${phaseClassMap[item.phase] ?? 'is-blue'}">${escapeHtml(item.phase_label)}</span>
+                                    <span class="pkm-pill ${escapeHtml(item.status_class ?? 'is-blue')}">${escapeHtml(item.status_label ?? item.meta_status ?? item.phase_label)}</span>
                                 </div>
                                 <div class="pkm-modal-schedule__grid">
                                     <div>
@@ -382,10 +373,6 @@
                                     <div>
                                         <span>Petugas</span>
                                         <strong>${escapeHtml(item.people)}</strong>
-                                    </div>
-                                    <div>
-                                        <span>Status</span>
-                                        <strong>${escapeHtml(item.meta_status)}</strong>
                                     </div>
                                     <div>
                                         <span>Tanggal</span>
