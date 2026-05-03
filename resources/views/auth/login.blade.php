@@ -56,14 +56,28 @@
                             <form method="POST" action="{{ route('login.store') }}" class="mt-8 flex flex-col gap-5">
                                 @csrf
                                 <div>
-                                    <input class="h-10 w-full rounded-md border bg-background ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-foreground placeholder:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/5 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 box block min-w-full px-5 py-6 xl:min-w-[28rem]" type="email" name="email" value="{{ old('email', 'admin@pkmbunar.test') }}" placeholder="Email" required autofocus>
+                                    <input class="h-10 w-full rounded-md border bg-background ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-foreground placeholder:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/5 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 box block min-w-full px-5 py-6 xl:min-w-[28rem]" type="email" name="email" value="{{ old('email', 'admin@pkmbunar.test') }}" placeholder="Email" autocomplete="username" required autofocus>
                                     @error('email')
                                         <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <input class="h-10 w-full rounded-md border bg-background ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-foreground placeholder:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/5 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 box block min-w-full px-5 py-6 xl:min-w-[28rem]" type="password" name="password" value="password" placeholder="Password" required>
+                                    <div class="relative">
+                                        <input class="h-10 w-full rounded-md border bg-background ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-foreground placeholder:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/5 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 box block min-w-full px-5 py-6 pr-14 xl:min-w-[28rem]" type="password" name="password" value="password" placeholder="Password" autocomplete="current-password" required>
+                                        <button type="button" class="password-toggle absolute inset-y-0 right-0 flex items-center justify-center px-4 opacity-70 transition hover:opacity-100" aria-label="Tampilkan password" aria-pressed="false">
+                                            <svg class="password-toggle-icon-show size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <path d="M2.06 12.35a1 1 0 0 1 0-.7C3.52 7.64 7.27 5 12 5s8.48 2.64 9.94 6.65a1 1 0 0 1 0 .7C20.48 16.36 16.73 19 12 19s-8.48-2.64-9.94-6.65Z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                            <svg class="password-toggle-icon-hide hidden size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <path d="m3 3 18 18"></path>
+                                                <path d="M10.58 10.58A2 2 0 0 0 12 14a2 2 0 0 0 1.42-.58"></path>
+                                                <path d="M9.88 5.09A9.76 9.76 0 0 1 12 5c4.73 0 8.48 2.64 9.94 6.65a1 1 0 0 1 0 .7 10.46 10.46 0 0 1-4.24 5.1"></path>
+                                                <path d="M6.61 6.61A10.45 10.45 0 0 0 2.06 11.65a1 1 0 0 0 0 .7C3.52 16.36 7.27 19 12 19a9.8 9.8 0 0 0 5.39-1.61"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
                                     @error('password')
                                         <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
                                     @enderror
