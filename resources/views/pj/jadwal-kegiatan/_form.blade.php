@@ -353,7 +353,7 @@
                     </article>
                 @empty
                     <div class="pkm-empty-state" data-existing-schedules-empty>
-                        <p>Belum ada jadwal layanan.</p>
+                        <strong>Belum ada jadwal layanan.</strong>
                     </div>
                 @endforelse
             </div>

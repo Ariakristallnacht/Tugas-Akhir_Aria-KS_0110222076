@@ -92,10 +92,18 @@
                     </div>
 
                     @foreach ($pegawaiList as $pegawai)
+                        @php
+                            $jenisPegawaiLabel = match ($pegawai->jenis_pegawai ?? 'asn') {
+                                'asn' => 'PNS',
+                                'p3k' => 'PPPK',
+                                'honorer' => 'Honorer',
+                                default => strtoupper((string) $pegawai->jenis_pegawai),
+                            };
+                        @endphp
                         <div class="pkm-table__row">
                             <div data-label="Pegawai">
                                 <strong>{{ $pegawai->nama }}</strong>
-                                <small>{{ $pegawai->nip ?: 'NIP belum diisi' }}</small>
+                                <small>{{ $jenisPegawaiLabel }} · {{ $pegawai->nip ?: 'NIP belum diisi' }}</small>
                             </div>
                             <div data-label="Jabatan">
                                 <strong>{{ $pegawai->jabatan }}</strong>

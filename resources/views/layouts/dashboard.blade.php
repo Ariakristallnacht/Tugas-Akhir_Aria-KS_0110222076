@@ -67,7 +67,6 @@
                         <a href="{{ auth()->user()->dashboardPath() }}" class="pkm-nav__item {{ request()->routeIs('admin.dashboard', 'pj.dashboard', 'pegawai.dashboard') ? 'is-active' : '' }}">
                             <span class="pkm-nav__icon"><i data-lucide="layout-dashboard" class="size-4"></i></span>
                             <span>Dashboard</span>
-                            <span class="pkm-nav__badge">Home</span>
                         </a>
                     </div>
 

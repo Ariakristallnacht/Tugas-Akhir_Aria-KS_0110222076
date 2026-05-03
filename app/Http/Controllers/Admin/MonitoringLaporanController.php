@@ -9,6 +9,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MonitoringLaporanController extends Controller
 {
-    public function index(Request $request): ViewContract
+    public function index(Request $request): ViewContract|JsonResponse
     {
         [$filters, $dateFrom, $dateTo] = $this->resolveFilters($request);
 
@@ -28,12 +29,23 @@ class MonitoringLaporanController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.monitoring-laporan.index', [
+        $summary = $this->buildSummary($summaryReports);
+
+        $viewData = [
             'filters' => $filters,
             'pegawaiOptions' => Pegawai::orderBy('nama')->get(['id', 'nama']),
             'reports' => $reports,
-            'summary' => $this->buildSummary($summaryReports),
-        ]);
+            'summary' => $summary,
+        ];
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.monitoring-laporan._report-list', $viewData)->render(),
+                'summary' => $summary,
+            ]);
+        }
+
+        return view('admin.monitoring-laporan.index', $viewData);
     }
 
     public function export(Request $request, string $format)

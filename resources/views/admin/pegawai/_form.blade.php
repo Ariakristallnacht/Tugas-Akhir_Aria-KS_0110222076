@@ -2,8 +2,22 @@
 
 <div class="pkm-form-grid">
     <div class="pkm-field">
+        <label for="jenis_pegawai">Jenis pegawai</label>
+        <select id="jenis_pegawai" class="pkm-input" name="jenis_pegawai" required data-jenis-pegawai>
+            <option value="">Pilih jenis pegawai</option>
+            <option value="asn" @selected(old('jenis_pegawai', $pegawai->jenis_pegawai ?? 'asn') === 'asn')>PNS</option>
+            <option value="p3k" @selected(old('jenis_pegawai', $pegawai->jenis_pegawai ?? 'asn') === 'p3k')>PPPK</option>
+            <option value="honorer" @selected(old('jenis_pegawai', $pegawai->jenis_pegawai ?? 'asn') === 'honorer')>Honorer</option>
+        </select>
+        @error('jenis_pegawai')
+            <small>{{ $message }}</small>
+        @enderror
+    </div>
+
+    <div class="pkm-field" data-nip-field>
         <label for="nip">NIP <small>(opsional)</small></label>
-        <input id="nip" class="pkm-input" type="text" name="nip" value="{{ old('nip', $pegawai->nip ?? '') }}">
+        <input id="nip" class="pkm-input" type="text" name="nip" value="{{ old('nip', $pegawai->nip ?? '') }}" data-nip-input>
+        <small data-nip-hint>NIP ditampilkan untuk pegawai PNS dan PPPK.</small>
         @error('nip')
             <small>{{ $message }}</small>
         @enderror
@@ -116,3 +130,31 @@
         <span>{{ $submitLabel }}</span>
     </button>
 </div>
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const jenisPegawaiSelect = document.querySelector('[data-jenis-pegawai]');
+            const nipField = document.querySelector('[data-nip-field]');
+            const nipInput = document.querySelector('[data-nip-input]');
+
+            if (!jenisPegawaiSelect || !nipField || !nipInput) {
+                return;
+            }
+
+            const syncNipVisibility = () => {
+                const shouldShowNip = ['asn', 'p3k'].includes(jenisPegawaiSelect.value);
+
+                nipField.hidden = !shouldShowNip;
+                nipInput.disabled = !shouldShowNip;
+
+                if (!shouldShowNip) {
+                    nipInput.value = '';
+                }
+            };
+
+            jenisPegawaiSelect.addEventListener('change', syncNipVisibility);
+            syncNipVisibility();
+        });
+    </script>
+@endpush

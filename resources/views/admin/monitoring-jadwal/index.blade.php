@@ -274,7 +274,7 @@
 
                     modalDate.textContent = dateLabel;
                     modalSummary.innerHTML = total > 0
-                        ? '<span class="pkm-pill is-blue">' + total + ' agenda</span><small>Pilih tanggal ini untuk melihat rincian jadwal layanan dan dinas luar.</small>'
+                        ? '<span class="pkm-pill is-blue">' + total + ' agenda</span>'
                         : '<span class="pkm-pill is-amber">Tidak ada jadwal</span><small>Belum ada kegiatan yang tercatat pada tanggal ini.</small>';
 
                     modalBody.innerHTML = items.length > 0

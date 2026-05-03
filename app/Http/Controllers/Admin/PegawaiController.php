@@ -33,6 +33,7 @@ class PegawaiController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            'jenis_pegawai' => ['required', Rule::in(['asn', 'p3k', 'honorer'])],
             'nip' => ['nullable', 'string', 'max:30', 'unique:pegawai,nip'],
             'nama' => ['required', 'string', 'max:100'],
             'jabatan' => ['required', 'string', 'max:100'],
@@ -46,9 +47,13 @@ class PegawaiController extends Controller
         ]);
 
         $validated['is_aktif'] = $request->boolean('is_aktif');
+        $validated['nip'] = $validated['jenis_pegawai'] === 'honorer'
+            ? null
+            : ($validated['nip'] ?? null);
 
         $pegawai = Pegawai::create([
-            'nip' => $validated['nip'] ?? null,
+            'nip' => $validated['nip'],
+            'jenis_pegawai' => $validated['jenis_pegawai'],
             'nama' => $validated['nama'],
             'jabatan' => $validated['jabatan'],
             'unit_kerja' => $validated['unit_kerja'],
@@ -81,6 +86,7 @@ class PegawaiController extends Controller
     public function update(Request $request, Pegawai $pegawai): RedirectResponse
     {
         $validated = $request->validate([
+            'jenis_pegawai' => ['required', Rule::in(['asn', 'p3k', 'honorer'])],
             'nip' => ['nullable', 'string', 'max:30', Rule::unique('pegawai', 'nip')->ignore($pegawai->id)],
             'nama' => ['required', 'string', 'max:100'],
             'jabatan' => ['required', 'string', 'max:100'],
@@ -94,12 +100,16 @@ class PegawaiController extends Controller
         ]);
 
         $validated['is_aktif'] = $request->boolean('is_aktif');
+        $validated['nip'] = $validated['jenis_pegawai'] === 'honorer'
+            ? null
+            : ($validated['nip'] ?? null);
         $request->validate([
             'password' => [$pegawai->user ? 'nullable' : 'required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $pegawai->update([
-            'nip' => $validated['nip'] ?? null,
+            'nip' => $validated['nip'],
+            'jenis_pegawai' => $validated['jenis_pegawai'],
             'nama' => $validated['nama'],
             'jabatan' => $validated['jabatan'],
             'unit_kerja' => $validated['unit_kerja'],
