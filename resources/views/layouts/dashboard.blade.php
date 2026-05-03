@@ -102,9 +102,9 @@
                                     <i data-lucide="folders" class="size-4"></i>
                                     <span>Kelola Layanan</span>
                                 </a>
-                                <a href="{{ route('pj.laporan-kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.laporan-kegiatan.*') ? 'is-active' : '' }}">
-                                    <i data-lucide="file-pen-line" class="size-4"></i>
-                                    <span>Laporan Kegiatan</span>
+                                <a href="{{ route('pj.monitoring-laporan') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.monitoring-laporan*') ? 'is-active' : '' }}">
+                                    <i data-lucide="file-spreadsheet" class="size-4"></i>
+                                    <span>Monitoring Laporan</span>
                                 </a>
                             </div>
                         </div>
@@ -115,6 +115,10 @@
                                 <a href="{{ route('pegawai.jadwal-kegiatan') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.jadwal-kegiatan') ? 'is-active' : '' }}">
                                     <i data-lucide="calendar-range" class="size-4"></i>
                                     <span>Jadwal Kegiatan</span>
+                                </a>
+                                <a href="{{ route('pegawai.laporan-kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.laporan-kegiatan.*') ? 'is-active' : '' }}">
+                                    <i data-lucide="file-pen-line" class="size-4"></i>
+                                    <span>Laporan Saya</span>
                                 </a>
                                 <a href="{{ route('pegawai.pengajuan-dinas.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.pengajuan-dinas.*') ? 'is-active' : '' }}">
                                     <i data-lucide="briefcase-business" class="size-4"></i>

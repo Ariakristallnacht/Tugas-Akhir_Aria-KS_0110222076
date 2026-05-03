@@ -201,7 +201,12 @@
                                     </div>
                                     <div data-label="Aksi">
                                         @if ($roleCode === 'pj_penjadwalan')
-                                            <a href="{{ route('pj.laporan-kegiatan.edit', $laporan) }}" class="pkm-text-link">
+                                            <a href="{{ route('pj.monitoring-laporan.show', $laporan) }}" class="pkm-text-link">
+                                                <i data-lucide="arrow-right" class="size-4"></i>
+                                                <span>Buka</span>
+                                            </a>
+                                        @elseif ($roleCode === 'pegawai')
+                                            <a href="{{ route('pegawai.laporan-kegiatan.show', $laporan) }}" class="pkm-text-link">
                                                 <i data-lucide="arrow-right" class="size-4"></i>
                                                 <span>Buka</span>
                                             </a>

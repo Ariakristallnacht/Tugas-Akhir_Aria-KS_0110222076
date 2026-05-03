@@ -24,6 +24,7 @@
 @endphp
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('template/dist/css/vendors/tom-select.css') }}">
     <style>
         .pkm-planning-grid {
             display: grid;
@@ -134,6 +135,41 @@
             font-size: 0.92rem;
         }
 
+        .ts-wrapper.single .ts-control,
+        .ts-wrapper.single.input-active .ts-control {
+            border-radius: 1.15rem;
+            border: 1px solid rgba(93, 143, 112, 0.18);
+            background: rgba(246, 251, 248, 0.9);
+            padding: 0.78rem 1.1rem;
+            min-height: 56px;
+            box-shadow: none;
+        }
+
+        .ts-wrapper.single .ts-control > input {
+            font-size: 1rem;
+        }
+
+        .ts-wrapper.focus .ts-control {
+            border-color: rgba(77, 143, 106, 0.45);
+            box-shadow: 0 0 0 4px rgba(77, 143, 106, 0.12);
+        }
+
+        .ts-dropdown {
+            border-radius: 1rem;
+            border: 1px solid var(--pkm-border);
+            box-shadow: 0 18px 40px rgba(58, 78, 113, 0.08);
+        }
+
+        .ts-dropdown .option,
+        .ts-dropdown .create {
+            padding: 0.8rem 1rem;
+        }
+
+        .ts-dropdown .active {
+            background: var(--pkm-primary-pale);
+            color: var(--pkm-primary-strong);
+        }
+
         @media (max-width: 1199px) {
             .pkm-planning-grid {
                 grid-template-columns: 1fr;
@@ -217,7 +253,7 @@
                     <i data-lucide="plus" class="size-4"></i>
                     <span>Tambah Petugas</span>
                 </button>
-            </div>
+            </div><br>
 
             <div class="pkm-assignment-list" id="assignment-list">
                 @foreach ($petugasRows->values() as $index => $petugas)
@@ -226,9 +262,15 @@
                     @endphp
                     <div class="pkm-assignment-row" data-assignment-row>
                         <div class="pkm-assignment-row__head">
-                            <strong>Petugas {{ $index + 1 }}</strong>
+                            <strong data-assignment-title>Petugas {{ $index + 1 }}</strong>
                             <button type="button" class="pkm-danger-button" data-remove-assignment>
-                                <i data-lucide="trash-2" class="size-4"></i>
+                                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M3 6h18"></path>
+                                    <path d="M8 6V4h8v2"></path>
+                                    <path d="M19 6l-1 14H6L5 6"></path>
+                                    <path d="M10 11v6"></path>
+                                    <path d="M14 11v6"></path>
+                                </svg>
                                 <span>Hapus</span>
                             </button>
                         </div>
@@ -241,16 +283,11 @@
                                     @foreach ($pegawaiOptions as $pegawai)
                                         @php
                                             $optionAvailability = $availabilityMap[$pegawai->id] ?? null;
-                                            $optionLabel = $pegawai->nama.' - '.$pegawai->jabatan;
-                                            if ($optionAvailability) {
-                                                $optionLabel .= ' - Tidak tersedia: '.$optionAvailability['summary'];
-                                            } else {
-                                                $optionLabel .= ' - Tersedia';
-                                            }
+                                            $optionLabel = $pegawai->nama;
                                         @endphp
                                         <option
                                             value="{{ $pegawai->id }}"
-                                            data-base-label="{{ $pegawai->nama }} - {{ $pegawai->jabatan }}"
+                                            data-base-label="{{ $pegawai->nama }}"
                                             @disabled($optionAvailability)
                                             @selected((string) ($petugas['pegawai_id'] ?? '') === (string) $pegawai->id)
                                         >
@@ -366,6 +403,12 @@
         <i data-lucide="arrow-left" class="size-4"></i>
         <span>Kembali</span>
     </a>
+    @if (! $jadwal->exists)
+        <button type="submit" class="pkm-secondary-button" name="save_action" value="save_and_create">
+            <i data-lucide="plus" class="size-4"></i>
+            <span>Simpan dan Buat Lagi</span>
+        </button>
+    @endif
     <button type="submit" class="pkm-primary-button">
         <i data-lucide="save" class="size-4"></i>
         <span>{{ $submitLabel }}</span>
@@ -377,7 +420,13 @@
         <div class="pkm-assignment-row__head">
             <strong data-assignment-title>Petugas</strong>
             <button type="button" class="pkm-danger-button" data-remove-assignment>
-                <i data-lucide="trash-2" class="size-4"></i>
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M8 6V4h8v2"></path>
+                    <path d="M19 6l-1 14H6L5 6"></path>
+                    <path d="M10 11v6"></path>
+                    <path d="M14 11v6"></path>
+                </svg>
                 <span>Hapus</span>
             </button>
         </div>
@@ -388,8 +437,8 @@
                 <select class="pkm-input" data-assignment-name="pegawai_id" data-pegawai-select required>
                     <option value="">Pilih pegawai</option>
                     @foreach ($pegawaiOptions as $pegawai)
-                        <option value="{{ $pegawai->id }}" data-base-label="{{ $pegawai->nama }} - {{ $pegawai->jabatan }}">
-                            {{ $pegawai->nama }} - {{ $pegawai->jabatan }}
+                        <option value="{{ $pegawai->id }}" data-base-label="{{ $pegawai->nama }}">
+                            {{ $pegawai->nama }}
                         </option>
                     @endforeach
                 </select>
@@ -415,6 +464,7 @@
 </template>
 
 @push('scripts')
+    <script src="{{ asset('template/dist/js/vendors/tom-select.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const planner = document.querySelector('[data-planning-form]');
@@ -436,38 +486,68 @@
             const approvedDinasList = planner.querySelector('[data-approved-dinas-list]');
             const existingSchedulesList = planner.querySelector('[data-existing-schedules-list]');
 
+            const renderIcons = () => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            };
+
+            const initializePegawaiSearch = (scope = planner) => {
+                if (typeof window.TomSelect !== 'function') {
+                    return;
+                }
+
+                scope.querySelectorAll('[data-pegawai-select]').forEach((select) => {
+                    if (select.tomselect) {
+                        select.tomselect.sync();
+                        select.tomselect.refreshOptions(false);
+                        return;
+                    }
+
+                    new window.TomSelect(select, {
+                        plugins: {
+                            dropdown_input: {},
+                        },
+                        create: false,
+                        persist: false,
+                        maxOptions: 200,
+                        allowEmptyOption: true,
+                        closeAfterSelect: true,
+                        searchField: ['text'],
+                        sortField: [
+                            { field: 'text', direction: 'asc' },
+                        ],
+                        placeholder: 'Cari atau pilih pegawai',
+                    });
+                });
+            };
+
             const refreshRows = () => {
-                list.querySelectorAll('[data-assignment-row]').forEach((row, index) => {
-                    const title = row.querySelector('[data-assignment-title]') || row.querySelector('.pkm-assignment-row__head strong');
+                const rows = list.querySelectorAll('[data-assignment-row]');
+
+                rows.forEach((row, index) => {
+                    const title = row.querySelector('[data-assignment-title]');
+                    const removeButton = row.querySelector('[data-remove-assignment]');
 
                     if (title) {
                         title.textContent = `Petugas ${index + 1}`;
                     }
 
-                    row.querySelectorAll('[data-assignment-name], select[name^="petugas["], input[name^="petugas["]]').forEach((input) => {
-                        const field = input.dataset.assignmentName || input.name.match(/\]\[(.+)\]$/)?.[1];
+                    if (removeButton) {
+                        removeButton.disabled = rows.length === 1;
+                    }
+
+                    row.querySelectorAll('select, input, textarea').forEach((input) => {
+                        const field = input.dataset.assignmentName || input.name?.match(/\]\[(.+)\]$/)?.[1];
 
                         if (field) {
                             input.name = `petugas[${index}][${field}]`;
                         }
                     });
                 });
-            };
 
-            const bindRemoveButton = (scope) => {
-                scope.querySelectorAll('[data-remove-assignment]').forEach((button) => {
-                    button.onclick = function () {
-                        const rows = list.querySelectorAll('[data-assignment-row]');
-
-                        if (rows.length === 1) {
-                            return;
-                        }
-
-                        this.closest('[data-assignment-row]')?.remove();
-                        refreshRows();
-                        refreshAssignmentNotes();
-                    };
-                });
+                initializePegawaiSearch(list);
+                renderIcons();
             };
 
             const escapeHtml = (value) => String(value ?? '')
@@ -491,13 +571,16 @@
                         const availability = availabilityMap[option.value];
 
                         option.disabled = Boolean(availability);
-                        option.textContent = availability
-                            ? `${baseLabel} - Tidak tersedia: ${availability.summary}`
-                            : `${baseLabel} - Tersedia`;
+                        option.textContent = baseLabel;
                     });
 
                     if (select.value && availabilityMap[select.value]) {
                         select.value = '';
+                    }
+
+                    if (select.tomselect) {
+                        select.tomselect.sync();
+                        select.tomselect.refreshOptions(false);
                     }
                 });
             };
@@ -615,8 +698,25 @@
                 const fragment = template.content.cloneNode(true);
                 list.appendChild(fragment);
                 refreshRows();
-                bindRemoveButton(list);
                 updateSelectOptionLabels();
+                refreshAssignmentNotes();
+            });
+
+            list.addEventListener('click', function (event) {
+                const removeButton = event.target.closest('[data-remove-assignment]');
+
+                if (!removeButton) {
+                    return;
+                }
+
+                const rows = list.querySelectorAll('[data-assignment-row]');
+
+                if (rows.length === 1) {
+                    return;
+                }
+
+                removeButton.closest('[data-assignment-row]')?.remove();
+                refreshRows();
                 refreshAssignmentNotes();
             });
 
@@ -629,9 +729,10 @@
             dateInput.addEventListener('change', fetchPlanningContext);
 
             refreshRows();
-            bindRemoveButton(list);
             updateSelectOptionLabels();
             refreshAssignmentNotes();
+            initializePegawaiSearch();
+            renderIcons();
         });
     </script>
 @endpush

@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Laporan Kegiatan | Puskesmas Bunar';
-    $heading = 'Laporan Kegiatan';
+    $title = 'Laporan Saya | Puskesmas Bunar';
+    $heading = 'Laporan Saya';
 @endphp
 
 @push('styles')
@@ -12,6 +12,31 @@
                 grid-template-columns: repeat(4, minmax(0, 1fr));
             }
         }
+
+        .pkm-report-table-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            width: 100%;
+        }
+
+        .pkm-report-search-inline {
+            width: min(420px, 100%);
+            margin-left: auto;
+        }
+
+        @media (max-width: 1023px) {
+            .pkm-report-table-head {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .pkm-report-search-inline {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
     </style>
 @endpush
 
@@ -19,9 +44,9 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2  style="font-weight: bold">Membuat Laporan Kegiatan</h2>
+                <h2 style="font-weight: bold">Laporan Saya</h2>
             </div>
-            <a href="{{ route('pj.laporan-kegiatan.create') }}" class="pkm-primary-button">
+            <a href="{{ route('pegawai.laporan-kegiatan.create') }}" class="pkm-primary-button">
                 <i data-lucide="plus" class="size-4"></i>
                 <span>Tambah Laporan</span>
             </a>
@@ -36,11 +61,6 @@
                 <div class="pkm-metric-card__label">Total Laporan</div>
             </article>
             <article class="pkm-metric-card">
-                <div class="pkm-metric-card__icon bg-amber-100 text-amber-700"><i data-lucide="users-round" class="size-5"></i></div>
-                <div class="pkm-metric-card__value">{{ $summary['pegawai'] }}</div>
-                <div class="pkm-metric-card__label">Pegawai Pelaksana</div>
-            </article>
-            <article class="pkm-metric-card">
                 <div class="pkm-metric-card__icon bg-emerald-100 text-emerald-700"><i data-lucide="folder-kanban" class="size-5"></i></div>
                 <div class="pkm-metric-card__value">{{ $summary['kegiatan'] }}</div>
                 <div class="pkm-metric-card__label">Jenis Kegiatan</div>
@@ -49,6 +69,11 @@
                 <div class="pkm-metric-card__icon bg-rose-100 text-rose-700"><i data-lucide="calendar-days" class="size-5"></i></div>
                 <div class="pkm-metric-card__value">{{ $summary['bulan_ini'] }}</div>
                 <div class="pkm-metric-card__label">Laporan Bulan Ini</div>
+            </article>
+            <article class="pkm-metric-card">
+                <div class="pkm-metric-card__icon bg-amber-100 text-amber-700"><i data-lucide="file-check-2" class="size-5"></i></div>
+                <div class="pkm-metric-card__value">{{ $summary['dokumen'] }}</div>
+                <div class="pkm-metric-card__label">Dokumen Terunggah</div>
             </article>
         </div>
 
@@ -60,7 +85,7 @@
                 </div>
             </div>
 
-            <form method="GET" action="{{ route('pj.laporan-kegiatan.index') }}" class="pkm-monitoring-filter">
+            <form method="GET" action="{{ route('pegawai.laporan-kegiatan.index') }}" class="pkm-monitoring-filter">
                 <div class="pkm-form-grid">
                     <div class="pkm-field">
                         <label for="month">Bulan laporan</label>
@@ -74,28 +99,10 @@
                         <label for="date_to">Tanggal akhir</label>
                         <input id="date_to" class="pkm-input" type="date" name="date_to" value="{{ $filters['date_to'] }}">
                     </div>
-                    <div class="pkm-field">
-                        <label for="pegawai_id">Pegawai</label>
-                        <select id="pegawai_id" class="pkm-input" name="pegawai_id">
-                            <option value="">Semua Pegawai</option>
-                            @foreach ($pegawaiOptions as $pegawai)
-                                <option value="{{ $pegawai->id }}" @selected((string) $filters['pegawai_id'] === (string) $pegawai->id)>{{ $pegawai->nama }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="pkm-field pkm-field--full">
-                        <label for="search">Cari laporan</label>
-                        <input id="search" class="pkm-input" type="text" name="search" value="{{ $filters['search'] }}" placeholder="Cari nama pegawai, kegiatan, atau lokasi">
-                    </div>
                 </div>
 
                 <div class="pkm-form-actions">
-                    <div class="pkm-export-actions">
-                        <a href="{{ route('pj.laporan-kegiatan.export', ['format' => 'pdf'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh PDF</span></a>
-                        <a href="{{ route('pj.laporan-kegiatan.export', ['format' => 'xls'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh Excel</span></a>
-                        <a href="{{ route('pj.laporan-kegiatan.export', ['format' => 'csv'] + request()->query()) }}" class="pkm-secondary-button"><i data-lucide="download" class="size-4"></i><span>Unduh CSV</span></a>
-                    </div>
-                    <a href="{{ route('pj.laporan-kegiatan.index') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
+                    <a href="{{ route('pegawai.laporan-kegiatan.index') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
                     <button type="submit" class="pkm-primary-button"><i data-lucide="funnel" class="size-4"></i><span>Terapkan Filter</span></button>
                 </div>
             </form>
@@ -103,11 +110,19 @@
 
         <section class="pkm-card pkm-table-card">
             <div class="pkm-card__head">
-                <div>
-                    <h3 style="font-weight: bold">Daftar Laporan Kegiatan</h3>
-                    <br>
+                <div class="pkm-report-table-head">
+                    <div>
+                        <h3 style="font-weight: bold">Daftar Laporan Saya</h3>
+                    </div>
+                    <form method="GET" action="{{ route('pegawai.laporan-kegiatan.index') }}" class="pkm-report-search-inline">
+                        <input type="hidden" name="month" value="{{ $filters['month'] }}">
+                        <input type="hidden" name="date_from" value="{{ $filters['date_from'] }}">
+                        <input type="hidden" name="date_to" value="{{ $filters['date_to'] }}">
+                        <input id="table-search" class="pkm-input" type="text" name="search" value="{{ $filters['search'] }}" placeholder="Cari kegiatan atau lokasi" autocomplete="off">
+                    </form> 
                 </div>
             </div>
+            <br>
 
             @if ($reports->isEmpty())
                 <div class="pkm-empty-state">
@@ -117,7 +132,7 @@
                 <div class="pkm-table pkm-table--laporan">
                     <div class="pkm-table__head">
                         <span>Laporan</span>
-                        <span>Pelaksana</span>
+                        <span>Jadwal</span>
                         <span>Waktu Dibuat</span>
                         <span>Aksi</span>
                     </div>
@@ -126,11 +141,11 @@
                         <div class="pkm-table__row">
                             <div data-label="Laporan">
                                 <strong>{{ $report->jadwal?->kegiatan?->nama_kegiatan ?? 'Kegiatan tidak ditemukan' }}</strong>
-                                <small>{{ $report->tanggal->translatedFormat('d F Y') }} - {{ $report->jadwal?->lokasi ?? 'Lokasi belum diisi' }}</small>
+                                <small>{{ $report->tanggal?->translatedFormat('d F Y') ?? '-' }} - {{ $report->jadwal?->lokasi ?? 'Lokasi belum diisi' }}</small>
                             </div>
-                            <div data-label="Pelaksana">
-                                <strong>{{ $report->pegawai?->nama ?? 'Pegawai tidak ditemukan' }}</strong>
-                                <small>{{ $report->pegawai?->jabatan ?? 'Jabatan tidak tersedia' }}</small>
+                            <div data-label="Jadwal">
+                                <strong>{{ $report->jadwal?->waktu_mulai?->format('H:i') ?? '-' }} - {{ $report->jadwal?->waktu_selesai?->format('H:i') ?? '-' }}</strong>
+                                <small>Status jadwal: {{ ucfirst($report->jadwal?->status ?? 'tidak diketahui') }}</small>
                             </div>
                             <div data-label="Waktu Dibuat">
                                 <strong>{{ $report->created_at?->translatedFormat('d M Y H:i') ?? '-' }}</strong>
@@ -138,18 +153,14 @@
                             </div>
                             <div data-label="Aksi">
                                 <div class="pkm-row-actions">
-                                    <a href="{{ route('pj.laporan-kegiatan.edit', $report) }}" class="pkm-text-link">
+                                    <a href="{{ route('pegawai.laporan-kegiatan.show', $report) }}" class="pkm-text-link">
+                                        <i data-lucide="eye" class="size-4"></i>
+                                        <span>Lihat</span>
+                                    </a>
+                                    <a href="{{ route('pegawai.laporan-kegiatan.edit', $report) }}" class="pkm-text-link">
                                         <i data-lucide="pencil" class="size-4"></i>
                                         <span>Edit</span>
                                     </a>
-                                    <form method="POST" action="{{ route('pj.laporan-kegiatan.destroy', $report) }}" onsubmit="return confirm('Hapus laporan kegiatan ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="pkm-danger-button">
-                                            <i data-lucide="trash-2" class="size-4"></i>
-                                            <span>Hapus</span>
-                                        </button>
-                                    </form>
                                 </div>
                             </div>
                         </div>

@@ -32,6 +32,11 @@ class MonitoringLaporanController extends Controller
         $summary = $this->buildSummary($summaryReports);
 
         $viewData = [
+            'title' => $this->viewTitle(),
+            'heading' => 'Monitoring Laporan Kegiatan',
+            'routeName' => $this->routeName(),
+            'exportRouteName' => $this->exportRouteName(),
+            'showRouteName' => $this->showRouteName(),
             'filters' => $filters,
             'pegawaiOptions' => Pegawai::orderBy('nama')->get(['id', 'nama']),
             'reports' => $reports,
@@ -46,6 +51,16 @@ class MonitoringLaporanController extends Controller
         }
 
         return view('admin.monitoring-laporan.index', $viewData);
+    }
+
+    public function show(LaporanKegiatan $laporanKegiatan): ViewContract
+    {
+        return view('admin.monitoring-laporan.show', [
+            'title' => $this->viewTitle(),
+            'heading' => 'Detail Laporan Kegiatan',
+            'routeName' => $this->routeName(),
+            'report' => $laporanKegiatan->load(['jadwal.kegiatan', 'pegawai']),
+        ]);
     }
 
     public function export(Request $request, string $format)
@@ -110,8 +125,7 @@ class MonitoringLaporanController extends Controller
                 $keyword = $filters['search'];
 
                 $query->where(function (Builder $nested) use ($keyword) {
-                    $nested->where('laporan', 'like', '%'.$keyword.'%')
-                        ->orWhereHas('pegawai', fn (Builder $pegawaiQuery) => $pegawaiQuery->where('nama', 'like', '%'.$keyword.'%'))
+                    $nested->whereHas('pegawai', fn (Builder $pegawaiQuery) => $pegawaiQuery->where('nama', 'like', '%'.$keyword.'%'))
                         ->orWhereHas('jadwal.kegiatan', fn (Builder $kegiatanQuery) => $kegiatanQuery->where('nama_kegiatan', 'like', '%'.$keyword.'%'))
                         ->orWhereHas('jadwal', fn (Builder $jadwalQuery) => $jadwalQuery->where('lokasi', 'like', '%'.$keyword.'%'));
                 });
@@ -181,5 +195,25 @@ class MonitoringLaporanController extends Controller
             'filters' => $filters,
             'generatedAt' => now(),
         ])->setPaper('a4', 'landscape')->download($filename);
+    }
+
+    protected function routeName(): string
+    {
+        return 'admin.monitoring-laporan';
+    }
+
+    protected function exportRouteName(): string
+    {
+        return 'admin.monitoring-laporan.export';
+    }
+
+    protected function showRouteName(): string
+    {
+        return 'admin.monitoring-laporan.show';
+    }
+
+    protected function viewTitle(): string
+    {
+        return 'Monitoring Laporan Kegiatan | Puskesmas Bunar';
     }
 }

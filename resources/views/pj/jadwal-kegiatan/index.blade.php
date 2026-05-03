@@ -89,7 +89,7 @@
                 <section class="pkm-card">
                     <div class="pkm-card__head">
                         <div>
-                            <h3 style="font-weight: bold">Filter Penjadwalan</h3>
+                            <h3 style="font-weight: bold">Filter Jadwal</h3>
                             <br>
                         </div>
                     </div>
@@ -108,7 +108,7 @@
                                 <label for="type">Jenis kegiatan</label>
                                 <select id="type" class="pkm-input" name="type">
                                     <option value="all" @selected($filters['type'] === 'all')>Semua</option>
-                                    <option value="layanan" @selected($filters['type'] === 'layanan')>Jadwal layanan</option>
+                                    <option value="layanan" @selected($filters['type'] === 'layanan')>Layanan</option>
                                     <option value="dinas_luar" @selected($filters['type'] === 'dinas_luar')>Dinas luar</option>
                                 </select>
                             </div>
@@ -288,7 +288,7 @@
             <div class="pkm-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="pkm-calendar-modal-title">
                 <div class="pkm-modal__head">
                     <div>
-                        <h3 id="pkm-calendar-modal-title">Detail Jadwal</h3>
+                        <h3 id="pkm-calendar-modal-title" style="font-weight: bold">Detail Jadwal</h3>
                         <p id="pkm-calendar-modal-date">Tanggal dipilih</p>
                     </div>
                     <button type="button" class="pkm-modal__close" data-modal-close aria-label="Tutup detail jadwal">
@@ -329,6 +329,18 @@
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
 
+            const renderLucideIcons = () => {
+                if (typeof window.createIcons === 'function' && window.icons) {
+                    window.createIcons({
+                        icons: window.icons,
+                        nameAttr: 'data-lucide',
+                        attrs: {
+                            'stroke-width': 1.5,
+                        },
+                    });
+                }
+            };
+
             const closeModal = () => {
                 modal.hidden = true;
                 document.body.classList.remove('pkm-modal-open');
@@ -337,10 +349,7 @@
             const openModal = () => {
                 modal.hidden = false;
                 document.body.classList.add('pkm-modal-open');
-
-                if (window.lucide) {
-                    window.lucide.createIcons();
-                }
+                renderLucideIcons();
             };
 
             dayButtons.forEach((button) => {
@@ -351,7 +360,7 @@
 
                     modalDate.textContent = dateLabel;
                     modalSummary.innerHTML = total > 0
-                        ? '<span class="pkm-pill is-blue">' + total + ' agenda</span><small>Tanggal ini memadukan layanan poli dan dinas luar yang perlu diperhitungkan PJ.</small>'
+                        ? '<span class="pkm-pill is-blue">' + total + ' agenda</span><small></small>'
                         : '<span class="pkm-pill is-amber">Tidak ada jadwal</span><small>Belum ada kegiatan yang tercatat pada tanggal ini.</small>';
 
                     modalBody.innerHTML = items.length > 0

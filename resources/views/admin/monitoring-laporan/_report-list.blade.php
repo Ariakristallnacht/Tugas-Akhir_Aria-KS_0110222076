@@ -9,7 +9,7 @@
             <span>Pelaksana</span>
             <span>Jadwal</span>
             <span>Waktu Dibuat</span>
-            <span>Lihat Laporan</span>
+            <span>Aksi</span>
         </div>
 
         @foreach ($reports as $report)
@@ -17,7 +17,6 @@
                 <div data-label="Laporan">
                     <strong>{{ $report->jadwal?->kegiatan?->nama_kegiatan ?? 'Kegiatan tidak ditemukan' }}</strong>
                     <small>{{ $report->tanggal->translatedFormat('d F Y') }} · {{ $report->jadwal?->lokasi ?? 'Lokasi belum diisi' }}</small>
-                    <p class="pkm-report-snippet">{{ \Illuminate\Support\Str::limit($report->laporan, 180) }}</p>
                 </div>
                 <div data-label="Pelaksana">
                     <strong>{{ $report->pegawai?->nama ?? 'Pegawai tidak ditemukan' }}</strong>
@@ -31,17 +30,23 @@
                     <strong>{{ $report->created_at?->translatedFormat('d M Y H:i') ?? '-' }}</strong>
                     <small>Terakhir diperbarui: {{ $report->updated_at?->translatedFormat('d M Y H:i') ?? '-' }}</small>
                 </div>
-                <div data-label="Lihat Laporan">
-                    @if ($report->dokumen_laporan_url)
-                        <a href="{{ $report->dokumen_laporan_url }}" target="_blank" rel="noopener noreferrer" class="pkm-text-link">
-                            <i data-lucide="file-text" class="size-4"></i>
-                            <span>Lihat PDF</span>
-                        </a>
-                        <small>{{ $report->dokumen_laporan_nama ?? 'Dokumen laporan' }}</small>
-                    @else
-                        <strong>Belum diunggah</strong>
-                        <small>PJ belum mengunggah file PDF.</small>
-                    @endif
+                <div data-label="Aksi">
+                    <div class="pkm-row-actions">
+                        @if ($report->dokumen_laporan_url)
+                            <div>
+                                <a href="{{ $report->dokumen_laporan_url }}" target="_blank" rel="noopener noreferrer" class="pkm-text-link">
+                                    <i data-lucide="file-text" class="size-4"></i>
+                                    <span>Lihat</span>
+                                </a>
+                                <small>{{ $report->dokumen_laporan_nama ?? 'Dokumen laporan' }}</small>
+                            </div>
+                        @else
+                            <div>
+                                <strong>Belum diunggah</strong>
+                                <small>Pegawai belum mengunggah file PDF.</small>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         @endforeach

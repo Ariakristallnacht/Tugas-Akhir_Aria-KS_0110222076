@@ -1270,6 +1270,78 @@ body {
     box-shadow: 0 0 0 2px rgba(74, 142, 103, 0.08);
 }
 
+@media (max-width: 1550px) {
+    .pkm-monitoring-layout {
+        grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+        --pkm-monitoring-panel-height: 880px;
+    }
+
+    .pkm-monitoring-calendar > .pkm-card {
+        min-height: var(--pkm-monitoring-panel-height);
+    }
+
+    .pkm-monitoring-calendar .pkm-card__head {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+    }
+
+    .pkm-monitoring-calendar .pkm-card__head > div:nth-child(2) {
+        text-align: center;
+    }
+
+    .pkm-calendar__day {
+        min-height: 136px;
+        padding: 10px;
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 1380px) {
+    .pkm-monitoring-layout {
+        grid-template-columns: 1fr;
+        --pkm-monitoring-panel-height: auto;
+    }
+
+    .pkm-monitoring-list,
+    .pkm-monitoring-calendar {
+        grid-template-rows: auto;
+    }
+
+    .pkm-monitoring-list > .pkm-card:last-child,
+    .pkm-monitoring-calendar > .pkm-card {
+        min-height: auto;
+        max-height: none;
+        height: auto;
+    }
+
+    .pkm-monitoring-items {
+        overflow-y: visible;
+        padding-right: 0;
+    }
+
+    .pkm-monitoring-calendar .pkm-card__head {
+        grid-template-columns: 1fr;
+        justify-items: stretch;
+        gap: 14px;
+    }
+
+    .pkm-monitoring-calendar .pkm-card__head > div:nth-child(2) {
+        text-align: left;
+    }
+
+    .pkm-monitoring-calendar .pkm-card__head > div:first-child,
+    .pkm-monitoring-calendar .pkm-card__head > div:last-child {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .pkm-calendar__day {
+        min-height: 124px;
+    }
+}
+
 .pkm-calendar__date-row strong {
     color: #334968;
     font-size: 1.02rem;
@@ -2450,4 +2522,7 @@ body {
         max-height: calc(100vh - 20px);
         border-radius: 18px;
     }
+}
+h1, h2, h3, h4 {
+    font-weight: bold;
 }

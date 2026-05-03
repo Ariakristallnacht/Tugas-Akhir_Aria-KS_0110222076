@@ -17,7 +17,8 @@ class MonitoringJadwalController extends Controller
         $calendarMonthInput = $request->string('calendar_month')->toString() ?: now()->format('Y-m');
         $monthDate = $this->parseMonth($calendarMonthInput);
 
-        $referenceDate = now()->startOfDay();
+        $referenceMoment = now();
+        $referenceDate = $referenceMoment->copy()->startOfDay();
         $defaultDate = $this->resolveDefaultDate($referenceDate, $monthDate);
 
         $dateFrom = $request->filled('date_from')
@@ -40,17 +41,20 @@ class MonitoringJadwalController extends Controller
             ? $request->string('phase')->toString()
             : 'all';
 
-        $items = $this->buildAgendaItems($dateFrom, $dateTo, $referenceDate);
+        $items = $this->buildAgendaItems($dateFrom, $dateTo, $referenceMoment);
 
         $filteredItems = $items
             ->when($type !== 'all', fn (Collection $collection) => $collection->where('type', $type))
             ->when($phase !== 'all', fn (Collection $collection) => $collection->where('phase', $phase))
+            ->sortBy(fn (array $item) => sprintf('%02d-%010d-%s', $item['phase_order'], $item['start_sort'], $item['key']))
             ->values();
 
-        $calendarItems = $this->buildAgendaItems(
-            $monthDate->copy()->startOfMonth(),
-            $monthDate->copy()->endOfMonth(),
-            $referenceDate
+        $calendarItems = $this->filterCalendarItems(
+            $this->buildAgendaItems(
+                $monthDate->copy()->startOfMonth(),
+                $monthDate->copy()->endOfMonth(),
+                $referenceMoment
+            )
         );
 
         $calendarQuery = $request->except('calendar_month');
@@ -88,32 +92,28 @@ class MonitoringJadwalController extends Controller
             : now()->startOfMonth();
     }
 
-    private function buildAgendaItems(Carbon $dateFrom, Carbon $dateTo, Carbon $referenceDate): Collection
+    private function buildAgendaItems(Carbon $dateFrom, Carbon $dateTo, Carbon $referenceMoment): Collection
     {
         $jadwalItems = Jadwal::with(['kegiatan', 'pegawai'])
-            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->whereDate('tanggal', '>=', $dateFrom->toDateString())
+            ->whereDate('tanggal', '<=', $dateTo->toDateString())
             ->orderBy('tanggal')
             ->orderBy('waktu_mulai')
             ->get()
-            ->map(fn (Jadwal $jadwal) => $this->mapJadwal($jadwal, $referenceDate));
+            ->map(fn (Jadwal $jadwal) => $this->mapJadwal($jadwal, $referenceMoment));
 
         $dinasItems = PengajuanDinas::with('pegawai')
-            ->where(function ($query) use ($dateFrom, $dateTo) {
-                $query->whereDate('tanggal_mulai', '<=', $dateTo->toDateString())
-                    ->whereDate('tanggal_selesai', '>=', $dateFrom->toDateString());
-            })
+            ->where('status', 'disetujui')
+            ->whereDate('tanggal_mulai', '<=', $dateTo->toDateString())
+            ->whereDate('tanggal_selesai', '>=', $dateFrom->toDateString())
             ->orderBy('tanggal_mulai')
             ->orderBy('tanggal_selesai')
             ->get()
-            ->map(fn (PengajuanDinas $dinas) => $this->mapDinas($dinas, $referenceDate));
+            ->map(fn (PengajuanDinas $dinas) => $this->mapDinas($dinas, $referenceMoment));
 
         return $jadwalItems
             ->concat($dinasItems)
-            ->sortBy([
-                ['phase_order', 'asc'],
-                ['start_sort', 'asc'],
-                ['title', 'asc'],
-            ])
+            ->sortBy(fn (array $item) => sprintf('%02d-%010d-%s', $item['phase_order'], $item['start_sort'], $item['key']))
             ->values();
     }
 
@@ -148,6 +148,7 @@ class MonitoringJadwalController extends Controller
     {
         return Jadwal::query()->whereDate('tanggal', $date->toDateString())->exists()
             || PengajuanDinas::query()
+                ->where('status', 'disetujui')
                 ->whereDate('tanggal_mulai', '<=', $date->toDateString())
                 ->whereDate('tanggal_selesai', '>=', $date->toDateString())
                 ->exists();
@@ -157,31 +158,38 @@ class MonitoringJadwalController extends Controller
     {
         return collect()
             ->merge(Jadwal::query()->pluck('tanggal')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
-            ->merge(PengajuanDinas::query()->pluck('tanggal_mulai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
-            ->merge(PengajuanDinas::query()->pluck('tanggal_selesai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->merge(PengajuanDinas::query()->where('status', 'disetujui')->pluck('tanggal_mulai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
+            ->merge(PengajuanDinas::query()->where('status', 'disetujui')->pluck('tanggal_selesai')->map(fn ($date) => Carbon::parse($date)->startOfDay()))
             ->filter()
             ->unique(fn (Carbon $date) => $date->toDateString())
             ->values();
     }
 
-    private function mapJadwal(Jadwal $jadwal, Carbon $referenceDate): array
+    private function mapJadwal(Jadwal $jadwal, Carbon $referenceMoment): array
     {
         $startDate = $jadwal->tanggal->copy()->startOfDay();
         $endDate = $jadwal->tanggal->copy()->endOfDay();
-        $phase = $this->determinePhase($startDate, $endDate, $referenceDate);
-        $firstPegawaiName = $jadwal->pegawai->pluck('nama')->first();
-        $pegawaiNames = $jadwal->pegawai->pluck('nama')->take(3)->implode(', ');
+        $startMoment = $jadwal->waktu_mulai
+            ? $jadwal->tanggal->copy()->setTimeFrom($jadwal->waktu_mulai)
+            : $startDate->copy();
+        $endMoment = $jadwal->waktu_selesai
+            ? $jadwal->tanggal->copy()->setTimeFrom($jadwal->waktu_selesai)
+            : $endDate->copy();
+        $phase = $this->determinePhase($startMoment, $endMoment, $referenceMoment);
+        $pegawaiNames = $jadwal->pegawai->pluck('nama');
+        $displayNames = $pegawaiNames->take(3)->implode(', ');
+        $firstPegawaiName = $pegawaiNames->first() ?: 'PJ';
 
         return [
             'key' => 'jadwal-'.$jadwal->id,
             'id' => $jadwal->id,
             'type' => 'layanan',
-            'type_label' => 'Jadwal Layanan',
+            'type_label' => 'Layanan',
             'title' => $jadwal->kegiatan?->nama_kegiatan ?? 'Layanan',
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
-            'people' => $pegawaiNames ?: 'Belum ada petugas',
-            'pj_initials' => $this->initials($firstPegawaiName ?: 'PJ'),
+            'people' => $displayNames ?: 'Belum ada petugas',
+            'pj_initials' => $this->initials($firstPegawaiName),
             'date_label' => $startDate->translatedFormat('d M Y'),
             'time_label' => $this->formatTimeRange($jadwal->waktu_mulai, $jadwal->waktu_selesai),
             'phase' => $phase,
@@ -192,7 +200,7 @@ class MonitoringJadwalController extends Controller
             'status_class' => $this->statusClass($jadwal->status),
             'start_date' => $startDate->copy(),
             'end_date' => $endDate->copy(),
-            'start_sort' => $startDate->copy()->setTimeFromTimeString($jadwal->waktu_mulai?->format('H:i:s') ?? '00:00:00')->timestamp,
+            'start_sort' => $startMoment->timestamp,
         ];
     }
 
@@ -291,6 +299,25 @@ class MonitoringJadwalController extends Controller
             ->map(fn (string $part) => mb_strtoupper(mb_substr($part, 0, 1)));
 
         return $parts->isNotEmpty() ? $parts->implode('') : 'PJ';
+    }
+
+    private function filterCalendarItems(Collection $items): Collection
+    {
+        return $items
+            ->filter(function (array $item) {
+                $status = strtolower((string) ($item['meta_status'] ?? ''));
+
+                if (($item['type'] ?? null) === 'layanan') {
+                    return in_array($status, ['terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
+                }
+
+                if (($item['type'] ?? null) === 'dinas_luar') {
+                    return $status === 'disetujui';
+                }
+
+                return false;
+            })
+            ->values();
     }
 
     private function buildCalendarWeeks(Carbon $monthDate, Collection $items, Carbon $referenceDate): array

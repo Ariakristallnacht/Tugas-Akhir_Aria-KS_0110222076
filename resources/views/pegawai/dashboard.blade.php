@@ -95,6 +95,10 @@
                     <span class="pkm-quick-action__icon"><i data-lucide="briefcase-business" class="size-4"></i></span>
                     <span><strong>Pengajuan Dinas</strong><small>Lihat dan kelola pengajuan dinas luar Anda.</small></span>
                 </a>
+                <a href="{{ route('pegawai.laporan-kegiatan.create') }}" class="pkm-quick-action">
+                    <span class="pkm-quick-action__icon"><i data-lucide="file-plus-2" class="size-4"></i></span>
+                    <span><strong>Tambah Laporan</strong><small>Kirim laporan kegiatan sesuai jadwal tugas Anda.</small></span>
+                </a>
                 <a href="{{ route('pegawai.pengajuan-dinas.create') }}" class="pkm-quick-action">
                     <span class="pkm-quick-action__icon"><i data-lucide="file-plus-2" class="size-4"></i></span>
                     <span><strong>Buat Pengajuan</strong><small>Ajukan kegiatan lapangan baru dengan lebih cepat.</small></span>

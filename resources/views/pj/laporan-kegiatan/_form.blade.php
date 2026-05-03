@@ -57,22 +57,22 @@
 
     <div class="pkm-field">
         <label for="pegawai_id">Pegawai pelaksana</label>
-        <select id="pegawai_id" class="pkm-input" name="pegawai_id" data-pegawai-select required>
-            <option value="">Pilih pegawai</option>
-            @foreach ($pegawaiOptions as $pegawai)
-                <option value="{{ $pegawai->id }}" @selected((string) old('pegawai_id', $report->pegawai_id) === (string) $pegawai->id)>{{ $pegawai->nama }} - {{ $pegawai->jabatan }}</option>
-            @endforeach
-        </select>
+        @if ($lockPegawai ?? false)
+            <input class="pkm-input" type="text" value="{{ $lockedPegawai?->nama ?? 'Pegawai login' }}" disabled>
+            <input type="hidden" name="pegawai_id" value="{{ $lockedPegawai?->id }}">
+        @else
+            <select id="pegawai_id" class="pkm-input" name="pegawai_id" data-pegawai-select required>
+                <option value="">Pilih pegawai</option>
+                @foreach ($pegawaiOptions as $pegawai)
+                    <option value="{{ $pegawai->id }}" @selected((string) old('pegawai_id', $report->pegawai_id) === (string) $pegawai->id)>{{ $pegawai->nama }} - {{ $pegawai->jabatan }}</option>
+                @endforeach
+            </select>
+        @endif
     </div>
 
     <div class="pkm-field">
         <label for="tanggal">Tanggal laporan</label>
         <input id="tanggal" class="pkm-input" type="date" name="tanggal" value="{{ $tanggalValue }}" required>
-    </div>
-
-    <div class="pkm-field pkm-field--full">
-        <label for="laporan">Isi laporan kegiatan</label>
-        <textarea id="laporan" class="pkm-input" name="laporan" rows="8" placeholder="Jelaskan hasil kegiatan, capaian layanan, hambatan, dan tindak lanjut." required>{{ old('laporan', $report->laporan) }}</textarea>
     </div>
 
     <div class="pkm-field pkm-field--full">
@@ -104,7 +104,7 @@
 </div>
 
 <div class="pkm-form-actions">
-    <a href="{{ route('pj.laporan-kegiatan.index') }}" class="pkm-secondary-button">
+    <a href="{{ route(($lockPegawai ?? false) ? 'pegawai.laporan-kegiatan.index' : 'pj.monitoring-laporan') }}" class="pkm-secondary-button">
         <i data-lucide="arrow-left" class="size-4"></i>
         <span>Kembali</span>
     </a>
@@ -122,8 +122,9 @@
             const pegawaiSelect = document.querySelector('[data-pegawai-select]');
             const hint = document.getElementById('report-assignment-hint');
             const currentPegawaiId = @json((string) old('pegawai_id', $report->pegawai_id));
+            const isPegawaiLocked = @json($lockPegawai ?? false);
 
-            if (!form || !jadwalSelect || !pegawaiSelect || !hint) {
+            if (!form || !jadwalSelect || !hint || (!isPegawaiLocked && !pegawaiSelect)) {
                 return;
             }
 
@@ -131,9 +132,15 @@
                 const selected = jadwalSelect.options[jadwalSelect.selectedIndex];
                 const pegawai = selected?.dataset?.pegawai ? JSON.parse(selected.dataset.pegawai) : [];
 
-                pegawaiSelect.innerHTML = '<option value="">Pilih pegawai</option>';
+                if (!isPegawaiLocked) {
+                    pegawaiSelect.innerHTML = '<option value="">Pilih pegawai</option>';
+                }
 
                 pegawai.forEach((item) => {
+                    if (isPegawaiLocked) {
+                        return;
+                    }
+
                     const option = document.createElement('option');
                     option.value = item.id;
                     option.textContent = `${item.nama} - ${item.jabatan}`;
@@ -146,7 +153,7 @@
                 });
 
                 if (pegawai.length === 0) {
-                    hint.innerHTML = '<strong>Belum ada petugas pada jadwal ini.</strong><span>Pilih jadwal lain atau lengkapi petugas di fitur jadwal kegiatan terlebih dahulu.</span>';
+                    hint.innerHTML = '<strong>Belum ada petugas pada jadwal ini.';
                     return;
                 }
 
@@ -154,7 +161,9 @@
             };
 
             jadwalSelect.addEventListener('change', function () {
-                pegawaiSelect.value = '';
+                if (!isPegawaiLocked) {
+                    pegawaiSelect.value = '';
+                }
                 updatePegawaiOptions();
             });
 

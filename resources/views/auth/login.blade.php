@@ -84,7 +84,7 @@
                                 </div>
 
                                 <div class="flex text-xs sm:text-sm">
-                                    <div class="mr-auto flex items-center gap-2.5">
+                                    <div class="flex items-center gap-2.5">
                                         <div class="bg-background border-foreground/70 relative size-4 rounded-sm border">
                                             <input class="peer relative z-10 size-full cursor-pointer opacity-0" type="checkbox" name="remember" value="1" id="remember-me" @checked(old('remember'))>
                                             <div class="z-4 bg-foreground invisible absolute inset-0 flex items-center justify-center text-white peer-checked:visible">
@@ -93,7 +93,6 @@
                                         </div>
                                         <label class="font-medium leading-none opacity-70" for="remember-me">Remember me</label>
                                     </div>
-                                    <a class="opacity-70" href="#">Forgot Password?</a>
                                 </div>
 
                                 <div class="text-center xl:mt-2 xl:text-left">

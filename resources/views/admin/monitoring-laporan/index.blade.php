@@ -1,12 +1,19 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Monitoring Laporan Kegiatan | Puskesmas Bunar';
-    $heading = 'Monitoring Laporan Kegiatan';
+    $title = $title ?? 'Monitoring Laporan Kegiatan | Puskesmas Bunar';
+    $heading = $heading ?? 'Monitoring Laporan Kegiatan';
+    $routeName = $routeName ?? 'admin.monitoring-laporan';
 @endphp
 
 @push('styles')
     <style>
+        @media (min-width: 1280px) {
+            .pkm-management-summary--single-row {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
         .pkm-report-table-head {
             display: flex;
             align-items: center;
@@ -59,7 +66,7 @@
             </div>
         </div>
 
-        <div class="pkm-management-summary">
+        <div class="pkm-management-summary pkm-management-summary--single-row">
             <article class="pkm-metric-card">
                 <div class="pkm-metric-card__icon bg-cyan-100 text-cyan-700"><i data-lucide="file-text" class="size-5"></i></div>
                 <div class="pkm-metric-card__value" id="summary-all">{{ $summary['all'] }}</div>
@@ -80,12 +87,12 @@
         <section class="pkm-card">
             <div class="pkm-card__head">
                 <div>
-                    <h3 style="font-weight: bold">Filter dan Export</h3>
+                    <h3 style="font-weight: bold">Filter</h3>
                     <br>
                 </div>
             </div>
 
-            <form method="GET" action="{{ route('admin.monitoring-laporan') }}" class="pkm-monitoring-filter">
+            <form method="GET" action="{{ route($routeName) }}" class="pkm-monitoring-filter">
                 <div class="pkm-form-grid">
                     <div class="pkm-field">
                         <label for="date_from">Tanggal awal</label>
@@ -107,7 +114,7 @@
                 </div>
 
                 <div class="pkm-form-actions">
-                    <a href="{{ route('admin.monitoring-laporan') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
+                    <a href="{{ route($routeName) }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
                     <button type="submit" class="pkm-primary-button"><i data-lucide="funnel" class="size-4"></i><span>Terapkan Filter</span></button>
                 </div>
             </form>
@@ -119,17 +126,17 @@
                     <div>
                         <h3 style="font-weight: bold">Daftar Laporan</h3>
                     </div>
-                    <form method="GET" action="{{ route('admin.monitoring-laporan') }}" class="pkm-report-search-inline" id="report-search-form">
+                    <form method="GET" action="{{ route($routeName) }}" class="pkm-report-search-inline" id="report-search-form">
                         <input type="hidden" name="date_from" value="{{ $filters['date_from'] }}">
                         <input type="hidden" name="date_to" value="{{ $filters['date_to'] }}">
                         <input type="hidden" name="pegawai_id" value="{{ $filters['pegawai_id'] }}">
-                        <input id="table-search" class="pkm-input" type="text" name="search" value="{{ $filters['search'] }}" placeholder="Cari nama pegawai, kegiatan, lokasi, atau isi laporan" autocomplete="off">
+                        <input id="table-search" class="pkm-input" type="text" name="search" value="{{ $filters['search'] }}" placeholder="Cari nama pegawai, kegiatan, atau lokasi" autocomplete="off">
                     </form>
                 </div>
             </div>
 
             <div id="report-list-container">
-                @include('admin.monitoring-laporan._report-list', ['reports' => $reports])
+                @include('admin.monitoring-laporan._report-list', ['reports' => $reports, 'showRouteName' => $showRouteName ?? null])
             </div>
         </section>
     </section>

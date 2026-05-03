@@ -56,7 +56,7 @@
                                 <label for="type">Jenis kegiatan</label>
                                 <select id="type" class="pkm-input" name="type">
                                     <option value="all" @selected($filters['type'] === 'all')>Semua</option>
-                                    <option value="layanan" @selected($filters['type'] === 'layanan')>Jadwal layanan</option>
+                                    <option value="layanan" @selected($filters['type'] === 'layanan')>Layanan</option>
                                     <option value="dinas_luar" @selected($filters['type'] === 'dinas_luar')>Dinas luar</option>
                                 </select>
                             </div>

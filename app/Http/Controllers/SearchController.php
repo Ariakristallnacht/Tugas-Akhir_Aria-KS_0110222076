@@ -122,6 +122,21 @@ class SearchController extends Controller
                     ->limit(8)
                     ->get();
 
+                $results['laporan'] = LaporanKegiatan::query()
+                    ->with(['pegawai', 'jadwal.kegiatan'])
+                    ->where('pegawai_id', $pegawai->id)
+                    ->where(function (Builder $builder) use ($query) {
+                        $builder
+                            ->where('laporan', 'like', "%{$query}%")
+                            ->orWhereHas('jadwal.kegiatan', fn (Builder $subQuery) => $subQuery->where('nama_kegiatan', 'like', "%{$query}%"))
+                            ->orWhereHas('jadwal', fn (Builder $subQuery) => $subQuery
+                                ->where('lokasi', 'like', "%{$query}%")
+                                ->orWhere('keterangan', 'like', "%{$query}%"));
+                    })
+                    ->latest('tanggal')
+                    ->limit(8)
+                    ->get();
+
                 $results['pengajuan'] = PengajuanDinas::query()
                     ->where('pegawai_id', $pegawai->id)
                     ->where(function (Builder $builder) use ($query) {

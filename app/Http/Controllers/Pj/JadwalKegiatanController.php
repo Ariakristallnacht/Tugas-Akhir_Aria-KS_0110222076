@@ -25,7 +25,8 @@ class JadwalKegiatanController extends Controller
         $calendarMonthInput = $request->string('calendar_month')->toString() ?: now()->format('Y-m');
         $monthDate = $this->parseMonth($calendarMonthInput);
 
-        $referenceDate = now()->startOfDay();
+        $referenceMoment = now();
+        $referenceDate = $referenceMoment->copy()->startOfDay();
         $defaultDate = $this->resolveDefaultDate($referenceDate, $monthDate);
 
         $dateFrom = $request->filled('date_from')
@@ -48,7 +49,7 @@ class JadwalKegiatanController extends Controller
             ? $request->string('phase')->toString()
             : 'all';
 
-        $rangeItems = $this->buildAgendaItems($dateFrom, $dateTo, $referenceDate);
+        $rangeItems = $this->buildAgendaItems($dateFrom, $dateTo, $referenceMoment);
 
         $items = $rangeItems
             ->when($type !== 'all', fn (Collection $collection) => $collection->where('type', $type))
@@ -56,10 +57,12 @@ class JadwalKegiatanController extends Controller
             ->sortBy(fn (array $item) => sprintf('%02d-%010d-%s', $item['phase_order'], $item['start_sort'], $item['key']))
             ->values();
 
-        $calendarItems = $this->buildAgendaItems(
-            $monthDate->copy()->startOfMonth(),
-            $monthDate->copy()->endOfMonth(),
-            $referenceDate
+        $calendarItems = $this->filterCalendarItems(
+            $this->buildAgendaItems(
+                $monthDate->copy()->startOfMonth(),
+                $monthDate->copy()->endOfMonth(),
+                $referenceMoment
+            )
         );
 
         $planningDate = $request->filled('planning_date')
@@ -147,8 +150,12 @@ class JadwalKegiatanController extends Controller
         });
 
         return redirect()
-            ->route('pj.jadwal-kegiatan.index')
-            ->with('success', 'Jadwal layanan berhasil disimpan tanpa bentrok penugasan pegawai.');
+            ->route($request->input('save_action') === 'save_and_create'
+                ? 'pj.jadwal-kegiatan.create'
+                : 'pj.jadwal-kegiatan.index')
+            ->with('success', $request->input('save_action') === 'save_and_create'
+                ? 'Jadwal layanan berhasil disimpan. Silakan buat jadwal berikutnya.'
+                : 'Jadwal layanan berhasil disimpan tanpa bentrok penugasan pegawai.');
     }
 
     public function edit(Jadwal $jadwalKegiatan): View
@@ -200,14 +207,15 @@ class JadwalKegiatanController extends Controller
             ->with('success', 'Jadwal kegiatan berhasil dihapus.');
     }
 
-    private function buildAgendaItems(Carbon $dateFrom, Carbon $dateTo, Carbon $referenceDate): Collection
+    private function buildAgendaItems(Carbon $dateFrom, Carbon $dateTo, Carbon $referenceMoment): Collection
     {
         $jadwalItems = Jadwal::with(['kegiatan', 'pegawai'])
-            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->whereDate('tanggal', '>=', $dateFrom->toDateString())
+            ->whereDate('tanggal', '<=', $dateTo->toDateString())
             ->orderBy('tanggal')
             ->orderBy('waktu_mulai')
             ->get()
-            ->map(fn (Jadwal $jadwal) => $this->mapJadwal($jadwal, $referenceDate));
+            ->map(fn (Jadwal $jadwal) => $this->mapJadwal($jadwal, $referenceMoment));
 
         $approvedDinasItems = PengajuanDinas::with('pegawai')
             ->where('status', 'disetujui')
@@ -215,7 +223,7 @@ class JadwalKegiatanController extends Controller
             ->whereDate('tanggal_selesai', '>=', $dateFrom->toDateString())
             ->orderBy('tanggal_mulai')
             ->get()
-            ->map(fn (PengajuanDinas $pengajuan) => $this->mapPengajuanDinas($pengajuan, $referenceDate));
+            ->map(fn (PengajuanDinas $pengajuan) => $this->mapPengajuanDinas($pengajuan, $referenceMoment));
 
         return $jadwalItems
             ->concat($approvedDinasItems)
@@ -508,11 +516,17 @@ class JadwalKegiatanController extends Controller
             : now()->startOfMonth();
     }
 
-    private function mapJadwal(Jadwal $jadwal, Carbon $referenceDate): array
+    private function mapJadwal(Jadwal $jadwal, Carbon $referenceMoment): array
     {
         $startDate = $jadwal->tanggal->copy()->startOfDay();
         $endDate = $jadwal->tanggal->copy()->endOfDay();
-        $phase = $this->determinePhase($startDate, $endDate, $referenceDate);
+        $startMoment = $jadwal->waktu_mulai
+            ? $jadwal->tanggal->copy()->setTimeFrom($jadwal->waktu_mulai)
+            : $startDate->copy();
+        $endMoment = $jadwal->waktu_selesai
+            ? $jadwal->tanggal->copy()->setTimeFrom($jadwal->waktu_selesai)
+            : $endDate->copy();
+        $phase = $this->determinePhase($startMoment, $endMoment, $referenceMoment);
         $pegawaiNames = $jadwal->pegawai->pluck('nama');
         $displayNames = $pegawaiNames->take(3)->implode(', ');
         $firstName = $pegawaiNames->first() ?: 'PJ';
@@ -521,7 +535,7 @@ class JadwalKegiatanController extends Controller
             'key' => 'jadwal-'.$jadwal->id,
             'id' => $jadwal->id,
             'type' => 'layanan',
-            'type_label' => 'Jadwal Layanan',
+            'type_label' => 'Layanan',
             'title' => $jadwal->kegiatan?->nama_kegiatan ?? 'Kegiatan',
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
@@ -537,24 +551,24 @@ class JadwalKegiatanController extends Controller
             'status_class' => $this->statusClass($jadwal->status),
             'start_date' => $startDate->copy(),
             'end_date' => $endDate->copy(),
-            'start_sort' => $startDate->copy()->setTimeFromTimeString($jadwal->waktu_mulai?->format('H:i:s') ?? '00:00:00')->timestamp,
+            'start_sort' => $startMoment->timestamp,
             'edit_url' => route('pj.jadwal-kegiatan.edit', $jadwal),
             'delete_url' => route('pj.jadwal-kegiatan.destroy', $jadwal),
             'reference_note' => null,
         ];
     }
 
-    private function mapPengajuanDinas(PengajuanDinas $pengajuan, Carbon $referenceDate): array
+    private function mapPengajuanDinas(PengajuanDinas $pengajuan, Carbon $referenceMoment): array
     {
         $startDate = $pengajuan->tanggal_mulai->copy()->startOfDay();
         $endDate = $pengajuan->tanggal_selesai->copy()->endOfDay();
-        $phase = $this->determinePhase($startDate, $endDate, $referenceDate);
+        $phase = $this->determinePhase($startDate, $endDate, $referenceMoment);
 
         return [
             'key' => 'dinas-'.$pengajuan->id,
             'id' => $pengajuan->id,
             'type' => 'dinas_luar',
-            'type_label' => 'Dinas Luar Disetujui',
+            'type_label' => 'Dinas Luar',
             'title' => $pengajuan->kegiatan,
             'subtitle' => $pengajuan->tujuan,
             'description' => $pengajuan->keterangan,
@@ -642,6 +656,25 @@ class JadwalKegiatanController extends Controller
             ->map(fn (string $part) => mb_strtoupper(mb_substr($part, 0, 1)));
 
         return $parts->isNotEmpty() ? $parts->implode('') : 'PJ';
+    }
+
+    private function filterCalendarItems(Collection $items): Collection
+    {
+        return $items
+            ->filter(function (array $item) {
+                $status = strtolower((string) ($item['meta_status'] ?? ''));
+
+                if (($item['type'] ?? null) === 'layanan') {
+                    return in_array($status, ['terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
+                }
+
+                if (($item['type'] ?? null) === 'dinas_luar') {
+                    return $status === 'disetujui';
+                }
+
+                return false;
+            })
+            ->values();
     }
 
     private function buildCalendarWeeks(Carbon $monthDate, Collection $items, Carbon $referenceDate): array

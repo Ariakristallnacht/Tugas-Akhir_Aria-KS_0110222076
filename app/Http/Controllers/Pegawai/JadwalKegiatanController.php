@@ -200,7 +200,7 @@ class JadwalKegiatanController extends Controller
             'key' => 'jadwal-'.$jadwal->id,
             'id' => $jadwal->id,
             'type' => 'layanan',
-            'type_label' => 'Jadwal Layanan',
+            'type_label' => 'Layanan',
             'title' => $jadwal->kegiatan?->nama_kegiatan ?? 'Layanan',
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
@@ -265,7 +265,7 @@ class JadwalKegiatanController extends Controller
             'key' => 'jadwal-'.$jadwal->id,
             'id' => $jadwal->id,
             'type' => 'layanan',
-            'type_label' => 'Jadwal Layanan',
+            'type_label' => 'Layanan',
             'title' => $jadwal->kegiatan?->nama_kegiatan ?? 'Layanan',
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
@@ -389,12 +389,8 @@ class JadwalKegiatanController extends Controller
             ->filter(function (array $item) {
                 $status = strtolower((string) ($item['meta_status'] ?? ''));
 
-                if (($item['phase'] ?? null) !== 'completed') {
-                    return false;
-                }
-
                 if (($item['type'] ?? null) === 'layanan') {
-                    return in_array($status, ['selesai', 'hadir'], true);
+                    return in_array($status, ['terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
                 }
 
                 if (($item['type'] ?? null) === 'dinas_luar') {
