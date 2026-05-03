@@ -9,7 +9,7 @@
     <style>
         .pkm-report-table-head {
             display: flex;
-            align-items: end;
+            align-items: center;
             justify-content: space-between;
             gap: 18px;
             width: 100%;
@@ -116,7 +116,6 @@
                         <h3 style="font-weight: bold">Daftar Laporan</h3>
                     </div>
                     <form method="GET" action="{{ route('admin.monitoring-laporan') }}" class="pkm-report-search-inline">
-                        <label for="table-search">Cari laporan</label>
                         <input type="hidden" name="date_from" value="{{ $filters['date_from'] }}">
                         <input type="hidden" name="date_to" value="{{ $filters['date_to'] }}">
                         <input type="hidden" name="pegawai_id" value="{{ $filters['pegawai_id'] }}">
