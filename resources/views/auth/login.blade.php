@@ -56,7 +56,7 @@
                             <form method="POST" action="{{ route('login.store') }}" class="mt-8 flex flex-col gap-5">
                                 @csrf
                                 <div>
-                                    <input class="h-10 w-full rounded-md border bg-background ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-foreground placeholder:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/5 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 box block min-w-full px-5 py-6 xl:min-w-[28rem]" type="email" name="email" value="{{ old('email', 'admin@pkmbunar.test') }}" placeholder="Email" autocomplete="username" required autofocus>
+                                    <input class="h-10 w-full rounded-md border bg-background ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-foreground placeholder:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/5 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 box block min-w-full px-5 py-6 xl:min-w-[28rem]" type="email" name="email" value="{{ old('email', 'admin@puskesmasbunar.id') }}" placeholder="Email" autocomplete="username" required autofocus>
                                     @error('email')
                                         <p class="mt-2 text-sm font-medium text-rose-600">{{ $message }}</p>
                                     @enderror

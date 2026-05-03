@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Jadwal;
 use App\Models\JadwalPegawai;
 use App\Models\Kegiatan;
+use App\Models\LaporanKegiatan;
+use App\Models\Monitoring;
 use App\Models\Pegawai;
 use App\Models\User;
 use Carbon\Carbon;
@@ -21,58 +23,69 @@ class MarchAprilJadwalSeeder extends Seeder
     private const LAYANAN = [
         [
             'nama_kegiatan' => 'Skrining Kesehatan BPJS / CKG',
-            'deskripsi' => 'Layanan skrining kesehatan BPJS dan CKG.',
+            'deskripsi' => 'Skrining faktor risiko penyakit tidak menular dan pemeriksaan kesehatan dasar peserta BPJS.',
             'lokasi' => 'Lobby Pendaftaran',
+            'ringkasan' => 'Skrining tekanan darah, gula darah sewaktu, dan konseling faktor risiko.',
         ],
         [
             'nama_kegiatan' => 'PIPP',
-            'deskripsi' => 'Layanan PIPP Puskesmas Bunar.',
-            'lokasi' => 'Meja PIPP',
+            'deskripsi' => 'Pemberian informasi, penanganan pengaduan, dan pelayanan pelanggan puskesmas.',
+            'lokasi' => 'Meja Informasi Pelayanan',
+            'ringkasan' => 'Pendampingan alur layanan dan tindak lanjut keluhan pasien.',
         ],
         [
             'nama_kegiatan' => 'Kluster 2 Kesehatan Ibu',
-            'deskripsi' => 'Poli layanan kesehatan ibu.',
+            'deskripsi' => 'Pemeriksaan antenatal, konseling ibu hamil, dan pemantauan risiko kehamilan.',
             'lokasi' => 'Ruang KIA',
+            'ringkasan' => 'Pelayanan ANC terpadu dan konseling persiapan persalinan.',
         ],
         [
-            'nama_kegiatan' => 'Kluster 2 Balita & Anak',
-            'deskripsi' => 'Poli layanan balita dan anak.',
+            'nama_kegiatan' => 'Kluster 2 Balita dan Anak',
+            'deskripsi' => 'Pemantauan tumbuh kembang, imunisasi, dan edukasi kesehatan balita.',
             'lokasi' => 'Ruang Balita',
+            'ringkasan' => 'Imunisasi dasar, penimbangan, dan edukasi pengasuhan.',
         ],
         [
-            'nama_kegiatan' => 'Meja Tensi',
-            'deskripsi' => 'Layanan pemeriksaan tanda vital awal.',
+            'nama_kegiatan' => 'Meja Tensi dan Triage',
+            'deskripsi' => 'Pemeriksaan tanda vital awal sebelum pasien masuk ke poli tujuan.',
             'lokasi' => 'Area Triage',
+            'ringkasan' => 'Pemeriksaan tanda vital awal untuk seluruh pasien rawat jalan.',
         ],
         [
             'nama_kegiatan' => 'Kluster 3 Pelayanan Dewasa',
-            'deskripsi' => 'Poli layanan dewasa.',
+            'deskripsi' => 'Pelayanan pemeriksaan umum pasien dewasa dengan kasus rawat jalan.',
             'lokasi' => 'Poli Dewasa',
+            'ringkasan' => 'Pelayanan pasien hipertensi, ISPA, diabetes, dan kasus umum lainnya.',
         ],
         [
-            'nama_kegiatan' => 'Klaster 3 Layanan Lansia',
-            'deskripsi' => 'Poli layanan kesehatan lansia.',
+            'nama_kegiatan' => 'Kluster 3 Layanan Lansia',
+            'deskripsi' => 'Pelayanan kesehatan lansia mencakup skrining geriatri dan pemantauan penyakit kronis.',
             'lokasi' => 'Poli Lansia',
+            'ringkasan' => 'Skrining geriatri dasar dan evaluasi kepatuhan pengobatan.',
         ],
         [
-            'nama_kegiatan' => 'Kluster 2 & 3 TB (Tuberkulosis)',
-            'deskripsi' => 'Poli layanan tuberkulosis.',
+            'nama_kegiatan' => 'Pelayanan TB Terpadu',
+            'deskripsi' => 'Penemuan kasus, pemantauan terapi, dan edukasi pasien tuberkulosis.',
             'lokasi' => 'Klinik TB',
+            'ringkasan' => 'Pemantauan pengobatan TB dan edukasi kepatuhan minum obat.',
         ],
         [
-            'nama_kegiatan' => 'Kluster 5 Pelayanan UGD',
-            'deskripsi' => 'Poli layanan unit gawat darurat.',
+            'nama_kegiatan' => 'Pelayanan UGD',
+            'deskripsi' => 'Pelayanan kegawatdaruratan dasar dan stabilisasi pasien sebelum rujukan.',
             'lokasi' => 'UGD',
+            'ringkasan' => 'Stabilisasi awal pasien gawat darurat sebelum tindak lanjut.',
         ],
         [
-            'nama_kegiatan' => 'Kluster 5 Pelayanan Laboratorium',
-            'deskripsi' => 'Poli layanan laboratorium.',
+            'nama_kegiatan' => 'Pelayanan Laboratorium',
+            'deskripsi' => 'Pemeriksaan laboratorium dasar untuk mendukung diagnosis dan tindak lanjut layanan.',
             'lokasi' => 'Laboratorium',
+            'ringkasan' => 'Pemeriksaan hematologi sederhana dan kimia klinik dasar.',
         ],
         [
-            'nama_kegiatan' => 'Klaster 5 Apotek',
-            'deskripsi' => 'Layanan farmasi dan pengambilan obat.',
+            'nama_kegiatan' => 'Pelayanan Farmasi',
+            'deskripsi' => 'Dispensing obat, edukasi penggunaan obat, dan monitoring ketersediaan farmasi.',
             'lokasi' => 'Apotek',
+            'ringkasan' => 'Penyerahan obat dan edukasi aturan pakai kepada pasien.',
         ],
     ];
 
@@ -96,8 +109,12 @@ class MarchAprilJadwalSeeder extends Seeder
                 ->whereHas('role', fn ($query) => $query->where('kode', 'pj_penjadwalan'))
                 ->first();
 
-            if (! $creator) {
-                throw new RuntimeException('User dengan role pj_penjadwalan tidak ditemukan.');
+            $adminVerifier = User::query()
+                ->whereHas('role', fn ($query) => $query->where('kode', 'admin'))
+                ->first();
+
+            if (! $creator || ! $adminVerifier) {
+                throw new RuntimeException('User admin atau pj_penjadwalan tidak ditemukan.');
             }
 
             $pegawai = Pegawai::query()
@@ -158,8 +175,8 @@ class MarchAprilJadwalSeeder extends Seeder
                     'waktu_selesai' => $shift['selesai'],
                     'lokasi' => $service['lokasi'],
                     'keterangan' => sprintf(
-                        'Jadwal layanan %s untuk tanggal %s.',
-                        $service['nama_kegiatan'],
+                        '%s untuk tanggal %s di wilayah kerja Puskesmas Bunar.',
+                        $service['ringkasan'],
                         $dayCursor->translatedFormat('d F Y')
                     ),
                     'status' => 'selesai',
@@ -172,7 +189,34 @@ class MarchAprilJadwalSeeder extends Seeder
                         'peran_tugas' => self::ROLE_TEMPLATES[$index] ?? 'Petugas Layanan',
                         'status_penugasan' => 'hadir',
                     ]);
+
+                    Monitoring::query()->create([
+                        'jadwal_id' => $jadwal->id,
+                        'pegawai_id' => $pegawaiItem->id,
+                        'status' => 'selesai',
+                        'laporan' => sprintf(
+                            'Monitoring %s pada layanan %s menunjukkan pelaksanaan sesuai SOP dan jadwal shift.',
+                            $pegawaiItem->nama,
+                            $service['nama_kegiatan']
+                        ),
+                        'dipantau_at' => $dayCursor->copy()->setTime(11, 45),
+                    ]);
                 }
+
+                LaporanKegiatan::query()->create([
+                    'jadwal_id' => $jadwal->id,
+                    'pegawai_id' => $assignedPegawai[0]->id,
+                    'tanggal' => $dayCursor->toDateString(),
+                    'laporan' => sprintf(
+                        'Pelayanan %s tanggal %s selesai dilaksanakan dengan alur pasien tertib, dokumentasi lengkap, dan kebutuhan logistik terpenuhi.',
+                        $service['nama_kegiatan'],
+                        $dayCursor->translatedFormat('d F Y')
+                    ),
+                    'status_verifikasi' => 'diterima',
+                    'diverifikasi_oleh' => $adminVerifier->id,
+                    'diverifikasi_at' => $dayCursor->copy()->setTime(16, 30),
+                    'catatan_verifikasi' => 'Laporan historis lengkap dan sesuai data monitoring lapangan.',
+                ]);
             }
         });
     }
