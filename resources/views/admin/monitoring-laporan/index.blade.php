@@ -37,14 +37,10 @@
                     <h3 style="font-weight: bold">Filter dan Export</h3>
                     <br>
                 </div>
-            </div>
+                </div>
 
             <form method="GET" action="{{ route('admin.monitoring-laporan') }}" class="pkm-monitoring-filter">
                 <div class="pkm-form-grid">
-                    <div class="pkm-field">
-                        <label for="month">Bulan laporan</label>
-                        <input id="month" class="pkm-input" type="month" name="month" value="{{ $filters['month'] }}">
-                    </div>
                     <div class="pkm-field">
                         <label for="date_from">Tanggal awal</label>
                         <input id="date_from" class="pkm-input" type="date" name="date_from" value="{{ $filters['date_from'] }}">
