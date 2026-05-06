@@ -282,7 +282,7 @@ class JadwalKegiatanController extends Controller
     private function validateRequest(Request $request, ?Jadwal $jadwal = null): array
     {
         $validated = $request->validate([
-            'kegiatan_id' => ['required', Rule::exists('kegiatan', 'id')->where(fn ($query) => $query->where('jenis', 'layanan')->where('is_aktif', true))],
+            'kegiatan_id' => ['required', Rule::exists('kegiatan', 'id')->where(fn ($query) => $query->whereIn('jenis', ['layanan', 'dinas_luar'])->where('is_aktif', true))],
             'tanggal' => ['required', 'date'],
             'waktu_mulai' => ['nullable', 'date_format:H:i'],
             'waktu_selesai' => ['nullable', 'date_format:H:i', 'after:waktu_mulai'],
@@ -383,9 +383,19 @@ class JadwalKegiatanController extends Controller
 
     private function formOptions(): array
     {
+        $dinasLuarOption = $this->ensurePjDinasLuarOption();
+
         return [
-            'kegiatanOptions' => Kegiatan::where('jenis', 'layanan')
+            'kegiatanOptions' => Kegiatan::query()
                 ->where('is_aktif', true)
+                ->where(function ($query) use ($dinasLuarOption) {
+                    $query->where('jenis', 'layanan');
+
+                    if ($dinasLuarOption) {
+                        $query->orWhere('id', $dinasLuarOption->id);
+                    }
+                })
+                ->orderByRaw("CASE WHEN jenis = 'layanan' THEN 0 ELSE 1 END")
                 ->orderBy('nama_kegiatan')
                 ->get()
                 ->values(),
@@ -530,12 +540,14 @@ class JadwalKegiatanController extends Controller
         $pegawaiNames = $jadwal->pegawai->pluck('nama');
         $displayNames = $pegawaiNames->take(3)->implode(', ');
         $firstName = $pegawaiNames->first() ?: 'PJ';
+        $kegiatanType = $jadwal->kegiatan?->jenis === 'dinas_luar' ? 'dinas_luar' : 'layanan';
+        $kegiatanLabel = $kegiatanType === 'dinas_luar' ? 'Dinas Luar' : 'Layanan';
 
         return [
             'key' => 'jadwal-'.$jadwal->id,
             'id' => $jadwal->id,
-            'type' => 'layanan',
-            'type_label' => 'Layanan',
+            'type' => $kegiatanType,
+            'type_label' => $kegiatanLabel,
             'title' => $jadwal->kegiatan?->nama_kegiatan ?? 'Kegiatan',
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
@@ -669,12 +681,39 @@ class JadwalKegiatanController extends Controller
                 }
 
                 if (($item['type'] ?? null) === 'dinas_luar') {
-                    return $status === 'disetujui';
+                    return in_array($status, ['disetujui', 'terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
                 }
 
                 return false;
             })
             ->values();
+    }
+
+    private function ensurePjDinasLuarOption(): Kegiatan
+    {
+        $legacyOption = Kegiatan::query()
+            ->where('jenis', 'dinas_luar')
+            ->where('nama_kegiatan', 'Dinas Luar PJ')
+            ->first();
+
+        if ($legacyOption) {
+            $legacyOption->update([
+                'nama_kegiatan' => 'Dinas Luar',
+                'deskripsi' => 'Opsi khusus penjadwalan dinas luar untuk penanggung jawab.',
+                'is_aktif' => true,
+            ]);
+
+            return $legacyOption->fresh();
+        }
+
+        return Kegiatan::updateOrCreate(
+            ['nama_kegiatan' => 'Dinas Luar'],
+            [
+                'jenis' => 'dinas_luar',
+                'deskripsi' => 'Opsi khusus penjadwalan dinas luar untuk penanggung jawab.',
+                'is_aktif' => true,
+            ]
+        );
     }
 
     private function buildCalendarWeeks(Carbon $monthDate, Collection $items, Carbon $referenceDate): array

@@ -124,8 +124,8 @@
                         </div>
 
                         <div class="pkm-form-actions">
-                            <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-secondary-button"><i data-lucide="rotate-ccw" class="size-4"></i><span>Reset</span></a>
-                            <button type="submit" class="pkm-primary-button"><i data-lucide="funnel" class="size-4"></i><span>Terapkan Filter</span></button>
+                            <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-secondary-button"><span>Reset</span></a>
+                            <button type="submit" class="pkm-primary-button"><span>Filter</span></button>
                         </div>
                     </form>
                 </section>

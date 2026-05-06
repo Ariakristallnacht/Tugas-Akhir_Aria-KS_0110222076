@@ -205,6 +205,7 @@ class LaporanKegiatanController extends Controller
             ]);
         }
 
+        $validated['laporan'] = $validated['laporan'] ?? '';
         $validated['status_verifikasi'] = $report?->status_verifikasi ?? 'menunggu';
         $validated['catatan_verifikasi'] = $report?->catatan_verifikasi;
         $validated['diverifikasi_oleh'] = $report?->diverifikasi_oleh;

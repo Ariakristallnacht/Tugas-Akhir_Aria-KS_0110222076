@@ -10,7 +10,7 @@
         <div class="pkm-card pkm-form-card">
             <div class="pkm-card__head">
                 <div>
-                    <h2 style="font-weight: bold">Susun Jadwal Layanan</h2>
+                    <h2 style="font-weight: bold">Susun Jadwal Kegiatan</h2>
                     <br>
                 </div>
             </div>

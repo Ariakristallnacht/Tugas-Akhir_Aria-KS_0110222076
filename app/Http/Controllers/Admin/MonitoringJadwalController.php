@@ -179,13 +179,15 @@ class MonitoringJadwalController extends Controller
         $pegawaiNames = $jadwal->pegawai->pluck('nama');
         $displayNames = $pegawaiNames->take(3)->implode(', ');
         $firstPegawaiName = $pegawaiNames->first() ?: 'PJ';
+        $kegiatanType = $jadwal->kegiatan?->jenis === 'dinas_luar' ? 'dinas_luar' : 'layanan';
+        $kegiatanLabel = $kegiatanType === 'dinas_luar' ? 'Dinas Luar' : 'Layanan';
 
         return [
             'key' => 'jadwal-'.$jadwal->id,
             'id' => $jadwal->id,
-            'type' => 'layanan',
-            'type_label' => 'Layanan',
-            'title' => $jadwal->kegiatan?->nama_kegiatan ?? 'Layanan',
+            'type' => $kegiatanType,
+            'type_label' => $kegiatanLabel,
+            'title' => $jadwal->kegiatan?->nama_kegiatan ?? $kegiatanLabel,
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
             'people' => $displayNames ?: 'Belum ada petugas',
@@ -312,7 +314,7 @@ class MonitoringJadwalController extends Controller
                 }
 
                 if (($item['type'] ?? null) === 'dinas_luar') {
-                    return $status === 'disetujui';
+                    return in_array($status, ['disetujui', 'terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
                 }
 
                 return false;

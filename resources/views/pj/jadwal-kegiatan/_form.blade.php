@@ -17,10 +17,16 @@
     }
 
     $groupedKegiatanOptions = collect($kegiatanOptions)
-        ->groupBy(fn ($kegiatan) => str_contains(mb_strtolower($kegiatan->nama_kegiatan), 'kluster')
-            || str_contains(mb_strtolower($kegiatan->nama_kegiatan), 'klaster')
-            ? 'Poli Layanan'
-            : 'Layanan Lainnya');
+        ->groupBy(function ($kegiatan) {
+            if (($kegiatan->jenis ?? 'layanan') === 'dinas_luar') {
+                return 'Dinas Luar';
+            }
+
+            return str_contains(mb_strtolower($kegiatan->nama_kegiatan), 'kluster')
+                || str_contains(mb_strtolower($kegiatan->nama_kegiatan), 'klaster')
+                ? 'Poli Layanan'
+                : 'Layanan Lainnya';
+        });
 @endphp
 
 @push('styles')
@@ -135,23 +141,46 @@
             font-size: 0.92rem;
         }
 
+        .pkm-planning-grid .pkm-input {
+            padding-left: 1.45rem;
+        }
+
+        .pkm-planning-grid [data-pegawai-select].pkm-input {
+            padding-left: 0;
+        }
+
+        .ts-wrapper {
+            width: 100%;
+        }
+
         .ts-wrapper.single .ts-control,
         .ts-wrapper.single.input-active .ts-control {
             border-radius: 1.15rem;
             border: 1px solid rgba(93, 143, 112, 0.18);
             background: rgba(246, 251, 248, 0.9);
-            padding: 0.78rem 1.1rem;
+            height: 56px;
             min-height: 56px;
+            padding: 0 2.75rem 0 1.45rem;
             box-shadow: none;
+            width: 100%;
+            display: flex;
+            align-items: center;
         }
 
         .ts-wrapper.single .ts-control > input {
-            font-size: 1rem;
+            font-size: 15px;
+            min-width: 100% !important;
+            width: 100% !important;
         }
 
         .ts-wrapper.focus .ts-control {
             border-color: rgba(77, 143, 106, 0.45);
             box-shadow: 0 0 0 4px rgba(77, 143, 106, 0.12);
+        }
+
+        .ts-wrapper.single .ts-control .item,
+        .ts-wrapper.single .ts-control .placeholder {
+            width: 100%;
         }
 
         .ts-dropdown {
@@ -193,9 +222,9 @@
     <div class="pkm-planning-stack">
         <div class="pkm-form-grid">
             <div class="pkm-field">
-                <label for="kegiatan_id">Layanan atau Poli</label>
+                <label for="kegiatan_id">Daftar Kegiatan</label>
                 <select id="kegiatan_id" class="pkm-input" name="kegiatan_id" required>
-                    <option value="">Pilih layanan</option>
+                    <option value="">Pilih kegiatan</option>
                     @foreach ($groupedKegiatanOptions as $groupLabel => $items)
                         <optgroup label="{{ $groupLabel }}">
                             @foreach ($items as $kegiatan)
@@ -278,7 +307,7 @@
                         <div class="pkm-form-grid">
                             <div class="pkm-field">
                                 <label>Pegawai</label>
-                                <select class="pkm-input" name="petugas[{{ $index }}][pegawai_id]" data-pegawai-select required>
+                                <select class="" name="petugas[{{ $index }}][pegawai_id]" data-pegawai-select required>
                                     <option value="">Pilih pegawai</option>
                                     @foreach ($pegawaiOptions as $pegawai)
                                         @php
@@ -390,7 +419,7 @@
                     </article>
                 @empty
                     <div class="pkm-empty-state" data-existing-schedules-empty>
-                        <strong>Belum ada jadwal layanan.</strong>
+                        <strong>Belum ada jadwal kegiatan.</strong>
                     </div>
                 @endforelse
             </div>
@@ -505,9 +534,6 @@
                     }
 
                     new window.TomSelect(select, {
-                        plugins: {
-                            dropdown_input: {},
-                        },
                         create: false,
                         persist: false,
                         maxOptions: 200,
@@ -645,7 +671,7 @@
                                 <span>${escapeHtml(item.range_label)}</span>
                             </article>
                         `).join('')
-                        : renderEmptyState('Tidak ada dinas luar disetujui.', 'Tanggal ini masih longgar untuk menyusun jadwal layanan.');
+                        : renderEmptyState('Tidak ada dinas luar disetujui.', 'Tanggal ini masih longgar untuk menyusun jadwal kegiatan.');
                 }
 
                 if (existingSchedulesList) {
@@ -657,7 +683,7 @@
                                 <span>${escapeHtml(item.pegawai)}</span>
                             </article>
                         `).join('')
-                        : renderEmptyState('Belum ada jadwal layanan.', 'PJ bisa mulai menyusun layanan pada tanggal ini.');
+                        : renderEmptyState('Belum ada jadwal kegiatan.', 'PJ bisa mulai menyusun kegiatan pada tanggal ini.');
                 }
 
                 updateSelectOptionLabels();

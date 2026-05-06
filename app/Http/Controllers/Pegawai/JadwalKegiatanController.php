@@ -195,13 +195,15 @@ class JadwalKegiatanController extends Controller
         $startDate = $jadwal->tanggal->copy()->startOfDay();
         $endDate = $jadwal->tanggal->copy()->endOfDay();
         $phase = $this->determinePhase($startDate, $endDate, $referenceDate);
+        $kegiatanType = $jadwal->kegiatan?->jenis === 'dinas_luar' ? 'dinas_luar' : 'layanan';
+        $kegiatanLabel = $kegiatanType === 'dinas_luar' ? 'Dinas Luar' : 'Layanan';
 
         return [
             'key' => 'jadwal-'.$jadwal->id,
             'id' => $jadwal->id,
-            'type' => 'layanan',
-            'type_label' => 'Layanan',
-            'title' => $jadwal->kegiatan?->nama_kegiatan ?? 'Layanan',
+            'type' => $kegiatanType,
+            'type_label' => $kegiatanLabel,
+            'title' => $jadwal->kegiatan?->nama_kegiatan ?? $kegiatanLabel,
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
             'people' => $pegawaiName,
@@ -260,13 +262,15 @@ class JadwalKegiatanController extends Controller
         $pegawaiNames = $jadwal->pegawai->pluck('nama');
         $displayName = $pegawaiNames->take(3)->implode(', ');
         $initialSeed = $pegawaiNames->first() ?: 'PG';
+        $kegiatanType = $jadwal->kegiatan?->jenis === 'dinas_luar' ? 'dinas_luar' : 'layanan';
+        $kegiatanLabel = $kegiatanType === 'dinas_luar' ? 'Dinas Luar' : 'Layanan';
 
         return [
             'key' => 'jadwal-'.$jadwal->id,
             'id' => $jadwal->id,
-            'type' => 'layanan',
-            'type_label' => 'Layanan',
-            'title' => $jadwal->kegiatan?->nama_kegiatan ?? 'Layanan',
+            'type' => $kegiatanType,
+            'type_label' => $kegiatanLabel,
+            'title' => $jadwal->kegiatan?->nama_kegiatan ?? $kegiatanLabel,
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
             'people' => $displayName ?: 'Belum ada petugas',
@@ -394,7 +398,7 @@ class JadwalKegiatanController extends Controller
                 }
 
                 if (($item['type'] ?? null) === 'dinas_luar') {
-                    return $status === 'disetujui';
+                    return in_array($status, ['disetujui', 'terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
                 }
 
                 return false;

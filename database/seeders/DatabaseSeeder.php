@@ -43,6 +43,8 @@ class DatabaseSeeder extends Seeder
             $this->seedMonitoringAndReports($jadwalList, $usersByRole);
         });
 
+        $this->call(DefaultRoleAccountSeeder::class);
+
         $this->call(MarchAprilJadwalSeeder::class);
     }
 
