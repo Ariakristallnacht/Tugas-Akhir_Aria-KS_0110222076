@@ -13,7 +13,7 @@ class DashboardController extends Controller
 {
     public function __invoke(): View
     {
-        $recentReports = LaporanKegiatan::with(['pegawai', 'jadwal.kegiatan'])
+        $recentReports = LaporanKegiatan::with(['pegawai', 'jadwal.kegiatan', 'pengajuanDinas'])
             ->latest('created_at')
             ->limit(5)
             ->get();

@@ -11,10 +11,15 @@ class LaporanKegiatan extends Model
 {
     use HasFactory;
 
+    public const JENIS_LAYANAN = 'layanan';
+    public const JENIS_DINAS_LUAR = 'dinas_luar';
+
     protected $table = 'laporan_kegiatan';
 
     protected $fillable = [
+        'jenis_kegiatan',
         'jadwal_id',
+        'pengajuan_dinas_id',
         'pegawai_id',
         'tanggal',
         'laporan',
@@ -45,9 +50,73 @@ class LaporanKegiatan extends Model
         return $this->belongsTo(Pegawai::class);
     }
 
+    public function pengajuanDinas(): BelongsTo
+    {
+        return $this->belongsTo(PengajuanDinas::class);
+    }
+
     public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'diverifikasi_oleh');
+    }
+
+    public function getJenisKegiatanLabelAttribute(): string
+    {
+        return $this->jenis_kegiatan === self::JENIS_DINAS_LUAR ? 'Dinas Luar' : 'Layanan';
+    }
+
+    public function getKegiatanNamaAttribute(): string
+    {
+        if ($this->jenis_kegiatan === self::JENIS_DINAS_LUAR) {
+            return $this->pengajuanDinas?->kegiatan ?? 'Kegiatan dinas luar tidak ditemukan';
+        }
+
+        return $this->jadwal?->kegiatan?->nama_kegiatan ?? 'Kegiatan layanan tidak ditemukan';
+    }
+
+    public function getLokasiKegiatanAttribute(): string
+    {
+        if ($this->jenis_kegiatan === self::JENIS_DINAS_LUAR) {
+            return $this->pengajuanDinas?->tujuan ?? 'Tujuan belum diisi';
+        }
+
+        return $this->jadwal?->lokasi ?? 'Lokasi belum diisi';
+    }
+
+    public function getWaktuKegiatanAttribute(): string
+    {
+        if ($this->jenis_kegiatan === self::JENIS_DINAS_LUAR) {
+            $startDate = $this->pengajuanDinas?->tanggal_mulai;
+            $endDate = $this->pengajuanDinas?->tanggal_selesai;
+
+            if (! $startDate || ! $endDate) {
+                return '-';
+            }
+
+            if ($startDate->isSameDay($endDate)) {
+                return $startDate->translatedFormat('d F Y');
+            }
+
+            return $startDate->translatedFormat('d F Y').' s.d. '.$endDate->translatedFormat('d F Y');
+        }
+
+        $startTime = $this->jadwal?->waktu_mulai?->format('H:i');
+        $endTime = $this->jadwal?->waktu_selesai?->format('H:i');
+
+        if (! $startTime && ! $endTime) {
+            return '-';
+        }
+
+        return trim(($startTime ?? '-').' - '.($endTime ?? '-'));
+    }
+
+    public function getStatusReferensiAttribute(): string
+    {
+        if ($this->jenis_kegiatan === self::JENIS_DINAS_LUAR) {
+            return ucfirst($this->pengajuanDinas?->status ?? 'tidak diketahui');
+        }
+
+        return ucfirst($this->jadwal?->status ?? 'tidak diketahui');
     }
 
     public function getDokumenLaporanUrlAttribute(): ?string

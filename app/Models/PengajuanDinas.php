@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class PengajuanDinas extends Model
@@ -48,6 +49,11 @@ class PengajuanDinas extends Model
     public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'diverifikasi_oleh');
+    }
+
+    public function laporanKegiatan(): HasMany
+    {
+        return $this->hasMany(LaporanKegiatan::class);
     }
 
     public function getBuktiSuratUrlAttribute(): ?string

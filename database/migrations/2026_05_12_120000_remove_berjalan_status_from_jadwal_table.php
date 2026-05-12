@@ -11,6 +11,10 @@ return new class extends Migration
             ->where('status', 'berjalan')
             ->update(['status' => 'terjadwal']);
 
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement("
             ALTER TABLE jadwal
             MODIFY status ENUM('draft', 'terjadwal', 'selesai', 'dibatalkan')
@@ -20,6 +24,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement("
             ALTER TABLE jadwal
             MODIFY status ENUM('draft', 'terjadwal', 'berjalan', 'selesai', 'dibatalkan')

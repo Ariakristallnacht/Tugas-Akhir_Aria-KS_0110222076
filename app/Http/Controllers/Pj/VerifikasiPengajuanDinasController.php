@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pj;
 
 use App\Http\Controllers\Controller;
 use App\Models\PengajuanDinas;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -34,12 +35,14 @@ class VerifikasiPengajuanDinasController extends Controller
             'catatan_verifikasi' => ['nullable', 'string'],
         ]);
 
-        $pengajuanDina->update([
-            'status' => $validated['status'],
-            'catatan_verifikasi' => $validated['catatan_verifikasi'] ?? null,
-            'diverifikasi_oleh' => auth()->id(),
-            'diverifikasi_at' => now(),
-        ]);
+        DB::transaction(function () use ($pengajuanDina, $validated) {
+            $pengajuanDina->update([
+                'status' => $validated['status'],
+                'catatan_verifikasi' => $validated['catatan_verifikasi'] ?? null,
+                'diverifikasi_oleh' => auth()->id(),
+                'diverifikasi_at' => now(),
+            ]);
+        });
 
         return redirect()
             ->route('pj.verifikasi-pengajuan-dinas.index')

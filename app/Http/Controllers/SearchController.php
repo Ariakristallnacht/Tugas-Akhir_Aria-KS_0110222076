@@ -54,12 +54,16 @@ class SearchController extends Controller
                     ->get();
 
                 $results['laporan'] = LaporanKegiatan::query()
-                    ->with(['pegawai', 'jadwal.kegiatan'])
+                    ->with(['pegawai', 'jadwal.kegiatan', 'pengajuanDinas'])
                     ->where(function (Builder $builder) use ($query) {
                         $builder
                             ->where('laporan', 'like', "%{$query}%")
                             ->orWhereHas('pegawai', fn (Builder $subQuery) => $subQuery->where('nama', 'like', "%{$query}%"))
                             ->orWhereHas('jadwal.kegiatan', fn (Builder $subQuery) => $subQuery->where('nama_kegiatan', 'like', "%{$query}%"))
+                            ->orWhereHas('pengajuanDinas', fn (Builder $subQuery) => $subQuery
+                                ->where('tujuan', 'like', "%{$query}%")
+                                ->orWhere('kegiatan', 'like', "%{$query}%")
+                                ->orWhere('keterangan', 'like', "%{$query}%"))
                             ->orWhereHas('jadwal', fn (Builder $subQuery) => $subQuery
                                 ->where('lokasi', 'like', "%{$query}%")
                                 ->orWhere('keterangan', 'like', "%{$query}%"));
@@ -82,12 +86,16 @@ class SearchController extends Controller
                     ->get();
 
                 $results['laporan'] = LaporanKegiatan::query()
-                    ->with(['pegawai', 'jadwal.kegiatan'])
+                    ->with(['pegawai', 'jadwal.kegiatan', 'pengajuanDinas'])
                     ->where(function (Builder $builder) use ($query) {
                         $builder
                             ->where('laporan', 'like', "%{$query}%")
                             ->orWhereHas('pegawai', fn (Builder $subQuery) => $subQuery->where('nama', 'like', "%{$query}%"))
                             ->orWhereHas('jadwal.kegiatan', fn (Builder $subQuery) => $subQuery->where('nama_kegiatan', 'like', "%{$query}%"))
+                            ->orWhereHas('pengajuanDinas', fn (Builder $subQuery) => $subQuery
+                                ->where('tujuan', 'like', "%{$query}%")
+                                ->orWhere('kegiatan', 'like', "%{$query}%")
+                                ->orWhere('keterangan', 'like', "%{$query}%"))
                             ->orWhereHas('jadwal', fn (Builder $subQuery) => $subQuery
                                 ->where('lokasi', 'like', "%{$query}%")
                                 ->orWhere('keterangan', 'like', "%{$query}%"));
@@ -123,12 +131,16 @@ class SearchController extends Controller
                     ->get();
 
                 $results['laporan'] = LaporanKegiatan::query()
-                    ->with(['pegawai', 'jadwal.kegiatan'])
+                    ->with(['pegawai', 'jadwal.kegiatan', 'pengajuanDinas'])
                     ->where('pegawai_id', $pegawai->id)
                     ->where(function (Builder $builder) use ($query) {
                         $builder
                             ->where('laporan', 'like', "%{$query}%")
                             ->orWhereHas('jadwal.kegiatan', fn (Builder $subQuery) => $subQuery->where('nama_kegiatan', 'like', "%{$query}%"))
+                            ->orWhereHas('pengajuanDinas', fn (Builder $subQuery) => $subQuery
+                                ->where('tujuan', 'like', "%{$query}%")
+                                ->orWhere('kegiatan', 'like', "%{$query}%")
+                                ->orWhere('keterangan', 'like', "%{$query}%"))
                             ->orWhereHas('jadwal', fn (Builder $subQuery) => $subQuery
                                 ->where('lokasi', 'like', "%{$query}%")
                                 ->orWhere('keterangan', 'like', "%{$query}%"));

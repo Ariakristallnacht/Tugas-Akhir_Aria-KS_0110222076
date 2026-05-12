@@ -53,10 +53,11 @@
             <tr>
                 <th>Tanggal</th>
                 <th>Pegawai</th>
+                <th>Jenis</th>
                 <th>Kegiatan</th>
                 <th>Lokasi</th>
                 <th>Waktu</th>
-                <th>Status Jadwal</th>
+                <th>Status Referensi</th>
                 <th>Laporan</th>
             </tr>
         </thead>
@@ -68,15 +69,16 @@
                         {{ $report->pegawai?->nama ?? '-' }}
                         <div class="muted">{{ $report->pegawai?->jabatan ?? '-' }}</div>
                     </td>
-                    <td>{{ $report->jadwal?->kegiatan?->nama_kegiatan ?? 'Kegiatan tidak ditemukan' }}</td>
-                    <td>{{ $report->jadwal?->lokasi ?? '-' }}</td>
-                    <td>{{ $report->jadwal?->waktu_mulai?->format('H:i') ?? '-' }} - {{ $report->jadwal?->waktu_selesai?->format('H:i') ?? '-' }}</td>
-                    <td>{{ ucfirst($report->jadwal?->status ?? 'tidak diketahui') }}</td>
+                    <td>{{ $report->jenis_kegiatan_label }}</td>
+                    <td>{{ $report->kegiatan_nama }}</td>
+                    <td>{{ $report->lokasi_kegiatan }}</td>
+                    <td>{{ $report->waktu_kegiatan }}</td>
+                    <td>{{ $report->status_referensi }}</td>
                     <td>{{ $report->laporan }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7">Tidak ada data laporan pada filter ini.</td>
+                    <td colspan="8">Tidak ada data laporan pada filter ini.</td>
                 </tr>
             @endforelse
         </tbody>

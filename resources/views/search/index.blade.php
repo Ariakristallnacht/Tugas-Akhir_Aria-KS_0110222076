@@ -188,12 +188,12 @@
                             @foreach ($results['laporan'] as $laporan)
                                 <div class="pkm-table__row">
                                     <div data-label="Laporan">
-                                        <strong>{{ $laporan->jadwal?->kegiatan?->nama_kegiatan ?? 'Kegiatan tidak ditemukan' }}</strong>
+                                        <strong>{{ $laporan->kegiatan_nama }}</strong>
                                         <small>{{ \Illuminate\Support\Str::limit($laporan->laporan, 110) }}</small>
                                     </div>
                                     <div data-label="Pelaksana">
                                         <strong>{{ $laporan->pegawai?->nama ?? '-' }}</strong>
-                                        <small>{{ $laporan->jadwal?->lokasi ?? 'Lokasi belum diisi' }}</small>
+                                        <small>{{ $laporan->jenis_kegiatan_label }} · {{ $laporan->lokasi_kegiatan }}</small>
                                     </div>
                                     <div data-label="Waktu">
                                         <strong>{{ $laporan->tanggal?->translatedFormat('d M Y') ?? '-' }}</strong>

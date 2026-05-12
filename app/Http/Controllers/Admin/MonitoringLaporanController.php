@@ -59,7 +59,7 @@ class MonitoringLaporanController extends Controller
             'title' => $this->viewTitle(),
             'heading' => 'Detail Laporan Kegiatan',
             'routeName' => $this->routeName(),
-            'report' => $laporanKegiatan->load(['jadwal.kegiatan', 'pegawai']),
+            'report' => $laporanKegiatan->load(['jadwal.kegiatan', 'pengajuanDinas', 'pegawai']),
         ]);
     }
 
@@ -118,7 +118,7 @@ class MonitoringLaporanController extends Controller
     private function buildQuery(array $filters, Carbon $dateFrom, Carbon $dateTo): Builder
     {
         return LaporanKegiatan::query()
-            ->with(['jadwal.kegiatan', 'pegawai'])
+            ->with(['jadwal.kegiatan', 'pengajuanDinas', 'pegawai'])
             ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
             ->when($filters['pegawai_id'], fn (Builder $query, $pegawaiId) => $query->where('pegawai_id', $pegawaiId))
             ->when($filters['search'] !== '', function (Builder $query) use ($filters) {
@@ -127,7 +127,11 @@ class MonitoringLaporanController extends Controller
                 $query->where(function (Builder $nested) use ($keyword) {
                     $nested->whereHas('pegawai', fn (Builder $pegawaiQuery) => $pegawaiQuery->where('nama', 'like', '%'.$keyword.'%'))
                         ->orWhereHas('jadwal.kegiatan', fn (Builder $kegiatanQuery) => $kegiatanQuery->where('nama_kegiatan', 'like', '%'.$keyword.'%'))
-                        ->orWhereHas('jadwal', fn (Builder $jadwalQuery) => $jadwalQuery->where('lokasi', 'like', '%'.$keyword.'%'));
+                        ->orWhereHas('jadwal', fn (Builder $jadwalQuery) => $jadwalQuery->where('lokasi', 'like', '%'.$keyword.'%'))
+                        ->orWhereHas('pengajuanDinas', fn (Builder $pengajuanQuery) => $pengajuanQuery
+                            ->where('tujuan', 'like', '%'.$keyword.'%')
+                            ->orWhere('kegiatan', 'like', '%'.$keyword.'%')
+                            ->orWhere('keterangan', 'like', '%'.$keyword.'%'));
                 });
             });
     }
@@ -137,7 +141,7 @@ class MonitoringLaporanController extends Controller
         return [
             'all' => $reports->count(),
             'pegawai' => $reports->pluck('pegawai_id')->filter()->unique()->count(),
-            'kegiatan' => $reports->pluck('jadwal.kegiatan_id')->filter()->unique()->count(),
+            'kegiatan' => $reports->map(fn (LaporanKegiatan $report) => $report->kegiatan_nama)->filter()->unique()->count(),
         ];
     }
 
@@ -160,10 +164,10 @@ class MonitoringLaporanController extends Controller
                 fputcsv($handle, [
                     optional($report->tanggal)->translatedFormat('d/m/Y'),
                     $report->pegawai?->nama,
-                    $report->jadwal?->kegiatan?->nama_kegiatan ?? 'Kegiatan tidak ditemukan',
-                    $report->jadwal?->lokasi ?? '-',
-                    trim(($report->jadwal?->waktu_mulai?->format('H:i') ?? '-').' - '.($report->jadwal?->waktu_selesai?->format('H:i') ?? '-')),
-                    ucfirst($report->jadwal?->status ?? 'tidak diketahui'),
+                    $report->kegiatan_nama,
+                    $report->lokasi_kegiatan,
+                    $report->waktu_kegiatan,
+                    $report->status_referensi,
                     $report->laporan,
                 ]);
             }

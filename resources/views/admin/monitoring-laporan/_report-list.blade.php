@@ -7,7 +7,7 @@
         <div class="pkm-table__head">
             <span>Laporan</span>
             <span>Pelaksana</span>
-            <span>Jadwal</span>
+            <span>Referensi</span>
             <span>Waktu Dibuat</span>
             <span>Aksi</span>
         </div>
@@ -15,16 +15,16 @@
         @foreach ($reports as $report)
             <div class="pkm-table__row">
                 <div data-label="Laporan">
-                    <strong>{{ $report->jadwal?->kegiatan?->nama_kegiatan ?? 'Kegiatan tidak ditemukan' }}</strong>
-                    <small>{{ $report->tanggal->translatedFormat('d F Y') }} · {{ $report->jadwal?->lokasi ?? 'Lokasi belum diisi' }}</small>
+                    <strong>{{ $report->kegiatan_nama }}</strong>
+                    <small>{{ $report->jenis_kegiatan_label }} · {{ $report->tanggal->translatedFormat('d F Y') }} · {{ $report->lokasi_kegiatan }}</small>
                 </div>
                 <div data-label="Pelaksana">
                     <strong>{{ $report->pegawai?->nama ?? 'Pegawai tidak ditemukan' }}</strong>
                     <small>{{ $report->pegawai?->jabatan ?? 'Jabatan tidak tersedia' }}</small>
                 </div>
-                <div data-label="Jadwal">
-                    <strong>{{ $report->jadwal?->waktu_mulai?->format('H:i') ?? '-' }} - {{ $report->jadwal?->waktu_selesai?->format('H:i') ?? '-' }}</strong>
-                    <small>Status jadwal: {{ ucfirst($report->jadwal?->status ?? 'tidak diketahui') }}</small>
+                <div data-label="Referensi">
+                    <strong>{{ $report->waktu_kegiatan }}</strong>
+                    <small>Status referensi: {{ $report->status_referensi }}</small>
                 </div>
                 <div data-label="Waktu Dibuat">
                     <strong>{{ $report->created_at?->translatedFormat('d M Y H:i') ?? '-' }}</strong>

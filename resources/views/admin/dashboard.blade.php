@@ -71,8 +71,8 @@
                         @endphp
                         <div class="pkm-table__row">
                             <div data-label="Laporan">
-                                <strong>{{ $report->jadwal?->kegiatan?->nama_kegiatan ?? 'Kegiatan tidak ditemukan' }}</strong>
-                                <small>{{ $report->jadwal?->lokasi ?? 'Lokasi belum diisi' }}</small>
+                                <strong>{{ $report->kegiatan_nama }}</strong>
+                                <small>{{ $report->jenis_kegiatan_label }} · {{ $report->lokasi_kegiatan }}</small>
                             </div>
                             <div data-label="Pegawai">
                                 <strong>{{ $report->pegawai?->nama ?? 'Pegawai tidak ditemukan' }}</strong>

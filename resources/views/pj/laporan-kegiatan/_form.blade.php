@@ -1,5 +1,6 @@
 @php
     $tanggalValue = old('tanggal', filled($report->tanggal) ? \Illuminate\Support\Carbon::parse($report->tanggal)->format('Y-m-d') : '');
+    $selectedJenis = old('jenis_kegiatan', $report->jenis_kegiatan ?: \App\Models\LaporanKegiatan::JENIS_LAYANAN);
 @endphp
 
 @push('styles')
@@ -40,9 +41,17 @@
 
 <div class="pkm-form-grid" data-report-form>
     <div class="pkm-field">
-        <label for="jadwal_id">Jadwal kegiatan</label>
-        <select id="jadwal_id" class="pkm-input" name="jadwal_id" data-jadwal-select required>
-            <option value="">Pilih jadwal</option>
+        <label for="jenis_kegiatan">Jenis kegiatan</label>
+        <select id="jenis_kegiatan" class="pkm-input" name="jenis_kegiatan" data-jenis-select required>
+            <option value="{{ \App\Models\LaporanKegiatan::JENIS_LAYANAN }}" @selected($selectedJenis === \App\Models\LaporanKegiatan::JENIS_LAYANAN)>Layanan</option>
+            <option value="{{ \App\Models\LaporanKegiatan::JENIS_DINAS_LUAR }}" @selected($selectedJenis === \App\Models\LaporanKegiatan::JENIS_DINAS_LUAR)>Dinas Luar</option>
+        </select>
+    </div>
+
+    <div class="pkm-field" data-source-group="layanan">
+        <label for="jadwal_id">Pilih Jadwal Layanan</label>
+        <select id="jadwal_id" class="pkm-input" name="jadwal_id" data-jadwal-select>
+            <option value="">Pilih jadwal layanan</option>
             @foreach ($jadwalOptions as $jadwal)
                 <option
                     value="{{ $jadwal->id }}"
@@ -50,6 +59,22 @@
                     @selected((string) old('jadwal_id', $report->jadwal_id) === (string) $jadwal->id)
                 >
                     {{ $jadwal->tanggal->translatedFormat('d M Y') }} - {{ $jadwal->kegiatan?->nama_kegiatan ?? 'Kegiatan' }} - {{ $jadwal->lokasi }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="pkm-field" data-source-group="dinas_luar">
+        <label for="pengajuan_dinas_id">Pilih Pengajuan Dinas</label>
+        <select id="pengajuan_dinas_id" class="pkm-input" name="pengajuan_dinas_id" data-pengajuan-select>
+            <option value="">Pilih pengajuan dinas</option>
+            @foreach ($pengajuanDinasOptions as $pengajuan)
+                <option
+                    value="{{ $pengajuan->id }}"
+                    data-pegawai='@json($pengajuan->pegawai ? [['id' => $pengajuan->pegawai->id, 'nama' => $pengajuan->pegawai->nama, 'jabatan' => $pengajuan->pegawai->jabatan]] : [])'
+                    @selected((string) old('pengajuan_dinas_id', $report->pengajuan_dinas_id) === (string) $pengajuan->id)
+                >
+                    {{ $pengajuan->tanggal_mulai->translatedFormat('d M Y') }} - {{ \Illuminate\Support\Str::limit($pengajuan->kegiatan, 60) }} - {{ $pengajuan->tujuan }}
                 </option>
             @endforeach
         </select>
@@ -97,8 +122,8 @@
 
     <div class="pkm-field pkm-field--full">
         <div class="pkm-report-hint" id="report-assignment-hint">
-            <strong>Petugas jadwal akan muncul setelah jadwal dipilih.</strong>
-            <span>PJ hanya bisa memilih pegawai yang memang terdaftar pada jadwal tersebut.</span>
+            <strong>Pilih jenis kegiatan terlebih dahulu.</strong>
+            <span>Petugas akan menyesuaikan dengan jadwal layanan atau pengajuan dinas yang dipilih.</span>
         </div>
     </div>
 </div>
@@ -118,18 +143,45 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.querySelector('[data-report-form]');
+            const jenisSelect = document.querySelector('[data-jenis-select]');
             const jadwalSelect = document.querySelector('[data-jadwal-select]');
+            const pengajuanSelect = document.querySelector('[data-pengajuan-select]');
             const pegawaiSelect = document.querySelector('[data-pegawai-select]');
             const hint = document.getElementById('report-assignment-hint');
             const currentPegawaiId = @json((string) old('pegawai_id', $report->pegawai_id));
             const isPegawaiLocked = @json($lockPegawai ?? false);
+            const sourceGroups = document.querySelectorAll('[data-source-group]');
 
-            if (!form || !jadwalSelect || !hint || (!isPegawaiLocked && !pegawaiSelect)) {
+            if (!form || !jenisSelect || !jadwalSelect || !pengajuanSelect || !hint || (!isPegawaiLocked && !pegawaiSelect)) {
                 return;
             }
 
+            const activeSourceSelect = () => jenisSelect.value === 'dinas_luar' ? pengajuanSelect : jadwalSelect;
+
+            const updateSourceVisibility = () => {
+                const activeType = jenisSelect.value;
+
+                sourceGroups.forEach((group) => {
+                    const isActive = group.dataset.sourceGroup === activeType;
+                    group.hidden = !isActive;
+
+                    const select = group.querySelector('select');
+
+                    if (!select) {
+                        return;
+                    }
+
+                    select.disabled = !isActive;
+
+                    if (!isActive) {
+                        select.value = '';
+                    }
+                });
+            };
+
             const updatePegawaiOptions = () => {
-                const selected = jadwalSelect.options[jadwalSelect.selectedIndex];
+                const sourceSelect = activeSourceSelect();
+                const selected = sourceSelect.options[sourceSelect.selectedIndex];
                 const pegawai = selected?.dataset?.pegawai ? JSON.parse(selected.dataset.pegawai) : [];
 
                 if (!isPegawaiLocked) {
@@ -153,20 +205,33 @@
                 });
 
                 if (pegawai.length === 0) {
-                    hint.innerHTML = '<strong>Belum ada petugas pada jadwal ini.';
+                    hint.innerHTML = jenisSelect.value === 'dinas_luar'
+                        ? '<strong>Belum ada pegawai pada pengajuan dinas ini.</strong><span>Pilih pengajuan dinas yang valid untuk menentukan pelaksana laporan.</span>'
+                        : '<strong>Belum ada petugas pada jadwal ini.</strong><span>Pilih jadwal layanan yang memiliki petugas terdaftar.</span>';
                     return;
                 }
 
-                hint.innerHTML = `<strong>${pegawai.length} petugas tersedia untuk laporan ini.</strong><span>${pegawai.map((item) => `${item.nama} (${item.jabatan})`).join(', ')}</span>`;
+                const sourceLabel = jenisSelect.value === 'dinas_luar' ? 'pengajuan dinas' : 'jadwal layanan';
+                hint.innerHTML = `<strong>${pegawai.length} petugas tersedia untuk ${sourceLabel} ini.</strong><span>${pegawai.map((item) => `${item.nama} (${item.jabatan})`).join(', ')}</span>`;
             };
 
-            jadwalSelect.addEventListener('change', function () {
+            const handleSourceChange = () => {
                 if (!isPegawaiLocked) {
                     pegawaiSelect.value = '';
                 }
+
                 updatePegawaiOptions();
+            };
+
+            jenisSelect.addEventListener('change', function () {
+                updateSourceVisibility();
+                handleSourceChange();
             });
 
+            jadwalSelect.addEventListener('change', handleSourceChange);
+            pengajuanSelect.addEventListener('change', handleSourceChange);
+
+            updateSourceVisibility();
             updatePegawaiOptions();
         });
     </script>

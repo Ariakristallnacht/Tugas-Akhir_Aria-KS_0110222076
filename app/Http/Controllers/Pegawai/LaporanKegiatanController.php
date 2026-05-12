@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use App\Models\LaporanKegiatan;
 use App\Models\Pegawai;
+use App\Models\PengajuanDinas;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +35,7 @@ class LaporanKegiatanController extends Controller
             'reports' => $reports,
             'summary' => [
                 'all' => $summaryReports->count(),
-                'kegiatan' => $summaryReports->pluck('jadwal.kegiatan_id')->filter()->unique()->count(),
+                'kegiatan' => $summaryReports->map(fn (LaporanKegiatan $report) => $report->kegiatan_nama)->filter()->unique()->count(),
                 'bulan_ini' => $summaryReports->whereBetween('tanggal', [$dateFrom->copy()->startOfMonth(), $dateFrom->copy()->endOfMonth()])->count(),
                 'dokumen' => $summaryReports->whereNotNull('dokumen_laporan_path')->count(),
             ],
@@ -46,6 +47,7 @@ class LaporanKegiatanController extends Controller
         $pegawai = $this->currentPegawai();
         $report = new LaporanKegiatan([
             'pegawai_id' => $pegawai->id,
+            'jenis_kegiatan' => LaporanKegiatan::JENIS_LAYANAN,
             'tanggal' => now()->toDateString(),
             'status_verifikasi' => 'menunggu',
         ]);
@@ -82,7 +84,7 @@ class LaporanKegiatanController extends Controller
         $this->ensureOwnReport($laporanKegiatan, $pegawai);
 
         return view('pegawai.laporan-kegiatan.show', [
-            'report' => $laporanKegiatan->load(['jadwal.kegiatan', 'pegawai']),
+            'report' => $laporanKegiatan->load(['jadwal.kegiatan', 'pengajuanDinas', 'pegawai']),
         ]);
     }
 
@@ -92,7 +94,7 @@ class LaporanKegiatanController extends Controller
         $this->ensureOwnReport($laporanKegiatan, $pegawai);
 
         return view('pegawai.laporan-kegiatan.edit', [
-            'report' => $laporanKegiatan->load(['jadwal.pegawai', 'pegawai']),
+            'report' => $laporanKegiatan->load(['jadwal.pegawai', 'pengajuanDinas.pegawai', 'pegawai']),
             ...$this->formOptions($pegawai, $laporanKegiatan),
         ]);
     }
@@ -190,19 +192,71 @@ class LaporanKegiatanController extends Controller
     private function validateRequest(Request $request, Pegawai $pegawai, ?LaporanKegiatan $report = null): array
     {
         $validated = $request->validate([
-            'jadwal_id' => ['required', 'exists:jadwal,id'],
+            'jenis_kegiatan' => ['required', 'in:layanan,dinas_luar'],
+            'jadwal_id' => ['nullable', 'exists:jadwal,id'],
+            'pengajuan_dinas_id' => ['nullable', 'exists:pengajuan_dinas,id'],
             'tanggal' => ['required', 'date'],
             'laporan' => ['nullable', 'string'],
             'dokumen_laporan' => ['required_without:dokumen_laporan_existing', 'file', 'mimes:pdf', 'max:10240'],
             'dokumen_laporan_existing' => ['nullable', 'string'],
         ]);
 
-        $jadwal = Jadwal::with('pegawai')->findOrFail($validated['jadwal_id']);
+        if ($validated['jenis_kegiatan'] === LaporanKegiatan::JENIS_LAYANAN) {
+            if (blank($validated['jadwal_id'] ?? null)) {
+                throw ValidationException::withMessages([
+                    'jadwal_id' => 'Jadwal layanan wajib dipilih untuk laporan layanan.',
+                ]);
+            }
 
-        if (! $jadwal->pegawai->contains('id', $pegawai->id)) {
-            throw ValidationException::withMessages([
-                'jadwal_id' => 'Jadwal yang dipilih harus merupakan jadwal yang ditugaskan kepada Anda.',
-            ]);
+            if (filled($validated['pengajuan_dinas_id'] ?? null)) {
+                throw ValidationException::withMessages([
+                    'pengajuan_dinas_id' => 'Pengajuan dinas harus kosong jika jenis kegiatan adalah layanan.',
+                ]);
+            }
+
+            $jadwal = Jadwal::with('pegawai')->findOrFail($validated['jadwal_id']);
+
+            if (! $jadwal->pegawai->contains('id', $pegawai->id)) {
+                throw ValidationException::withMessages([
+                    'jadwal_id' => 'Jadwal yang dipilih harus merupakan jadwal yang ditugaskan kepada Anda.',
+                ]);
+            }
+
+            if (! $this->isEligibleJadwalForReport($jadwal, $pegawai, $report)) {
+                throw ValidationException::withMessages([
+                    'jadwal_id' => 'Jadwal yang dipilih tidak tersedia untuk pembuatan laporan.',
+                ]);
+            }
+
+            $validated['pengajuan_dinas_id'] = null;
+        } else {
+            if (blank($validated['pengajuan_dinas_id'] ?? null)) {
+                throw ValidationException::withMessages([
+                    'pengajuan_dinas_id' => 'Pengajuan dinas wajib dipilih untuk laporan dinas luar.',
+                ]);
+            }
+
+            if (filled($validated['jadwal_id'] ?? null)) {
+                throw ValidationException::withMessages([
+                    'jadwal_id' => 'Jadwal layanan harus kosong jika jenis kegiatan adalah dinas luar.',
+                ]);
+            }
+
+            $pengajuan = PengajuanDinas::with('pegawai')->findOrFail($validated['pengajuan_dinas_id']);
+
+            if ((int) $pengajuan->pegawai_id !== (int) $pegawai->id) {
+                throw ValidationException::withMessages([
+                    'pengajuan_dinas_id' => 'Pengajuan dinas yang dipilih harus milik Anda.',
+                ]);
+            }
+
+            if (! $this->isEligibleSubmissionForReport($pengajuan, $pegawai, $report)) {
+                throw ValidationException::withMessages([
+                    'pengajuan_dinas_id' => 'Pengajuan dinas yang dipilih tidak tersedia untuk pembuatan laporan.',
+                ]);
+            }
+
+            $validated['jadwal_id'] = null;
         }
 
         $validated['laporan'] = $validated['laporan'] ?? '';
@@ -233,7 +287,7 @@ class LaporanKegiatanController extends Controller
     private function buildQuery(Pegawai $pegawai, array $filters, Carbon $dateFrom, Carbon $dateTo)
     {
         return LaporanKegiatan::query()
-            ->with(['jadwal.kegiatan', 'pegawai'])
+            ->with(['jadwal.kegiatan', 'pengajuanDinas', 'pegawai'])
             ->where('pegawai_id', $pegawai->id)
             ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
             ->when($filters['search'] !== '', function ($query) use ($filters) {
@@ -241,7 +295,11 @@ class LaporanKegiatanController extends Controller
 
                 $query->where(function ($nested) use ($keyword) {
                     $nested->whereHas('jadwal.kegiatan', fn ($kegiatanQuery) => $kegiatanQuery->where('nama_kegiatan', 'like', '%'.$keyword.'%'))
-                        ->orWhereHas('jadwal', fn ($jadwalQuery) => $jadwalQuery->where('lokasi', 'like', '%'.$keyword.'%'));
+                        ->orWhereHas('jadwal', fn ($jadwalQuery) => $jadwalQuery->where('lokasi', 'like', '%'.$keyword.'%'))
+                        ->orWhereHas('pengajuanDinas', fn ($pengajuanQuery) => $pengajuanQuery
+                            ->where('tujuan', 'like', '%'.$keyword.'%')
+                            ->orWhere('kegiatan', 'like', '%'.$keyword.'%')
+                            ->orWhere('keterangan', 'like', '%'.$keyword.'%'));
                 });
             });
     }
@@ -250,16 +308,96 @@ class LaporanKegiatanController extends Controller
     {
         $jadwalOptions = $pegawai->jadwal()
             ->with(['kegiatan', 'pegawai'])
-            ->where('status', '!=', 'dibatalkan')
+            ->where(function ($query) use ($pegawai, $report) {
+                $query
+                    ->where(function ($eligibleQuery) use ($pegawai, $report) {
+                        $eligibleQuery
+                            ->where('jadwal.status', 'terjadwal')
+                            ->wherePivot('status_penugasan', 'dijadwalkan')
+                            ->whereDate('jadwal.tanggal', '<=', now()->toDateString())
+                            ->whereDoesntHave('laporanKegiatan', function ($laporanQuery) use ($pegawai, $report) {
+                                $laporanQuery->where('pegawai_id', $pegawai->id)
+                                    ->when($report, fn ($nested) => $nested->whereKeyNot($report->id));
+                            });
+                    });
+
+                if ($report?->jadwal_id) {
+                    $query->orWhere('jadwal.id', $report->jadwal_id);
+                }
+            })
             ->orderByDesc('tanggal')
             ->orderByDesc('waktu_mulai')
             ->get();
 
+        $pengajuanDinasOptions = PengajuanDinas::query()
+            ->with('pegawai')
+            ->where('pegawai_id', $pegawai->id)
+            ->where(function ($query) use ($report) {
+                $query
+                    ->where(function ($eligibleQuery) use ($report) {
+                        $eligibleQuery
+                            ->where('status', 'disetujui')
+                            ->whereDate('tanggal_mulai', '<=', now()->toDateString())
+                            ->whereDoesntHave('laporanKegiatan', function ($laporanQuery) use ($report) {
+                                $laporanQuery
+                                    ->when($report, fn ($nested) => $nested->whereKeyNot($report->id));
+                            });
+                    });
+
+                if ($report?->pengajuan_dinas_id) {
+                    $query->orWhere('id', $report->pengajuan_dinas_id);
+                }
+            })
+            ->orderByDesc('tanggal_mulai')
+            ->orderByDesc('created_at')
+            ->get();
+
         return [
             'jadwalOptions' => $jadwalOptions,
+            'pengajuanDinasOptions' => $pengajuanDinasOptions,
             'pegawaiOptions' => collect([$pegawai]),
             'lockedPegawai' => $pegawai,
             'lockPegawai' => true,
         ];
+    }
+
+    private function isEligibleJadwalForReport(Jadwal $jadwal, Pegawai $pegawai, ?LaporanKegiatan $report = null): bool
+    {
+        if ($jadwal->status !== 'terjadwal') {
+            return false;
+        }
+
+        if ($jadwal->tanggal->isFuture()) {
+            return false;
+        }
+
+        $pivot = $jadwal->pegawai->firstWhere('id', $pegawai->id)?->pivot;
+
+        if (! $pivot || $pivot->status_penugasan !== 'dijadwalkan') {
+            return false;
+        }
+
+        return ! LaporanKegiatan::query()
+            ->where('jadwal_id', $jadwal->id)
+            ->where('pegawai_id', $pegawai->id)
+            ->when($report, fn ($query) => $query->whereKeyNot($report->id))
+            ->exists();
+    }
+
+    private function isEligibleSubmissionForReport(PengajuanDinas $pengajuan, Pegawai $pegawai, ?LaporanKegiatan $report = null): bool
+    {
+        if ($pengajuan->status !== 'disetujui') {
+            return false;
+        }
+
+        if ($pengajuan->tanggal_mulai->isFuture()) {
+            return false;
+        }
+
+        return ! LaporanKegiatan::query()
+            ->where('pengajuan_dinas_id', $pengajuan->id)
+            ->where('pegawai_id', $pegawai->id)
+            ->when($report, fn ($query) => $query->whereKeyNot($report->id))
+            ->exists();
     }
 }
