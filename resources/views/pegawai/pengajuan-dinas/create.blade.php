@@ -19,7 +19,7 @@
 
             <form method="POST" action="{{ route('pegawai.pengajuan-dinas.store') }}" class="pkm-form-stack" enctype="multipart/form-data">
                 @csrf
-                @include('pegawai.pengajuan-dinas._form', ['submitLabel' => 'Kirim Pengajuan'])
+                @include('pegawai.pengajuan-dinas._form', ['submitLabel' => 'Kirim Pengajuan', 'isEditMode' => false])
             </form>
         </div>
     </section>

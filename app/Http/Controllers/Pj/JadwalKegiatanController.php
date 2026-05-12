@@ -288,7 +288,7 @@ class JadwalKegiatanController extends Controller
             'waktu_selesai' => ['nullable', 'date_format:H:i', 'after:waktu_mulai'],
             'lokasi' => ['required', 'string', 'max:200'],
             'keterangan' => ['nullable', 'string'],
-            'status' => ['required', Rule::in(['draft', 'terjadwal', 'berjalan', 'selesai', 'dibatalkan'])],
+            'status' => ['required', Rule::in(['draft', 'terjadwal', 'selesai', 'dibatalkan'])],
             'petugas' => ['required', 'array', 'min:1'],
             'petugas.*.pegawai_id' => ['required', 'distinct', Rule::exists('pegawai', 'id')->where(fn ($query) => $query->where('is_aktif', true))],
             'petugas.*.peran_tugas' => ['nullable', 'string', 'max:100'],
@@ -403,7 +403,6 @@ class JadwalKegiatanController extends Controller
             'statusOptions' => [
                 'draft' => 'Draft',
                 'terjadwal' => 'Terjadwal',
-                'berjalan' => 'Berjalan',
                 'selesai' => 'Selesai',
                 'dibatalkan' => 'Dibatalkan',
             ],
@@ -641,7 +640,7 @@ class JadwalKegiatanController extends Controller
     private function statusClass(string $status): string
     {
         return match ($status) {
-            'berjalan', 'selesai', 'disetujui', 'hadir' => 'is-green',
+            'selesai', 'disetujui', 'hadir' => 'is-green',
             'terjadwal', 'dijadwalkan', 'diajukan' => 'is-blue',
             default => 'is-amber',
         };
@@ -677,11 +676,11 @@ class JadwalKegiatanController extends Controller
                 $status = strtolower((string) ($item['meta_status'] ?? ''));
 
                 if (($item['type'] ?? null) === 'layanan') {
-                    return in_array($status, ['terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
+                    return in_array($status, ['terjadwal', 'selesai', 'dijadwalkan', 'hadir'], true);
                 }
 
                 if (($item['type'] ?? null) === 'dinas_luar') {
-                    return in_array($status, ['disetujui', 'terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
+                    return in_array($status, ['disetujui', 'terjadwal', 'selesai', 'dijadwalkan', 'hadir'], true);
                 }
 
                 return false;

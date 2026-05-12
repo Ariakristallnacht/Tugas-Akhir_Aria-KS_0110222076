@@ -373,7 +373,7 @@ class DatabaseSeeder extends Seeder
                 'waktu_selesai' => '12:00:00',
                 'lokasi' => 'Poli Umum Gedung Utama',
                 'keterangan' => 'Pelayanan rutin hari kerja dengan fokus pemeriksaan pasien dewasa dan tindak lanjut resep.',
-                'status' => 'berjalan',
+                'status' => 'terjadwal',
                 'petugas' => [
                     ['nama' => 'Dewi Lestari', 'peran_tugas' => 'Perawat triase', 'status_penugasan' => 'hadir'],
                     ['nama' => 'Rina Fitriani', 'peran_tugas' => 'Koordinator shift', 'status_penugasan' => 'hadir'],
@@ -569,7 +569,6 @@ class DatabaseSeeder extends Seeder
             foreach ($jadwal->pegawai as $pegawai) {
                 $status = match ($jadwal->status) {
                     'selesai' => 'selesai',
-                    'berjalan' => 'proses',
                     'dibatalkan' => 'tidak_hadir',
                     default => 'belum_mulai',
                 };
@@ -595,7 +594,7 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
-            if (! in_array($jadwal->status, ['selesai', 'berjalan'], true)) {
+            if (! in_array($jadwal->status, ['selesai'], true)) {
                 return;
             }
 

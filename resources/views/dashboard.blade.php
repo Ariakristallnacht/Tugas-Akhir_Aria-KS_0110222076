@@ -151,7 +151,7 @@
                         </div>
                         <div data-label="Petugas">Bidan Siska, 1 admin</div>
                         <div data-label="Waktu">09.00 - 11.30</div>
-                        <div data-label="Status"><span class="pkm-pill is-blue">Berjalan</span></div>
+                        <div data-label="Status"><span class="pkm-pill is-blue">Terjadwal</span></div>
                     </div>
                     <div class="pkm-table__row">
                         <div data-label="Kegiatan">

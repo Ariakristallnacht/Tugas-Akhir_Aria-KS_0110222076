@@ -358,7 +358,7 @@ class JadwalKegiatanController extends Controller
     private function statusClass(string $status): string
     {
         return match ($status) {
-            'berjalan', 'selesai', 'disetujui', 'hadir' => 'is-green',
+            'selesai', 'disetujui', 'hadir' => 'is-green',
             'terjadwal', 'dijadwalkan', 'diajukan' => 'is-blue',
             default => 'is-amber',
         };
@@ -394,11 +394,11 @@ class JadwalKegiatanController extends Controller
                 $status = strtolower((string) ($item['meta_status'] ?? ''));
 
                 if (($item['type'] ?? null) === 'layanan') {
-                    return in_array($status, ['terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
+                    return in_array($status, ['terjadwal', 'selesai', 'dijadwalkan', 'hadir'], true);
                 }
 
                 if (($item['type'] ?? null) === 'dinas_luar') {
-                    return in_array($status, ['disetujui', 'terjadwal', 'berjalan', 'selesai', 'dijadwalkan', 'hadir'], true);
+                    return in_array($status, ['disetujui', 'terjadwal', 'selesai', 'dijadwalkan', 'hadir'], true);
                 }
 
                 return false;

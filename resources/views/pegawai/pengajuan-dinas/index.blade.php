@@ -76,7 +76,8 @@
 
                     @foreach ($submissions as $submission)
                         @php
-                            $isEditable = in_array($submission->status, ['diajukan', 'dibatalkan'], true);
+                            $canEdit = in_array($submission->status, ['diajukan', 'dibatalkan', 'disetujui'], true);
+                            $canDelete = in_array($submission->status, ['diajukan', 'dibatalkan'], true);
                             $statusClass = match ($submission->status) {
                                 'disetujui' => 'is-green',
                                 'dibatalkan' => 'is-blue',
@@ -103,19 +104,22 @@
                             </div>
                             <div data-label="Aksi">
                                 <div class="pkm-row-actions">
-                                    @if ($isEditable)
+                                    @if ($canEdit)
                                         <a href="{{ route('pegawai.pengajuan-dinas.edit', $submission) }}" class="pkm-text-link">
                                             <i data-lucide="pencil" class="size-4"></i>
                                             <span>Edit</span>
                                         </a>
-                                        <form method="POST" action="{{ route('pegawai.pengajuan-dinas.destroy', $submission) }}" onsubmit="return confirm('Hapus Pengajuan Dinas ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="pkm-danger-button">
-                                                <i data-lucide="trash-2" class="size-4"></i>
-                                                <span>Hapus</span>
-                                            </button>
-                                        </form>
+
+                                        @if ($canDelete)
+                                            <form method="POST" action="{{ route('pegawai.pengajuan-dinas.destroy', $submission) }}" onsubmit="return confirm('Hapus Pengajuan Dinas ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="pkm-danger-button">
+                                                    <i data-lucide="trash-2" class="size-4"></i>
+                                                    <span>Hapus</span>
+                                                </button>
+                                            </form>
+                                        @endif
                                     @else
                                         <span class="pkm-pagination__muted">Terkunci</span>
                                     @endif

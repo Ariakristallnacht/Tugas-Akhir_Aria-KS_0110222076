@@ -19,7 +19,7 @@
             <form method="POST" action="{{ route('pegawai.pengajuan-dinas.update', $pengajuan) }}" class="pkm-form-stack" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                @include('pegawai.pengajuan-dinas._form', ['submitLabel' => 'Simpan Perubahan'])
+                @include('pegawai.pengajuan-dinas._form', ['submitLabel' => 'Simpan Perubahan', 'isEditMode' => true])
             </form>
         </div>
     </section>

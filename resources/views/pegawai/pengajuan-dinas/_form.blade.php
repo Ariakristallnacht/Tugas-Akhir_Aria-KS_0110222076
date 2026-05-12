@@ -1,6 +1,7 @@
 @php
     $tanggalMulai = old('tanggal_mulai', filled($pengajuan->tanggal_mulai) ? \Illuminate\Support\Carbon::parse($pengajuan->tanggal_mulai)->format('Y-m-d') : '');
     $tanggalSelesai = old('tanggal_selesai', filled($pengajuan->tanggal_selesai) ? \Illuminate\Support\Carbon::parse($pengajuan->tanggal_selesai)->format('Y-m-d') : '');
+    $isEditMode = $isEditMode ?? false;
 @endphp
 
 @push('styles')
@@ -54,6 +55,23 @@
         <label for="keterangan">Keterangan tambahan</label>
         <textarea id="keterangan" class="pkm-input" name="keterangan" rows="4" placeholder="Opsional. Tambahkan informasi pendukung bila diperlukan.">{{ old('keterangan', $pengajuan->keterangan) }}</textarea>
     </div>
+
+    @if ($isEditMode)
+        <div class="pkm-field pkm-field--full">
+            <label for="alasan_perubahan_tanggal">Alasan perubahan tanggal kegiatan</label>
+            <textarea
+                id="alasan_perubahan_tanggal"
+                class="pkm-input"
+                name="alasan_perubahan_tanggal"
+                rows="3"
+                placeholder="Jelaskan alasan perubahan tanggal bila jadwal dinas digeser."
+            >{{ old('alasan_perubahan_tanggal') }}</textarea>
+            <small>Jika tanggal diubah, sistem akan menambahkan catatan tanggal sebelumnya ke keterangan secara otomatis.</small>
+            @error('alasan_perubahan_tanggal')
+                <small>{{ $message }}</small>
+            @enderror
+        </div>
+    @endif
 
 
     <div class="pkm-field pkm-field--full">
