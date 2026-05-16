@@ -7,6 +7,7 @@ use App\Models\Pegawai;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -151,8 +152,9 @@ class PegawaiController extends Controller
                     ->with('error', 'Data pegawai yang terhubung dengan akun Anda sendiri tidak dapat dihapus.');
             }
 
-            $pegawai->user?->delete();
-            $pegawai->delete();
+            DB::transaction(function () use ($pegawai): void {
+                $pegawai->delete();
+            });
         } catch (QueryException) {
             return redirect()
                 ->route('admin.pegawai.index')

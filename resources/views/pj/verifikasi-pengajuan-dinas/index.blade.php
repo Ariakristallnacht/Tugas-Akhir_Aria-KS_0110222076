@@ -16,6 +16,33 @@
         .pkm-table--verifikasi-pengajuan .pkm-table__row > :last-child {
             justify-self: start;
         }
+
+        .pkm-submission-note {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(191, 138, 0, 0.18);
+            background: #fff9e8;
+        }
+
+        .pkm-submission-note.is-info {
+            border-color: rgba(37, 99, 235, 0.18);
+            background: #eff6ff;
+        }
+
+        .pkm-submission-note strong,
+        .pkm-submission-note span {
+            display: block;
+        }
+
+        .pkm-submission-note span + span {
+            margin-top: 4px;
+        }
+
+        .pkm-submission-description {
+            margin-top: 14px;
+            white-space: pre-line;
+        }
     </style>
 @endpush
 
@@ -78,6 +105,29 @@
                                 default => 'is-amber',
                             };
                             $modalId = 'verifikasi-pengajuan-'.$submission->id;
+                            $keteranganLines = collect(preg_split("/\r\n|\n|\r/", (string) $submission->keterangan) ?: [])
+                                ->map(fn (string $line) => trim($line))
+                                ->filter();
+                            $alasanPerubahan = $keteranganLines
+                                ->first(fn (string $line) => \Illuminate\Support\Str::startsWith($line, 'Alasan perubahan tanggal: '));
+                            $tanggalSebelumnya = $keteranganLines
+                                ->first(fn (string $line) => \Illuminate\Support\Str::startsWith($line, 'Kegiatan ini akan dilaksanakan pada '));
+                            $alasanPengajuanKembali = $alasanPerubahan
+                                ? \Illuminate\Support\Str::after($alasanPerubahan, 'Alasan perubahan tanggal: ')
+                                : null;
+                            $keteranganUtama = $keteranganLines
+                                ->reject(fn (string $line) => \Illuminate\Support\Str::startsWith($line, 'Alasan perubahan tanggal: '))
+                                ->reject(fn (string $line) => \Illuminate\Support\Str::startsWith($line, 'Kegiatan ini akan dilaksanakan pada '))
+                                ->implode("\n");
+                            $pernahDiperbarui = $submission->updated_at
+                                && $submission->created_at
+                                && $submission->updated_at->gt($submission->created_at);
+                            $isPengajuanRevisi = filled($alasanPerubahan)
+                                || filled($tanggalSebelumnya)
+                                || ($submission->status === 'diajukan' && $pernahDiperbarui);
+                            $tanggalKegiatanTerbaru = $submission->tanggal_mulai->isSameDay($submission->tanggal_selesai)
+                                ? $submission->tanggal_mulai->translatedFormat('d M Y')
+                                : $submission->tanggal_mulai->translatedFormat('d M Y').' s.d. '.$submission->tanggal_selesai->translatedFormat('d M Y');
                         @endphp
                         <div class="pkm-table__row">
                             <div data-label="Pegawai">
@@ -87,6 +137,9 @@
                             <div data-label="Pengajuan">
                                 <strong>{{ \Illuminate\Support\Str::limit($submission->kegiatan, 55) }}</strong>
                                 <small>{{ $submission->tujuan }}</small>
+                                @if ($isPengajuanRevisi)
+                                    <small>Pengajuan ini memuat perubahan tanggal kegiatan.</small>
+                                @endif
                             </div>
                             <div data-label="Tanggal">
                                 <strong>{{ $submission->tanggal_mulai->translatedFormat('d M Y') }}</strong>
@@ -168,8 +221,44 @@
                                             </div>
                                         </div>
 
-                                        @if ($submission->keterangan)
-                                            <p>{{ $submission->keterangan }}</p>
+                                        @if ($isPengajuanRevisi)
+                                            <div class="pkm-submission-note is-info">
+                                                <strong>Pengajuan diajukan kembali</strong>
+                                                <span>Dinas ini telah diperbarui oleh pegawai dan diajukan ulang untuk diverifikasi kembali oleh PJ.</span>
+                                            </div>
+
+                                            <div class="pkm-modal-schedule__grid" style="margin-top: 14px;">
+                                                <div>
+                                                    <span>Tanggal diajukan kembali</span>
+                                                    <strong>{{ $submission->updated_at?->translatedFormat('d M Y') ?? '-' }}</strong>
+                                                </div>
+                                                <div>
+                                                    <span>Tanggal kegiatan terbaru</span>
+                                                    <strong>{{ $tanggalKegiatanTerbaru }}</strong>
+                                                </div>
+                                                <div style="grid-column: 1 / -1;">
+                                                    <span>Keterangan pengajuan kembali</span>
+                                                    <strong>{{ $alasanPengajuanKembali ?: 'Pegawai mengajukan kembali setelah melakukan perubahan pada pengajuan dinas.' }}</strong>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        @if ($isPengajuanRevisi)
+                                            <div class="pkm-submission-note">
+                                                <strong>Catatan perubahan pengajuan</strong>
+                                                @if ($alasanPerubahan)
+                                                    <span>{{ $alasanPerubahan }}</span>
+                                                @endif
+                                                @if ($tanggalSebelumnya)
+                                                    <span>{{ $tanggalSebelumnya }}</span>
+                                                @endif
+                                            </div>
+                                        @endif
+
+                                        @if ($keteranganUtama !== '')
+                                            <p class="pkm-submission-description">{{ $keteranganUtama }}</p>
+                                        @elseif ($submission->keterangan)
+                                            <p class="pkm-submission-description">{{ $submission->keterangan }}</p>
                                         @endif
                                     </article>
 

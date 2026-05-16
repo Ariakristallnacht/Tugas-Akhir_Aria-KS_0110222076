@@ -40,6 +40,15 @@ class LaporanKegiatan extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::deleting(function (self $laporanKegiatan): void {
+            if ($laporanKegiatan->dokumen_laporan_path) {
+                Storage::disk('public')->delete($laporanKegiatan->dokumen_laporan_path);
+            }
+        });
+    }
+
     public function jadwal(): BelongsTo
     {
         return $this->belongsTo(Jadwal::class);

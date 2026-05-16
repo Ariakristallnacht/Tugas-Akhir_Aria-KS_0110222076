@@ -32,6 +32,17 @@ class Pegawai extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::deleting(function (self $pegawai): void {
+            $pegawai->laporanKegiatan()->get()->each->delete();
+            $pegawai->pengajuanDinas()->get()->each->delete();
+            $pegawai->monitoring()->delete();
+            $pegawai->jadwalPegawai()->delete();
+            $pegawai->user?->delete();
+        });
+    }
+
     public function user(): HasOne
     {
         return $this->hasOne(User::class);

@@ -41,6 +41,15 @@ class PengajuanDinas extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::deleting(function (self $pengajuanDinas): void {
+            if ($pengajuanDinas->bukti_surat_path) {
+                Storage::disk('public')->delete($pengajuanDinas->bukti_surat_path);
+            }
+        });
+    }
+
     public function pegawai(): BelongsTo
     {
         return $this->belongsTo(Pegawai::class);
