@@ -102,7 +102,7 @@
 
     <div class="pkm-field pkm-field--full">
         <label for="dokumen_laporan">Dokumen laporan (opsional)</label>
-        <input id="dokumen_laporan" class="pkm-input pkm-file-input" type="file" name="dokumen_laporan" accept=".doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.webp">
+        <input id="dokumen_laporan" class="pkm-input pkm-file-input" type="file" name="dokumen_laporan" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.webp">
         <input type="hidden" name="dokumen_laporan_existing" value="{{ $report->dokumen_laporan_path }}">
         @if ($report->dokumen_laporan_path)
             <small style="display: block; margin-top: 8px;">
@@ -113,7 +113,7 @@
                 </a>
             </small>
         @else
-            <small style="display: block; margin-top: 8px;">Unggah dokumen jika diperlukan. Format yang didukung: DOC, DOCX, XLS, XLSX, CSV, PPT, PPTX, TXT, JPG, JPEG, PNG, WEBP. Maksimal 10 MB.</small>
+            <small style="display: block; margin-top: 8px;">Unggah dokumen jika diperlukan. Format yang didukung: PDF, DOC, DOCX, XLS, XLSX, CSV, PPT, PPTX, TXT, JPG, JPEG, PNG, WEBP. Maksimal 10 MB.</small>
         @endif
         @error('dokumen_laporan')
             <small>{{ $message }}</small>

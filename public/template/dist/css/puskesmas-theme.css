@@ -614,6 +614,7 @@ body {
 .pkm-side-panel,
 .pkm-side-summary {
     padding: 24px;
+    margin-bottom: 25px;
 }
 
 .pkm-card__toolbar {
@@ -1049,10 +1050,10 @@ body {
 
 .pkm-monitoring-list,
 .pkm-monitoring-calendar {
-    display: grid;
+    /* display: grid; */
     grid-template-rows: auto 1fr;
     gap: 24px;
-    min-height: 100%;
+    /* min-height: 100%; */
     min-width: 0;
 }
 
@@ -1220,6 +1221,7 @@ body {
 
 .pkm-calendar {
     margin-top: 10px;
+    min-width: 0;
 }
 
 .pkm-calendar__weekdays {
@@ -1255,6 +1257,8 @@ body {
     background: #fff;
     text-align: left;
     color: inherit;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .pkm-calendar__day.is-outside {
@@ -1353,6 +1357,28 @@ body {
 
     .pkm-calendar__day {
         min-height: 124px;
+        padding: 10px;
+        border-radius: 16px;
+    }
+
+    .pkm-calendar__counts {
+        margin-top: 8px;
+    }
+
+    .pkm-calendar__counts small {
+        font-size: 0.68rem;
+        line-height: 1.35;
+    }
+
+    .pkm-calendar__items {
+        gap: 5px;
+        margin-top: 8px;
+    }
+
+    .pkm-calendar__item {
+        min-height: 1.8rem;
+        padding: 4px 7px;
+        font-size: 0.68rem;
     }
 }
 
@@ -1385,6 +1411,7 @@ body {
 .pkm-calendar__counts small {
     color: #7b8ca4;
     font-size: 0.74rem;
+    overflow-wrap: anywhere;
 }
 
 .pkm-calendar__items {
@@ -1392,6 +1419,7 @@ body {
     flex-direction: column;
     gap: 6px;
     margin-top: 12px;
+    min-width: 0;
 }
 
 .pkm-calendar__item {
@@ -1405,6 +1433,8 @@ body {
     font-weight: 800;
     line-height: 1.35;
     letter-spacing: 0.04em;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .pkm-calendar__item.is-layanan {
@@ -2044,6 +2074,194 @@ body {
     }
 }
 
+@media (min-width: 901px) and (max-width: 1180px) {
+    .pkm-main {
+        gap: 24px;
+        padding: 22px 22px 26px;
+    }
+
+    .pkm-topbar {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .pkm-topbar__headline,
+    .pkm-topbar__actions {
+        width: 100%;
+    }
+
+    .pkm-topbar__actions {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .pkm-topbar__search {
+        min-width: min(100%, 420px);
+        flex: 1 1 320px;
+    }
+
+    .pkm-section-head,
+    .pkm-card__head,
+    .pkm-side-panel__head,
+    .pkm-side-summary__head,
+    .pkm-account-block__head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .pkm-management-summary,
+    .pkm-metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pkm-form-grid,
+    .pkm-monitoring-item__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pkm-field--full {
+        grid-column: auto;
+    }
+
+    .pkm-export-actions,
+    .pkm-form-actions,
+    .pkm-row-actions,
+    .pkm-pagination {
+        justify-content: flex-start;
+    }
+
+    .pkm-export-actions {
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .pkm-export-actions > *,
+    .pkm-form-actions > *,
+    .pkm-row-actions > *,
+    .pkm-pagination > * {
+        flex: 1 1 220px;
+    }
+
+    .pkm-table__head,
+    .pkm-table__row {
+        grid-template-columns: 1fr;
+    }
+
+    .pkm-table__head {
+        display: none;
+    }
+
+    .pkm-table {
+        gap: 12px;
+        border: 0;
+        background: transparent;
+    }
+
+    .pkm-table__row {
+        gap: 10px;
+        padding: 16px;
+        border: 1px solid var(--pkm-border);
+        border-radius: 18px;
+        box-shadow: 0 10px 28px rgba(58, 78, 113, 0.06);
+    }
+
+    .pkm-table__row > div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .pkm-table__row > div::before {
+        content: attr(data-label);
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #8b9ab0;
+    }
+
+    .pkm-table__row strong,
+    .pkm-table__row small,
+    .pkm-table__row p {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .pkm-monitoring-calendar .pkm-card__head {
+        grid-template-columns: 1fr;
+        justify-items: stretch;
+        gap: 12px;
+    }
+
+    .pkm-monitoring-calendar .pkm-card__head > div:first-child,
+    .pkm-monitoring-calendar .pkm-card__head > div:last-child {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .pkm-monitoring-calendar .pkm-card__head > div:nth-child(2) {
+        text-align: left;
+    }
+
+    .pkm-calendar__weekdays {
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+
+    .pkm-calendar__weekdays span {
+        font-size: 0.64rem;
+        letter-spacing: 0.03em;
+    }
+
+    .pkm-calendar__grid {
+        gap: 5px;
+    }
+
+    .pkm-calendar__day {
+        min-height: 102px;
+        padding: 8px;
+        border-radius: 14px;
+    }
+
+    .pkm-calendar__date-row {
+        gap: 8px;
+    }
+
+    .pkm-calendar__date-row strong {
+        font-size: 0.92rem;
+    }
+
+    .pkm-calendar__date-row span {
+        min-width: 1.45rem;
+        height: 1.45rem;
+        font-size: 0.66rem;
+    }
+
+    .pkm-calendar__counts {
+        gap: 2px;
+        margin-top: 6px;
+    }
+
+    .pkm-calendar__counts small {
+        font-size: 0.62rem;
+    }
+
+    .pkm-calendar__items {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 6px;
+    }
+
+    .pkm-calendar__item {
+        min-height: 1.45rem;
+        padding: 2px 6px;
+        font-size: 0.6rem;
+        letter-spacing: 0.02em;
+    }
+}
+
 @media (max-width: 900px) {
     .pkm-app-shell {
         padding: 12px;
@@ -2065,6 +2283,35 @@ body {
     .pkm-main {
         gap: 22px;
         padding: 18px 14px 20px;
+    }
+
+    .pkm-monitoring-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .pkm-monitoring-list,
+    .pkm-monitoring-calendar {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+    }
+
+    .pkm-monitoring-list {
+        order: 1;
+    }
+
+    .pkm-monitoring-calendar {
+        order: 2;
+    }
+
+    .pkm-monitoring-list > .pkm-card:last-child,
+    .pkm-monitoring-calendar > .pkm-card,
+    .pkm-calendar {
+        height: auto;
+        min-height: 0;
+        max-height: none;
     }
 
     .pkm-topbar {
@@ -2247,8 +2494,42 @@ body {
     }
 
     .pkm-calendar__day {
-        min-height: 100px;
+        min-height: 92px;
         padding: 8px;
+        border-radius: 12px;
+    }
+
+    .pkm-calendar__weekdays span {
+        font-size: 0.6rem;
+        letter-spacing: 0.02em;
+    }
+
+    .pkm-calendar__date-row strong {
+        font-size: 0.88rem;
+    }
+
+    .pkm-calendar__date-row span {
+        min-width: 1.35rem;
+        height: 1.35rem;
+        font-size: 0.64rem;
+    }
+
+    .pkm-calendar__counts {
+        display: none;
+    }
+
+    .pkm-calendar__items {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 6px;
+    }
+
+    .pkm-calendar__item {
+        min-height: 1.35rem;
+        padding: 2px 5px;
+        font-size: 0.58rem;
+        letter-spacing: 0.01em;
     }
 
     .pkm-modal {
@@ -2289,6 +2570,27 @@ body {
 }
 
 @media (max-width: 640px) {
+    .pkm-monitoring-calendar .pkm-card__head {
+        gap: 10px;
+    }
+
+    .pkm-monitoring-calendar .pkm-card__head > div:first-child,
+    .pkm-monitoring-calendar .pkm-card__head > div:last-child {
+        gap: 8px;
+    }
+
+    .pkm-calendar {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 6px;
+        margin-inline: -2px;
+    }
+
+    .pkm-calendar__weekdays,
+    .pkm-calendar__grid {
+        min-width: 560px;
+    }
+
     .pkm-form-actions,
     .pkm-pagination,
     .pkm-row-actions {
@@ -2434,14 +2736,27 @@ body {
     }
 
     .pkm-calendar__day {
-        min-height: 88px;
+        min-height: 74px;
         padding: 7px;
-        border-radius: 14px;
+        border-radius: 12px;
     }
 
     .pkm-calendar__item {
-        padding: 5px 6px;
-        font-size: 0.68rem;
+        min-height: 1.2rem;
+        padding: 1px 5px;
+        font-size: 0.54rem;
+    }
+
+    .pkm-calendar__items {
+        margin-top: 4px;
+    }
+
+    .pkm-calendar__items .pkm-calendar__item:nth-child(n+3) {
+        display: none;
+    }
+
+    .pkm-calendar__items .pkm-calendar__item:nth-child(n+3) {
+        display: none;
     }
 
     .pkm-modal__head,
@@ -2506,28 +2821,42 @@ body {
         font-size: 0.62rem;
     }
 
+    .pkm-calendar__weekdays,
+    .pkm-calendar__grid {
+        min-width: 520px;
+    }
+
     .pkm-calendar__day {
-        min-height: 76px;
-        padding: 6px;
+        min-height: 64px;
+        padding: 5px;
     }
 
     .pkm-calendar__date-row strong {
-        font-size: 0.92rem;
+        font-size: 0.82rem;
     }
 
     .pkm-calendar__date-row span {
-        min-width: 1.45rem;
-        height: 1.45rem;
-        font-size: 0.68rem;
+        min-width: 1.2rem;
+        height: 1.2rem;
+        padding: 0 4px;
+        font-size: 0.58rem;
     }
 
     .pkm-calendar__counts,
     .pkm-calendar__items {
-        margin-top: 8px;
+        margin-top: 3px;
     }
 
     .pkm-calendar__counts small {
         font-size: 0.66rem;
+    }
+
+    .pkm-calendar__items .pkm-calendar__item:nth-child(n+2) {
+        display: none;
+    }
+
+    .pkm-calendar__items .pkm-calendar__item:nth-child(n+2) {
+        display: none;
     }
 
     .pkm-modal {
