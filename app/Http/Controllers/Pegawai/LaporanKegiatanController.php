@@ -197,7 +197,7 @@ class LaporanKegiatanController extends Controller
             'pengajuan_dinas_id' => ['nullable', 'exists:pengajuan_dinas,id'],
             'tanggal' => ['required', 'date'],
             'laporan' => ['nullable', 'string'],
-            'dokumen_laporan' => ['required_without:dokumen_laporan_existing', 'file', 'mimes:pdf', 'max:10240'],
+            'dokumen_laporan' => ['nullable', 'file', 'mimes:doc,docx,xls,xlsx,csv,ppt,pptx,txt,jpg,jpeg,png,webp', 'max:10240'],
             'dokumen_laporan_existing' => ['nullable', 'string'],
         ]);
 
