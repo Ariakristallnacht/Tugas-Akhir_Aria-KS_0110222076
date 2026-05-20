@@ -7,6 +7,12 @@
         'status_penugasan' => $item->status_penugasan,
     ])->all());
     $availabilityMap = $planningContext['availability_map'] ?? [];
+    $selectedPegawaiIds = $petugasRows
+        ->pluck('pegawai_id')
+        ->filter()
+        ->map(fn ($value) => (string) $value)
+        ->values()
+        ->all();
 
     if ($petugasRows->isEmpty()) {
         $petugasRows = collect([[
@@ -199,6 +205,16 @@
             color: var(--pkm-primary-strong);
         }
 
+        .ts-dropdown .option.is-disabled,
+        .ts-dropdown .option[data-disabled="true"] {
+            opacity: 1;
+            cursor: not-allowed;
+            background: #f3f4f6;
+            color: #9ca3af;
+            pointer-events: none;
+            user-select: none;
+        }
+
         @media (max-width: 1199px) {
             .pkm-planning-grid {
                 grid-template-columns: 1fr;
@@ -317,7 +333,7 @@
                                         <option
                                             value="{{ $pegawai->id }}"
                                             data-base-label="{{ $pegawai->nama }}"
-                                            @disabled($optionAvailability)
+                                            @disabled($optionAvailability || (in_array((string) $pegawai->id, $selectedPegawaiIds, true) && (string) ($petugas['pegawai_id'] ?? '') !== (string) $pegawai->id))
                                             @selected((string) ($petugas['pegawai_id'] ?? '') === (string) $pegawai->id)
                                         >
                                             {{ $optionLabel }}
@@ -543,7 +559,28 @@
                         sortField: [
                             { field: 'text', direction: 'asc' },
                         ],
+                        disabledField: 'disabled',
                         placeholder: 'Cari atau pilih pegawai',
+                        render: {
+                            option(data, escape) {
+                                const isDisabled = String(data.disabled) === 'true' || data.disabled === true;
+                                const disabledAttr = isDisabled ? ' data-disabled="true" aria-disabled="true"' : '';
+                                const disabledClass = isDisabled ? ' is-disabled' : '';
+
+                                return `<div class="option${disabledClass}"${disabledAttr}>${escape(data.text)}</div>`;
+                            },
+                        },
+                        onChange(value) {
+                            if (!value || !availabilityMap[value]) {
+                                refreshAssignmentNotes();
+                                updateSelectOptionLabels();
+                                return;
+                            }
+
+                            this.clear(true);
+                            updateSelectOptionLabels();
+                            refreshAssignmentNotes();
+                        },
                     });
                 });
             };
@@ -591,13 +628,26 @@
             `;
 
             const updateSelectOptionLabels = () => {
-                planner.querySelectorAll('[data-pegawai-select]').forEach((select) => {
+                const selects = Array.from(planner.querySelectorAll('[data-pegawai-select]'));
+                const selectedValues = selects
+                    .map((select) => select.value)
+                    .filter(Boolean);
+
+                selects.forEach((select) => {
                     select.querySelectorAll('option[value]').forEach((option) => {
                         const baseLabel = option.dataset.baseLabel || option.textContent.trim();
                         const availability = availabilityMap[option.value];
+                        const selectedInAnotherRow = selectedValues.includes(option.value) && select.value !== option.value;
+                        const isDisabled = Boolean(availability || selectedInAnotherRow);
+                        const disabledReason = availability
+                            ? 'Tidak tersedia'
+                            : selectedInAnotherRow
+                                ? 'Sudah dipilih'
+                                : '';
 
-                        option.disabled = Boolean(availability);
-                        option.textContent = baseLabel;
+                        option.disabled = isDisabled;
+                        option.dataset.disabled = isDisabled ? 'true' : 'false';
+                        option.textContent = disabledReason ? `${baseLabel} (${disabledReason})` : baseLabel;
                     });
 
                     if (select.value && availabilityMap[select.value]) {
@@ -605,6 +655,10 @@
                     }
 
                     if (select.tomselect) {
+                        Object.values(select.tomselect.options).forEach((item) => {
+                            const nativeOption = select.querySelector(`option[value="${window.CSS?.escape ? window.CSS.escape(item.value) : item.value}"]`);
+                            item.disabled = nativeOption?.disabled ?? false;
+                        });
                         select.tomselect.sync();
                         select.tomselect.refreshOptions(false);
                     }

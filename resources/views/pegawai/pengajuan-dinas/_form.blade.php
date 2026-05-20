@@ -76,7 +76,7 @@
 
     <div class="pkm-field pkm-field--full">
         <label for="bukti_surat">Bukti surat panggilan dinas luar</label>
-        <input id="bukti_surat" class="pkm-input pkm-file-input" type="file" name="bukti_surat" accept=".pdf,image/*">
+        <input id="bukti_surat" class="pkm-input pkm-file-input" type="file" name="bukti_surat" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.webp">
         <input type="hidden" name="bukti_surat_existing" value="{{ $pengajuan->bukti_surat_path }}">
         @if ($pengajuan->bukti_surat_path)
             <small style="display: block; margin-top: 8px;">
@@ -87,7 +87,7 @@
                 </a>
             </small>
         @else
-            <small style="display: block; margin-top: 8px;">Unggah file gambar atau PDF. Maksimal 5 MB.</small>
+            <small style="display: block; margin-top: 8px;">Unggah dokumen jika diperlukan. Format yang didukung: PDF, DOC, DOCX, XLS, XLSX, CSV, PPT, PPTX, TXT, JPG, JPEG, PNG, WEBP. Maksimal 10 MB.</small>
         @endif
         @error('bukti_surat')
             <small>{{ $message }}</small>
