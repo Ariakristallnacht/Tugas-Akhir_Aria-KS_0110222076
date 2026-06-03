@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Jadwal Kegiatan | Puskesmas Bunar';
-    $heading = 'Jadwal Kegiatan';
+    $title = 'Kelola Jadwal Kegiatan | Puskesmas Bunar';
+    $heading = 'Kelola Jadwal Kegiatan';
     $weekdayLabels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
 @endphp
 
@@ -26,6 +26,80 @@
             margin: 0;
         }
 
+        .pkm-calendar-head {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .pkm-calendar-head__main {
+            display: grid;
+            gap: 14px;
+            justify-items: center;
+            text-align: center;
+        }
+
+        .pkm-calendar-head__title {
+            display: grid;
+            gap: 4px;
+            justify-items: center;
+        }
+
+        .pkm-calendar-head__title p {
+            margin: 0;
+            color: var(--pkm-text-muted);
+        }
+
+        .pkm-calendar-head__actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pkm-modal-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 18px 0 16px;
+            padding: 6px;
+            border-radius: 18px;
+            background: #f5f7fb;
+        }
+
+        .pkm-modal-tab {
+            flex: 1;
+            border: 0;
+            border-radius: 14px;
+            padding: 12px 16px;
+            background: transparent;
+            color: var(--pkm-text-muted);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .pkm-modal-tab.is-active {
+            background: #fff;
+            color: var(--pkm-primary);
+            box-shadow: 0 6px 18px rgba(42, 66, 95, 0.08);
+        }
+
+        .pkm-modal-panel[hidden] {
+            display: none;
+        }
+
+        .pkm-modal-panel {
+            max-height: min(55vh, 520px);
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .pkm-modal__body {
+            display: grid;
+            gap: 14px;
+        }
+
         .pkm-action-button-sm {
             padding: 0.55rem 0.9rem;
             gap: 0.45rem;
@@ -39,6 +113,11 @@
         }
 
         @media (max-width: 640px) {
+            .pkm-calendar-head {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+
             .pkm-monitoring-item__actions {
                 overflow-x: auto;
                 padding-bottom: 2px;
@@ -51,7 +130,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2 style="font-weight: bold">Jadwal Kegiatan</h2>
+                <h2 style="font-weight: bold">Kelola Jadwal Kegiatan</h2>
             </div>
             <a href="{{ route('pj.jadwal-kegiatan.create') }}" class="pkm-primary-button">
                 <i data-lucide="plus" class="size-4"></i>
@@ -209,18 +288,25 @@
 
             <aside class="pkm-monitoring-calendar">
                 <section class="pkm-card">
-                    <div class="pkm-card__head">
-                        <div class="flex items-center gap-3">
+                    <div class="pkm-card__head pkm-calendar-head">
+                        <div class="pkm-calendar-head__nav">
                             <a href="{{ route('pj.jadwal-kegiatan.index', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['previous_month']])) }}" class="pkm-topbar__icon" aria-label="Bulan sebelumnya">
                                 <i data-lucide="chevron-left" class="size-4"></i>
                             </a>
                         </div>
-                        <div>
-                            <h3 style="font-weight:bold">Kalender Jadwal</h3>
-                            <p>{{ $calendarMonthLabel }}</p>
+                        <div class="pkm-calendar-head__main">
+                            <div class="pkm-calendar-head__title">
+                                <h3 style="font-weight:bold">Kalender Jadwal</h3>
+                                <p>{{ $calendarMonthLabel }}</p>
+                            </div>
+                            <div class="pkm-calendar-head__actions">
+                                <button type="button" class="pkm-secondary-button" id="btn-open-download-modal">
+                                    <i data-lucide="eye" class="size-4"></i><span>Preview PDF</span>
+                                </button>
+                                <a href="{{ route('pj.jadwal-kegiatan.index', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['current_month']])) }}" class="pkm-secondary-button"><i data-lucide="calendar-days" class="size-4"></i><span>Bulan Ini</span></a>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <a href="{{ route('pj.jadwal-kegiatan.index', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['current_month']])) }}" class="pkm-secondary-button"><i data-lucide="calendar-days" class="size-4"></i><span>Bulan Ini</span></a>
+                        <div class="pkm-calendar-head__nav">
                             <a href="{{ route('pj.jadwal-kegiatan.index', array_merge($calendarFilters['query'], ['calendar_month' => $calendarFilters['next_month']])) }}" class="pkm-topbar__icon" aria-label="Bulan berikutnya">
                                 <i data-lucide="chevron-right" class="size-4"></i>
                             </a>
@@ -288,7 +374,7 @@
             <div class="pkm-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="pkm-calendar-modal-title">
                 <div class="pkm-modal__head">
                     <div>
-                        <h3 id="pkm-calendar-modal-title" style="font-weight: bold">Detail Jadwal</h3>
+                        <h3 id="pkm-calendar-modal-title">Detail Jadwal</h3>
                         <p id="pkm-calendar-modal-date">Tanggal dipilih</p>
                     </div>
                     <button type="button" class="pkm-modal__close" data-modal-close aria-label="Tutup detail jadwal">
@@ -297,7 +383,52 @@
                 </div>
 
                 <div class="pkm-modal__summary" id="pkm-calendar-modal-summary"></div>
-                <div class="pkm-modal__body" id="pkm-calendar-modal-body"></div>
+                <div class="pkm-modal-tabs" role="tablist" aria-label="Filter pegawai jadwal">
+                    <button type="button" class="pkm-modal-tab is-active" data-modal-tab="with-schedule">Pegawai Ada Jadwal</button>
+                    <button type="button" class="pkm-modal-tab" data-modal-tab="without-schedule">Pegawai Tanpa Jadwal</button>
+                </div>
+                <div class="pkm-modal-panel" data-modal-panel="with-schedule">
+                    <div class="pkm-modal__body" id="pkm-calendar-modal-body"></div>
+                </div>
+                <div class="pkm-modal-panel" data-modal-panel="without-schedule" hidden>
+                    <div class="pkm-modal__body" id="pkm-calendar-modal-empty-body"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Unduh Jadwal -->
+        <div class="pkm-modal" id="pkm-download-modal" hidden>
+            <div class="pkm-modal__backdrop" id="btn-close-download-backdrop"></div>
+            <div class="pkm-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="pkm-download-modal-title" style="padding: 30px; max-width: 550px;">
+                <div class="pkm-modal__head" style="margin-bottom: 25px;">
+                    <div>
+                        <h3 id="pkm-download-modal-title" style="font-weight: bold; font-size: 1.25rem;">Preview Jadwal Kegiatan PDF</h3>
+                        <p style="margin-top: 5px; color: var(--pkm-text-muted);">Silakan tentukan rentang tanggal jadwal kegiatan yang ingin ditampilkan</p>
+                    </div>
+                    <button type="button" class="pkm-modal__close" id="btn-close-download-x" aria-label="Tutup">
+                        <i data-lucide="x" class="size-4"></i>
+                    </button>
+                </div>
+
+                <form method="GET" action="{{ route('jadwal-kegiatan.export-global') }}" target="_blank" id="form-download-pdf">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                        <div class="pkm-field">
+                            <label for="download_date_from" style="display: block; margin-bottom: 8px; font-weight: 500;">Tanggal Awal</label>
+                            <input id="download_date_from" class="pkm-input" type="date" name="date_from" required style="width: 100%;">
+                        </div>
+                        <div class="pkm-field">
+                            <label for="download_date_to" style="display: block; margin-bottom: 8px; font-weight: 500;">Tanggal Akhir</label>
+                            <input id="download_date_to" class="pkm-input" type="date" name="date_to" required style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <div class="pkm-form-actions" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #edf2f7; padding-top: 20px;">
+                        <button type="button" class="pkm-secondary-button" id="btn-close-download-cancel" style="padding: 10px 20px;"><span>Batal</span></button>
+                        <button type="submit" class="pkm-primary-button" id="btn-submit-download-pdf" style="padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px;">
+                            <i data-lucide="eye" class="size-4"></i><span>Tampilkan PDF</span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </section>
@@ -310,10 +441,14 @@
             const modalDate = document.getElementById('pkm-calendar-modal-date');
             const modalSummary = document.getElementById('pkm-calendar-modal-summary');
             const modalBody = document.getElementById('pkm-calendar-modal-body');
+            const modalEmptyBody = document.getElementById('pkm-calendar-modal-empty-body');
             const dayButtons = document.querySelectorAll('[data-calendar-day]');
             const closeButtons = document.querySelectorAll('[data-modal-close]');
+            const tabButtons = document.querySelectorAll('[data-modal-tab]');
+            const panels = document.querySelectorAll('[data-modal-panel]');
+            const activePegawai = @json($activePegawaiForModal ?? []);
 
-            if (!modal || !modalDate || !modalSummary || !modalBody || dayButtons.length === 0) {
+            if (!modal || !modalDate || !modalSummary || !modalBody || !modalEmptyBody || dayButtons.length === 0) {
                 return;
             }
 
@@ -352,11 +487,26 @@
                 renderLucideIcons();
             };
 
+            const setActiveTab = (tabName) => {
+                tabButtons.forEach((button) => {
+                    button.classList.toggle('is-active', button.dataset.modalTab === tabName);
+                });
+
+                panels.forEach((panel) => {
+                    panel.hidden = panel.dataset.modalPanel !== tabName;
+                });
+            };
+
             dayButtons.forEach((button) => {
                 button.addEventListener('click', function () {
                     const items = JSON.parse(this.dataset.items || '[]');
                     const dateLabel = this.dataset.dateLabel || 'Tanggal dipilih';
                     const total = Number(this.dataset.total || 0);
+                    const assignedIds = new Set(
+                        items.reduce((carry, item) => carry.concat(Array.isArray(item.pegawai_ids) ? item.pegawai_ids : []), [])
+                            .map(String)
+                    );
+                    const availablePegawai = activePegawai.filter((pegawai) => !assignedIds.has(String(pegawai.id)));
 
                     modalDate.textContent = dateLabel;
                     modalSummary.innerHTML = total > 0
@@ -402,7 +552,29 @@
                         `).join('')
                         : '<div class="pkm-empty-state"><strong>Tidak ada jadwal pada tanggal ini.</strong><p>Coba pilih tanggal lain pada kalender.</p></div>';
 
+                    modalEmptyBody.innerHTML = availablePegawai.length > 0
+                        ? availablePegawai.map((pegawai) => `
+                            <article class="pkm-modal-schedule">
+                                <div class="pkm-modal-schedule__top">
+                                    <div>
+                                        <span class="pkm-calendar__item is-amber">Pegawai Tanpa Jadwal</span>
+                                        <strong>${escapeHtml(pegawai.nama)}</strong>
+                                        <small>${escapeHtml(pegawai.jabatan ?? '-')}</small>
+                                    </div>
+                                    <span class="pkm-pill is-amber">Kosong</span>
+                                </div>
+                            </article>
+                        `).join('')
+                        : '<div class="pkm-empty-state"><strong>Semua pegawai sudah memiliki jadwal.</strong><p>Tidak ada pegawai kosong pada tanggal ini.</p></div>';
+
+                    setActiveTab('with-schedule');
                     openModal();
+                });
+            });
+
+            tabButtons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    setActiveTab(this.dataset.modalTab || 'with-schedule');
                 });
             });
 
@@ -419,6 +591,64 @@
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape' && !modal.hidden) {
                     closeModal();
+                }
+            });
+
+            // Logika Modal Unduh PDF
+            const downloadModal = document.getElementById('pkm-download-modal');
+            const btnOpenDownload = document.getElementById('btn-open-download-modal');
+            const btnCloseDownloadBackdrop = document.getElementById('btn-close-download-backdrop');
+            const btnCloseDownloadX = document.getElementById('btn-close-download-x');
+            const btnCloseDownloadCancel = document.getElementById('btn-close-download-cancel');
+            const inputDownloadDateFrom = document.getElementById('download_date_from');
+            const inputDownloadDateTo = document.getElementById('download_date_to');
+
+            const openDownloadModal = () => {
+                // Set default tanggal awal: Hari ini
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const formattedToday = `${year}-${month}-${day}`;
+
+                // Set default tanggal akhir: 1 bulan kedepan
+                const nextMonthDate = new Date();
+                nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+                const nextYear = nextMonthDate.getFullYear();
+                const nextMonth = String(nextMonthDate.getMonth() + 1).padStart(2, '0');
+                const nextDay = String(nextMonthDate.getDate()).padStart(2, '0');
+                const formattedNextMonth = `${nextYear}-${nextMonth}-${nextDay}`;
+
+                inputDownloadDateFrom.value = formattedToday;
+                inputDownloadDateTo.value = formattedNextMonth;
+
+                downloadModal.hidden = false;
+                document.body.classList.add('pkm-modal-open');
+                
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            };
+
+            const closeDownloadModal = () => {
+                downloadModal.hidden = true;
+                document.body.classList.remove('pkm-modal-open');
+            };
+
+            if (btnOpenDownload) {
+                btnOpenDownload.addEventListener('click', openDownloadModal);
+            }
+
+            [btnCloseDownloadBackdrop, btnCloseDownloadX, btnCloseDownloadCancel].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', closeDownloadModal);
+                }
+            });
+
+            // Tutup modal unduh jika Escape ditekan
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && !downloadModal.hidden) {
+                    closeDownloadModal();
                 }
             });
         });

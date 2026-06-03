@@ -2,7 +2,7 @@
 
 @php
     $title = 'Pengajuan Dinas | Puskesmas Bunar';
-    $heading = 'Pengajuan Dinas';
+    $heading = 'Pengajuan Dinas Luar';
 @endphp
 
 @push('styles')
@@ -19,7 +19,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2 style="font-weight: bold">Data Pengajuan Dinas</h2>
+                <h2 style="font-weight: bold">Pengajuan Dinas Luar</h2>
             </div>
             <a href="{{ route('pegawai.pengajuan-dinas.create') }}" class="pkm-primary-button">
                 <i data-lucide="plus" class="size-4"></i>

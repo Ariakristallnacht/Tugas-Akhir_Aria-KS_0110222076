@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\Jadwal;
+use App\Models\Pegawai;
 use App\Models\PengajuanDinas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -23,9 +25,7 @@ class JadwalKegiatanController extends Controller
         $hasDateToFilter = $request->filled('date_to');
 
         $referenceDate = now()->startOfDay();
-        $scope = in_array($request->string('scope')->toString(), ['mine', 'all'], true)
-            ? $request->string('scope')->toString()
-            : 'mine';
+        $scope = 'mine';
         $defaultDate = $this->resolveDefaultDate($pegawai, $scope, $referenceDate);
 
         $dateFrom = $hasDateFromFilter
@@ -51,7 +51,7 @@ class JadwalKegiatanController extends Controller
         $calendarItems = $this->filterCalendarItems(
             $this->buildAgendaItems(
                 $pegawai,
-                'mine',
+                'all',
                 $calendarMonth->copy()->startOfMonth(),
                 $calendarMonth->copy()->endOfMonth(),
                 $referenceDate
@@ -75,6 +75,17 @@ class JadwalKegiatanController extends Controller
             'items' => $filteredItems,
             'calendarWeeks' => $this->buildCalendarWeeks($calendarMonth, $calendarItems, $referenceDate),
             'calendarMonthLabel' => $calendarMonth->translatedFormat('F Y'),
+            'activePegawaiForModal' => Pegawai::query()
+                ->where('is_aktif', true)
+                ->orderBy('nama')
+                ->get(['id', 'nama', 'jabatan'])
+                ->map(fn (\App\Models\Pegawai $pegawai) => [
+                    'id' => $pegawai->id,
+                    'nama' => $pegawai->nama,
+                    'jabatan' => $pegawai->jabatan,
+                ])
+                ->values()
+                ->all(),
             'calendarFilters' => [
                 'month' => $calendarMonth->format('Y-m'),
                 'previous_month' => $calendarMonth->copy()->subMonth()->format('Y-m'),
@@ -84,6 +95,42 @@ class JadwalKegiatanController extends Controller
             ],
         ]);
     }
+
+    // Export schedule as PDF
+    public function export(Request $request)
+    {
+        $pegawai = auth()->user()?->pegawai;
+        abort_if(! $pegawai, 403, 'Akun pegawai belum terhubung dengan data pegawai.');
+
+        $dateFrom = $request->filled('date_from')
+            ? Carbon::parse($request->string('date_from'))->startOfDay()
+            : now()->startOfDay();
+
+        $dateTo = $request->filled('date_to')
+            ? Carbon::parse($request->string('date_to'))->endOfDay()
+            : now()->addMonth()->endOfDay(); // default 1 bulan kedepan
+
+        if ($dateFrom->gt($dateTo)) {
+            [$dateFrom, $dateTo] = [$dateTo->copy()->startOfDay(), $dateFrom->copy()->endOfDay()];
+        }
+
+        $referenceDate = now()->startOfDay();
+        // Selalu ambil 'all' sesuai permintaan agar mengunduh jadwal semua pegawai secara berurutan berdasarkan tanggal
+        $items = $this->buildAgendaItems($pegawai, 'all', $dateFrom, $dateTo, $referenceDate);
+
+        // Urutkan berdasarkan tanggal berurutan
+        $items = $items->sortBy('start_sort')->values();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pegawai.jadwal-kegiatan.exports.pdf', [
+            'items' => $items,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
+            'generatedAt' => now(),
+        ]);
+
+        return $pdf->setPaper('a4', 'landscape')->stream('jadwal-kegiatan-'.now()->format('Ymd-His').'.pdf');
+    }
+
 
     private function buildAgendaItems($pegawai, string $scope, Carbon $dateFrom, Carbon $dateTo, Carbon $referenceDate): Collection
     {
@@ -207,6 +254,7 @@ class JadwalKegiatanController extends Controller
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
             'people' => $pegawaiName,
+            'pegawai_ids' => $jadwal->pegawai->pluck('id')->values()->all(),
             'pj_initials' => $this->initials($pegawaiName),
             'date_label' => $startDate->translatedFormat('d M Y'),
             'time_label' => $this->formatTimeRange($jadwal->waktu_mulai, $jadwal->waktu_selesai),
@@ -237,6 +285,7 @@ class JadwalKegiatanController extends Controller
             'subtitle' => $dinas->tujuan,
             'description' => $dinas->keterangan,
             'people' => $pegawaiName,
+            'pegawai_ids' => [$dinas->pegawai_id],
             'pj_initials' => $this->initials($pegawaiName),
             'date_label' => $startDate->equalTo($endDate)
                 ? $startDate->translatedFormat('d M Y')
@@ -274,6 +323,7 @@ class JadwalKegiatanController extends Controller
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
             'people' => $displayName ?: 'Belum ada petugas',
+            'pegawai_ids' => $jadwal->pegawai->pluck('id')->values()->all(),
             'pj_initials' => $this->initials($initialSeed),
             'date_label' => $startDate->translatedFormat('d M Y'),
             'time_label' => $this->formatTimeRange($jadwal->waktu_mulai, $jadwal->waktu_selesai),
@@ -305,6 +355,7 @@ class JadwalKegiatanController extends Controller
             'subtitle' => $dinas->tujuan,
             'description' => $dinas->keterangan,
             'people' => $pegawaiName,
+            'pegawai_ids' => [$dinas->pegawai_id],
             'pj_initials' => $this->initials($pegawaiName),
             'date_label' => $startDate->equalTo($endDate)
                 ? $startDate->translatedFormat('d M Y')

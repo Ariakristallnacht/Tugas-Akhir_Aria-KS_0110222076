@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class JadwalKegiatanController extends Controller
@@ -89,6 +88,17 @@ class JadwalKegiatanController extends Controller
             'items' => $items,
             'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $calendarItems, $referenceDate),
             'calendarMonthLabel' => $monthDate->translatedFormat('F Y'),
+            'activePegawaiForModal' => Pegawai::query()
+                ->where('is_aktif', true)
+                ->orderBy('nama')
+                ->get(['id', 'nama', 'jabatan'])
+                ->map(fn (Pegawai $pegawai) => [
+                    'id' => $pegawai->id,
+                    'nama' => $pegawai->nama,
+                    'jabatan' => $pegawai->jabatan,
+                ])
+                ->values()
+                ->all(),
             'calendarFilters' => [
                 'month' => $monthDate->format('Y-m'),
                 'previous_month' => $monthDate->copy()->subMonth()->format('Y-m'),
@@ -114,6 +124,32 @@ class JadwalKegiatanController extends Controller
         return response()->json(
             $this->buildPlanningContext(Carbon::parse($validated['date']), $ignoredJadwal)
         );
+    }
+
+    public function releaseFromConflict(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'jadwal_id' => ['required', 'integer', 'exists:jadwal,id'],
+            'pegawai_id' => ['required', 'integer', 'exists:pegawai,id'],
+        ]);
+
+        DB::transaction(function () use ($validated): void {
+            $jadwal = Jadwal::with('pegawai')->findOrFail($validated['jadwal_id']);
+
+            if (! $jadwal->pegawai->contains('id', (int) $validated['pegawai_id'])) {
+                abort(422, 'Pegawai tersebut tidak terdaftar pada jadwal yang dipilih.');
+            }
+
+            $jadwal->pegawai()->detach($validated['pegawai_id']);
+
+            if ($jadwal->pegawai()->count() === 0) {
+                $jadwal->delete();
+            }
+        });
+
+        return response()->json([
+            'message' => 'Pegawai berhasil dilepas dari jadwal bentrok.',
+        ]);
     }
 
     public function create(): View
@@ -187,8 +223,12 @@ class JadwalKegiatanController extends Controller
             $this->syncPetugas($jadwalKegiatan, $validated['petugas']);
         });
 
+        $redirectUrl = $request->boolean('stay_on_edit')
+            ? route('pj.jadwal-kegiatan.edit', $jadwalKegiatan)
+            : route('pj.jadwal-kegiatan.index');
+
         return redirect()
-            ->route('pj.jadwal-kegiatan.index')
+            ->to($redirectUrl)
             ->with('success', 'Jadwal layanan berhasil diperbarui.');
     }
 
@@ -295,76 +335,7 @@ class JadwalKegiatanController extends Controller
             'petugas.*.status_penugasan' => ['required', Rule::in(['dijadwalkan', 'hadir', 'izin', 'berhalangan'])],
         ]);
 
-        $this->ensureNoAssignmentConflict($validated, $jadwal);
-
         return $validated;
-    }
-
-    private function ensureNoAssignmentConflict(array $validated, ?Jadwal $ignoredJadwal = null): void
-    {
-        $tanggal = Carbon::parse($validated['tanggal'])->toDateString();
-        $pegawaiIds = collect($validated['petugas'])
-            ->pluck('pegawai_id')
-            ->filter()
-            ->map(fn ($value) => (int) $value)
-            ->unique()
-            ->values();
-
-        if ($pegawaiIds->isEmpty()) {
-            return;
-        }
-
-        $messages = [];
-        $approvedDinasConflicts = PengajuanDinas::with('pegawai')
-            ->where('status', 'disetujui')
-            ->whereIn('pegawai_id', $pegawaiIds)
-            ->whereDate('tanggal_mulai', '<=', $tanggal)
-            ->whereDate('tanggal_selesai', '>=', $tanggal)
-            ->get()
-            ->keyBy('pegawai_id');
-
-        foreach ($validated['petugas'] as $index => $petugas) {
-            $pegawaiId = (int) ($petugas['pegawai_id'] ?? 0);
-            $pengajuan = $approvedDinasConflicts->get($pegawaiId);
-
-            if (! $pengajuan || ! $pengajuan->pegawai) {
-                continue;
-            }
-
-            $messages["petugas.$index.pegawai_id"] = 'Pegawai '.$pengajuan->pegawai->nama
-                .' sedang menjalankan dinas luar '
-                .$pengajuan->kegiatan
-                .' pada '.$pengajuan->tanggal_mulai->translatedFormat('d M Y')
-                .' sampai '.$pengajuan->tanggal_selesai->translatedFormat('d M Y').'.';
-        }
-
-        $conflictingSchedules = Jadwal::with(['kegiatan', 'pegawai'])
-            ->whereDate('tanggal', $tanggal)
-            ->where('status', '!=', 'dibatalkan')
-            ->when($ignoredJadwal, fn ($query) => $query->whereKeyNot($ignoredJadwal->id))
-            ->whereHas('pegawai', fn ($query) => $query->whereIn('pegawai.id', $pegawaiIds))
-            ->get();
-
-        foreach ($validated['petugas'] as $index => $petugas) {
-            $pegawaiId = (int) ($petugas['pegawai_id'] ?? 0);
-
-            $scheduleConflict = $conflictingSchedules
-                ->first(fn (Jadwal $jadwal) => $jadwal->pegawai->contains('id', $pegawaiId));
-
-            if (! $scheduleConflict) {
-                continue;
-            }
-
-            $messages["petugas.$index.pegawai_id"] = 'Pegawai '.$scheduleConflict->pegawai->firstWhere('id', $pegawaiId)?->nama
-                .' sudah memiliki jadwal '
-                .($scheduleConflict->kegiatan?->nama_kegiatan ?? 'kegiatan lain')
-                .' pada '.$scheduleConflict->tanggal->translatedFormat('d M Y')
-                .' pukul '.$this->formatTimeRange($scheduleConflict->waktu_mulai, $scheduleConflict->waktu_selesai).'.';
-        }
-
-        if ($messages !== []) {
-            throw ValidationException::withMessages($messages);
-        }
     }
 
     private function syncPetugas(Jadwal $jadwal, array $petugas): void
@@ -461,6 +432,10 @@ class JadwalKegiatanController extends Controller
                     'detail' => ($jadwal->kegiatan?->nama_kegiatan ?? 'Kegiatan')
                         .' • '.$this->formatTimeRange($jadwal->waktu_mulai, $jadwal->waktu_selesai)
                         .' • '.$jadwal->lokasi,
+                    'jadwal_id' => $jadwal->id,
+                    'title' => $jadwal->kegiatan?->nama_kegiatan ?? 'Kegiatan',
+                    'time_label' => $this->formatTimeRange($jadwal->waktu_mulai, $jadwal->waktu_selesai),
+                    'lokasi' => $jadwal->lokasi,
                 ];
             }
         }
@@ -477,12 +452,24 @@ class JadwalKegiatanController extends Controller
                     ->values()
                     ->all();
 
+                $conflicts = collect($item['reasons'] ?? [])
+                    ->map(fn (array $reason) => [
+                        'jadwal_id' => $reason['jadwal_id'] ?? null,
+                        'title' => $reason['title'] ?? 'Kegiatan',
+                        'time_label' => $reason['time_label'] ?? '-',
+                        'lokasi' => $reason['lokasi'] ?? '-',
+                    ])
+                    ->filter(fn (array $conflict) => filled($conflict['jadwal_id']))
+                    ->values()
+                    ->all();
+
                 return [
                     $pegawaiId => [
                         'name' => $item['name'] ?? 'Pegawai',
                         'jabatan' => $item['jabatan'] ?? '-',
                         'summary' => $summary,
                         'details' => $details,
+                        'conflicts' => $conflicts,
                         'date_label' => $selectedDate->translatedFormat('d F Y'),
                     ],
                 ];
@@ -551,6 +538,12 @@ class JadwalKegiatanController extends Controller
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
             'people' => $displayNames ?: 'Belum ada petugas',
+            'pegawai_ids' => $jadwal->pegawai->pluck('id')->values()->all(),
+            'pegawai_items' => $jadwal->pegawai->map(fn ($pegawai) => [
+                'id' => $pegawai->id,
+                'nama' => $pegawai->nama,
+                'jabatan' => $pegawai->jabatan,
+            ])->values()->all(),
             'pj_initials' => $this->initials($firstName),
             'date_label' => $startDate->translatedFormat('d M Y'),
             'time_label' => $this->formatTimeRange($jadwal->waktu_mulai, $jadwal->waktu_selesai),

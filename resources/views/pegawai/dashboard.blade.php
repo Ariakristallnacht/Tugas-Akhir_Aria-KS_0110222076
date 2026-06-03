@@ -2,7 +2,7 @@
 
 @php
     $title = 'Dashboard Pegawai | Puskesmas Bunar';
-    $heading = 'Dashboard Pegawai';
+    $heading = 'Dashboard';
 @endphp
 
 @push('styles')
@@ -20,7 +20,7 @@
         <div class="pkm-dashboard-main">
             <div class="pkm-section-head">
                 <div>
-                    <h2 style="font-weight: bold">Dashboard Pegawai</h2>
+                    <h2 style="font-weight: bold">Dashboard</h2>
                 </div>
             </div>
 

@@ -27,9 +27,25 @@
             default => 'Dashboard',
         };
     @endphp
-    <div class="page-loader bg-background fixed inset-0 z-[100] flex items-center justify-center transition-opacity">
+    <!-- Page-loader di-disable secara default menggunakan display:none inline style agar dijamin 100% tidak pernah mengunci layar pengguna jika JS telat diproses -->
+    <div class="page-loader bg-background fixed inset-0 z-[100] flex items-center justify-center transition-opacity" id="app-page-loader" style="display: none; opacity: 0; pointer-events: none;">
         <div class="loader-spinner !w-14"></div>
     </div>
+    <script>
+        // Sembunyikan loader secara instan jika JS utama butuh waktu memproses
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var loader = document.getElementById('app-page-loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    loader.style.pointerEvents = 'none';
+                    setTimeout(function() {
+                        loader.style.display = 'none';
+                    }, 300);
+                }
+            }, 50);
+        });
+    </script>
 
     <div class="pkm-app-shell">
         <div class="pkm-app-backdrop"></div>
@@ -73,56 +89,58 @@
                     @if ($roleCode === 'admin')
                         <div class="pkm-nav__group">
                             <div class="pkm-nav__label">Manajemen</div>
-                            <a href="{{ route('admin.monitoring-jadwal') }}" class="pkm-nav__item {{ request()->routeIs('admin.monitoring-jadwal') ? 'is-active' : '' }}">
-                                <span class="pkm-nav__icon"><i data-lucide="calendar-range" class="size-4"></i></span>
-                                <span>Jadwal Kegiatan</span>
-                            </a>
-                            <a href="{{ route('admin.monitoring-laporan') }}" class="pkm-nav__item {{ request()->routeIs('admin.monitoring-laporan*') ? 'is-active' : '' }}">
-                                <span class="pkm-nav__icon"><i data-lucide="file-spreadsheet" class="size-4"></i></span>
-                                <span>Monitoring Laporan</span>
-                            </a>
-                            <a href="{{ route('admin.pegawai.index') }}" class="pkm-nav__item {{ request()->routeIs('admin.pegawai.*') ? 'is-active' : '' }}">
-                                <span class="pkm-nav__icon"><i data-lucide="briefcase-business" class="size-4"></i></span>
-                                <span>Kelola Pegawai</span>
-                            </a>
+                            <div class="pkm-nav__submenu">
+                                <a href="{{ route('admin.monitoring-jadwal') }}" class="pkm-nav__subitem {{ request()->routeIs('admin.monitoring-jadwal') ? 'is-active' : '' }}">
+                                    <i data-lucide="calendar-range" class="size-4"></i>
+                                    <span>Monitoring Jadwal Kegiatan</span>
+                                </a>
+                                <a href="{{ route('admin.pegawai.index') }}" class="pkm-nav__subitem {{ request()->routeIs('admin.pegawai.*') ? 'is-active' : '' }}">
+                                    <i data-lucide="briefcase-business" class="size-4"></i>
+                                    <span>Kelola Pegawai</span>
+                                </a>
+                                <a href="{{ route('admin.monitoring-laporan') }}" class="pkm-nav__subitem {{ request()->routeIs('admin.monitoring-laporan*') ? 'is-active' : '' }}">
+                                    <i data-lucide="file-spreadsheet" class="size-4"></i>
+                                    <span>Monitoring Laporan Kegiatan</span>
+                                </a>
+                            </div>
                         </div>
                     @elseif ($roleCode === 'pj_penjadwalan')
                         <div class="pkm-nav__group">
-                            <div class="pkm-nav__label">Operasional</div>
+                            <div class="pkm-nav__label">Manajemen</div>
                             <div class="pkm-nav__submenu">
                                 <a href="{{ route('pj.jadwal-kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.jadwal-kegiatan.*') ? 'is-active' : '' }}">
                                     <i data-lucide="calendar-plus" class="size-4"></i>
-                                    <span>Jadwal Kegiatan</span>
+                                    <span>Kelola Jadwal Kegiatan</span>
                                 </a>
                                 <a href="{{ route('pj.verifikasi-pengajuan-dinas.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.verifikasi-pengajuan-dinas.*') ? 'is-active' : '' }}">
                                     <i data-lucide="shield-check" class="size-4"></i>
-                                    <span>Verifikasi Dinas</span>
+                                    <span>Verifikasi Dinas Luar</span>
                                 </a>
                                 <a href="{{ route('pj.kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.kegiatan.*') ? 'is-active' : '' }}">
                                     <i data-lucide="folders" class="size-4"></i>
                                     <span>Kelola Layanan</span>
                                 </a>
-                                <a href="{{ route('pj.monitoring-laporan') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.monitoring-laporan*') ? 'is-active' : '' }}">
+                                 <a href="{{ route('pj.monitoring-laporan') }}" class="pkm-nav__subitem {{ request()->routeIs('pj.monitoring-laporan*') ? 'is-active' : '' }}">
                                     <i data-lucide="file-spreadsheet" class="size-4"></i>
-                                    <span>Monitoring Laporan</span>
+                                    <span>Monitoring Laporan Kegiatan</span>
                                 </a>
                             </div>
                         </div>
                     @else
                         <div class="pkm-nav__group">
-                            <div class="pkm-nav__label">Aktivitas</div>
+                            <div class="pkm-nav__label">Manajemen</div>
                             <div class="pkm-nav__submenu">
                                 <a href="{{ route('pegawai.jadwal-kegiatan') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.jadwal-kegiatan') ? 'is-active' : '' }}">
                                     <i data-lucide="calendar-range" class="size-4"></i>
                                     <span>Jadwal Kegiatan</span>
                                 </a>
-                                <a href="{{ route('pegawai.laporan-kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.laporan-kegiatan.*') ? 'is-active' : '' }}">
-                                    <i data-lucide="file-pen-line" class="size-4"></i>
-                                    <span>Laporan Saya</span>
-                                </a>
                                 <a href="{{ route('pegawai.pengajuan-dinas.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.pengajuan-dinas.*') ? 'is-active' : '' }}">
                                     <i data-lucide="briefcase-business" class="size-4"></i>
-                                    <span>Pengajuan Dinas</span>
+                                    <span>Pengajuan Dinas Luar</span>
+                                </a>
+                                <a href="{{ route('pegawai.laporan-kegiatan.index') }}" class="pkm-nav__subitem {{ request()->routeIs('pegawai.laporan-kegiatan.*') ? 'is-active' : '' }}">
+                                    <i data-lucide="file-pen-line" class="size-4"></i>
+                                    <span>Laporan Kegiatan</span>
                                 </a>
                             </div>
                         </div>
@@ -138,7 +156,7 @@
                     <i data-lucide="move-right" class="size-4 text-white/55"></i>
                 </div>
             </aside>
-            <button class="pkm-sidebar-overlay js-pkm-sidebar-close" type="button" aria-label="Tutup sidebar"></button>
+            <button class="pkm-sidebar-overlay js-pkm-sidebar-close" type="button" aria-label="Tutup sidebar" style="display: none; pointer-events: none;" aria-hidden="true"></button>
 
             <main class="pkm-main">
                 <header class="pkm-topbar">
@@ -160,9 +178,6 @@
                             <i data-lucide="search" class="size-4 text-slate-400"></i>
                             <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari jadwal, pegawai, atau layanan...">
                         </form>
-                        <button class="pkm-topbar__icon" type="button">
-                            <i data-lucide="bell" class="size-4"></i>
-                        </button>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="pkm-topbar__login">Logout</button>
@@ -183,6 +198,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const shell = document.querySelector('.pkm-shell');
+            const sidebarOverlay = document.querySelector('.pkm-sidebar-overlay');
             const openButtons = document.querySelectorAll('.js-pkm-sidebar-open');
             const closeButtons = document.querySelectorAll('.js-pkm-sidebar-close');
 
@@ -190,17 +206,43 @@
                 return;
             }
 
-            const openSidebar = () => shell.classList.add('pkm-shell--sidebar-open');
-            const closeSidebar = () => shell.classList.remove('pkm-shell--sidebar-open');
+            const isMobileSidebar = () => window.innerWidth <= 1280;
+
+            const syncSidebarOverlay = () => {
+                if (!sidebarOverlay) {
+                    return;
+                }
+
+                const sidebarOpen = shell.classList.contains('pkm-shell--sidebar-open');
+                const shouldShowOverlay = isMobileSidebar() && sidebarOpen;
+
+                sidebarOverlay.style.display = shouldShowOverlay ? 'block' : 'none';
+                sidebarOverlay.style.pointerEvents = shouldShowOverlay ? 'auto' : 'none';
+                sidebarOverlay.setAttribute('aria-hidden', shouldShowOverlay ? 'false' : 'true');
+            };
+
+            const openSidebar = () => {
+                if (!isMobileSidebar()) {
+                    syncSidebarOverlay();
+                    return;
+                }
+
+                shell.classList.add('pkm-shell--sidebar-open');
+                syncSidebarOverlay();
+            };
+
+            const closeSidebar = () => {
+                shell.classList.remove('pkm-shell--sidebar-open');
+                syncSidebarOverlay();
+            };
 
             openButtons.forEach((button) => button.addEventListener('click', openSidebar));
             closeButtons.forEach((button) => button.addEventListener('click', closeSidebar));
 
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 1280) {
-                    closeSidebar();
-                }
-            });
+            window.addEventListener('resize', syncSidebarOverlay);
+            window.addEventListener('pageshow', syncSidebarOverlay);
+
+            syncSidebarOverlay();
         });
     </script>
     @stack('scripts')

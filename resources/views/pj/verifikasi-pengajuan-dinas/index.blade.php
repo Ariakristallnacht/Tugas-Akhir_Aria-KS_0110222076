@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Verifikasi Pengajuan Dinas | Puskesmas Bunar';
-    $heading = 'Verifikasi Pengajuan Dinas';
+    $title = 'Verifikasi Dinas Luar | Puskesmas Bunar';
+    $heading = 'Verifikasi Dinas Luar';
 @endphp
 
 @push('styles')
@@ -50,7 +50,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2 style="font-weight: bold">Verifikasi Pengajuan Dinas</h2>
+                <h2 style="font-weight: bold">Verifikasi Dinas Luar</h2>
             </div>
         </div>
 

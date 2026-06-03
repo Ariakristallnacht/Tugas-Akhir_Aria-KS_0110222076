@@ -1,5 +1,7 @@
 @php
     $tanggalValue = old('tanggal', filled($jadwal->tanggal) ? \Illuminate\Support\Carbon::parse($jadwal->tanggal)->format('Y-m-d') : '');
+    $waktuMulaiValue = old('waktu_mulai', $jadwal->waktu_mulai?->format('H:i'));
+    $waktuSelesaiValue = old('waktu_selesai', $jadwal->waktu_selesai?->format('H:i'));
     $oldPetugas = old('petugas');
     $petugasRows = collect($oldPetugas ?: ($jadwal->jadwalPegawai ?? collect())->map(fn ($item) => [
         'pegawai_id' => $item->pegawai_id,
@@ -7,12 +9,6 @@
         'status_penugasan' => $item->status_penugasan,
     ])->all());
     $availabilityMap = $planningContext['availability_map'] ?? [];
-    $selectedPegawaiIds = $petugasRows
-        ->pluck('pegawai_id')
-        ->filter()
-        ->map(fn ($value) => (string) $value)
-        ->values()
-        ->all();
 
     if ($petugasRows->isEmpty()) {
         $petugasRows = collect([[
@@ -33,6 +29,14 @@
                 ? 'Poli Layanan'
                 : 'Layanan Lainnya';
         });
+    $timeOptions = collect(range(0, 47))
+        ->map(function (int $slot) {
+            $hour = str_pad((string) intdiv($slot, 2), 2, '0', STR_PAD_LEFT);
+            $minute = $slot % 2 === 0 ? '00' : '30';
+
+            return $hour.':'.$minute;
+        })
+        ->push('23:59');
 @endphp
 
 @push('styles')
@@ -141,6 +145,49 @@
             color: #1f7a46;
         }
 
+        .pkm-modal[hidden] {
+            display: none;
+        }
+
+        .pkm-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            display: grid;
+            place-items: center;
+        }
+
+        .pkm-modal__backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+        }
+
+        .pkm-modal__panel {
+            position: relative;
+            z-index: 1;
+            width: min(92vw, 560px);
+            border-radius: 24px;
+            background: #fff;
+            border: 1px solid var(--pkm-border);
+            box-shadow: 0 28px 60px rgba(15, 23, 42, 0.2);
+            padding: 22px;
+        }
+
+        .pkm-modal__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .pkm-modal__actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
         .pkm-helper-note {
             margin-top: 10px;
             color: var(--pkm-text-muted);
@@ -233,6 +280,7 @@
     class="pkm-planning-grid"
     data-planning-form
     data-availability-url="{{ route('pj.jadwal-kegiatan.availability') }}"
+    data-release-conflict-url="{{ route('pj.jadwal-kegiatan.release-from-conflict') }}"
     data-ignore-jadwal="{{ $jadwal->exists ? $jadwal->id : '' }}"
 >
     <div class="pkm-planning-stack">
@@ -274,18 +322,30 @@
 
             <div class="pkm-field">
                 <label for="waktu_mulai">Waktu mulai</label>
-                <input id="waktu_mulai" class="pkm-input" type="time" name="waktu_mulai" value="{{ old('waktu_mulai', $jadwal->waktu_mulai?->format('H:i')) }}">
+                <select id="waktu_mulai" class="pkm-input" name="waktu_mulai">
+                    <option value="">Pilih waktu mulai</option>
+                    @foreach ($timeOptions as $timeOption)
+                        <option value="{{ $timeOption }}" @selected($waktuMulaiValue === $timeOption)>{{ $timeOption }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="pkm-field">
                 <label for="waktu_selesai">Waktu selesai</label>
-                <input id="waktu_selesai" class="pkm-input" type="time" name="waktu_selesai" value="{{ old('waktu_selesai', $jadwal->waktu_selesai?->format('H:i')) }}">
+                <select id="waktu_selesai" class="pkm-input" name="waktu_selesai">
+                    <option value="">Pilih waktu selesai</option>
+                    @foreach ($timeOptions as $timeOption)
+                        <option value="{{ $timeOption }}" @selected($waktuSelesaiValue === $timeOption)>{{ $timeOption }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="pkm-field pkm-field--full">
                 <label for="keterangan">Keterangan</label>
                 <textarea id="keterangan" class="pkm-input" name="keterangan" rows="4">{{ old('keterangan', $jadwal->keterangan) }}</textarea>
             </div>
+
+            <input type="hidden" name="stay_on_edit" value="{{ $jadwal->exists ? '1' : '0' }}">
         </div>
 
         <section class="pkm-card">
@@ -326,17 +386,12 @@
                                 <select class="" name="petugas[{{ $index }}][pegawai_id]" data-pegawai-select required>
                                     <option value="">Pilih pegawai</option>
                                     @foreach ($pegawaiOptions as $pegawai)
-                                        @php
-                                            $optionAvailability = $availabilityMap[$pegawai->id] ?? null;
-                                            $optionLabel = $pegawai->nama;
-                                        @endphp
                                         <option
                                             value="{{ $pegawai->id }}"
                                             data-base-label="{{ $pegawai->nama }}"
-                                            @disabled($optionAvailability || (in_array((string) $pegawai->id, $selectedPegawaiIds, true) && (string) ($petugas['pegawai_id'] ?? '') !== (string) $pegawai->id))
                                             @selected((string) ($petugas['pegawai_id'] ?? '') === (string) $pegawai->id)
                                         >
-                                            {{ $optionLabel }}
+                                            {{ $pegawai->nama }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -508,6 +563,21 @@
     </div>
 </template>
 
+<div class="pkm-modal" data-conflict-modal hidden>
+    <div class="pkm-modal__backdrop" data-conflict-close></div>
+    <div class="pkm-modal__panel" role="dialog" aria-modal="true" aria-labelledby="conflict-modal-title">
+        <div class="pkm-modal__head">
+            <h3 id="conflict-modal-title" style="font-weight:700;">Konfirmasi ubah jadwal</h3>
+            <button type="button" class="pkm-icon-button" data-conflict-close aria-label="Tutup">×</button>
+        </div>
+        <p data-conflict-modal-text style="margin:12px 0 0; color:var(--pkm-text-muted);"></p>
+        <div class="pkm-modal__actions">
+            <button type="button" class="pkm-secondary-button" data-conflict-close>Batal</button>
+            <button type="button" class="pkm-primary-button" data-conflict-confirm>Ya, ubah jadwal</button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
     <script src="{{ asset('template/dist/js/vendors/tom-select.js') }}"></script>
     <script>
@@ -530,10 +600,76 @@
             const approvedDinasCount = planner.querySelector('[data-approved-dinas-count]');
             const approvedDinasList = planner.querySelector('[data-approved-dinas-list]');
             const existingSchedulesList = planner.querySelector('[data-existing-schedules-list]');
+            const conflictModal = document.querySelector('[data-conflict-modal]');
+            const conflictModalText = document.querySelector('[data-conflict-modal-text]');
+            const conflictConfirmButton = document.querySelector('[data-conflict-confirm]');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+            let pendingConflict = null;
 
             const renderIcons = () => {
                 if (window.lucide) {
                     window.lucide.createIcons();
+                }
+            };
+
+            const closeConflictModal = () => {
+                if (!conflictModal) {
+                    return;
+                }
+
+                conflictModal.hidden = true;
+                pendingConflict = null;
+            };
+
+            const openConflictModal = (payload) => {
+                if (!conflictModal || !conflictModalText) {
+                    return;
+                }
+
+                pendingConflict = payload;
+                conflictModalText.innerHTML = `
+                    Pegawai <strong>${escapeHtml(payload.pegawaiName)}</strong> sedang memiliki jadwal bentrok:
+                    <br><strong>${escapeHtml(payload.title)}</strong>
+                    <br>${escapeHtml(payload.timeLabel)} - ${escapeHtml(payload.lokasi)}
+                    <br><br>Jika dilanjutkan, pegawai ini akan dilepas dari jadwal bentrok tersebut agar bisa dipakai pada jadwal yang sedang disusun.
+                `;
+                conflictModal.hidden = false;
+            };
+
+            const releaseConflict = async () => {
+                if (!pendingConflict) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(planner.dataset.releaseConflictUrl, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                            'X-CSRF-TOKEN': csrfToken,
+                        },
+                        body: new URLSearchParams({
+                            jadwal_id: String(pendingConflict.jadwalId),
+                            pegawai_id: String(pendingConflict.pegawaiId),
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        return;
+                    }
+
+                    const form = planner.closest('form');
+                    closeConflictModal();
+                    await fetchPlanningContext();
+                    const stayOnEditInput = form?.querySelector('input[name="stay_on_edit"]');
+                    if (stayOnEditInput) {
+                        stayOnEditInput.value = '1';
+                    }
+                    form?.requestSubmit();
+                } catch (error) {
+                    console.error(error);
                 }
             };
 
@@ -563,21 +699,10 @@
                         placeholder: 'Cari atau pilih pegawai',
                         render: {
                             option(data, escape) {
-                                const isDisabled = String(data.disabled) === 'true' || data.disabled === true;
-                                const disabledAttr = isDisabled ? ' data-disabled="true" aria-disabled="true"' : '';
-                                const disabledClass = isDisabled ? ' is-disabled' : '';
-
-                                return `<div class="option${disabledClass}"${disabledAttr}>${escape(data.text)}</div>`;
+                                return `<div class="option">${escape(data.text)}</div>`;
                             },
                         },
-                        onChange(value) {
-                            if (!value || !availabilityMap[value]) {
-                                refreshAssignmentNotes();
-                                updateSelectOptionLabels();
-                                return;
-                            }
-
-                            this.clear(true);
+                        onChange() {
                             updateSelectOptionLabels();
                             refreshAssignmentNotes();
                         },
@@ -638,26 +763,21 @@
                         const baseLabel = option.dataset.baseLabel || option.textContent.trim();
                         const availability = availabilityMap[option.value];
                         const selectedInAnotherRow = selectedValues.includes(option.value) && select.value !== option.value;
-                        const isDisabled = Boolean(availability || selectedInAnotherRow);
-                        const disabledReason = availability
-                            ? 'Tidak tersedia'
-                            : selectedInAnotherRow
-                                ? 'Sudah dipilih'
-                                : '';
 
-                        option.disabled = isDisabled;
-                        option.dataset.disabled = isDisabled ? 'true' : 'false';
-                        option.textContent = disabledReason ? `${baseLabel} (${disabledReason})` : baseLabel;
+                        option.disabled = false;
+                        option.dataset.disabled = 'false';
+                        option.textContent = baseLabel;
+
+                        if (selectedInAnotherRow) {
+                            option.textContent = `${baseLabel} (sudah dipakai di petugas lain)`;
+                        } else if (availability) {
+                            option.textContent = `${baseLabel} (punya jadwal lain)`;
+                        }
                     });
-
-                    if (select.value && availabilityMap[select.value]) {
-                        select.value = '';
-                    }
 
                     if (select.tomselect) {
                         Object.values(select.tomselect.options).forEach((item) => {
-                            const nativeOption = select.querySelector(`option[value="${window.CSS?.escape ? window.CSS.escape(item.value) : item.value}"]`);
-                            item.disabled = nativeOption?.disabled ?? false;
+                            item.disabled = false;
                         });
                         select.tomselect.sync();
                         select.tomselect.refreshOptions(false);
@@ -682,12 +802,22 @@
                     }
 
                     if (availability) {
-                        const details = Array.isArray(availability.details) && availability.details.length
-                            ? ` (${availability.details.join(' | ')})`
+                        note.className = 'pkm-assignment-row__availability is-warning';
+                        const detailLines = Array.isArray(availability.details) ? availability.details : [];
+                        const conflict = Array.isArray(availability.conflicts) ? availability.conflicts[0] : null;
+                        const detailHtml = detailLines.length
+                            ? `<div style="margin-top:8px; display:grid; gap:4px;">${detailLines.map((line) => `<div>- ${escapeHtml(line)}</div>`).join('')}</div>`
+                            : '';
+                        const actionHtml = conflict
+                            ? `<div style="margin-top:12px;"><button type="button" class="pkm-primary-button" data-release-conflict data-conflict-jadwal-id="${escapeHtml(conflict.jadwal_id)}" data-conflict-pegawai-id="${escapeHtml(select.value)}" data-conflict-pegawai-name="${escapeHtml(availability.name || 'Pegawai')}">Ubah Jadwal</button></div>`
                             : '';
 
-                        note.className = 'pkm-assignment-row__availability is-warning';
-                        note.textContent = `Tidak tersedia: ${availability.summary}${details}`;
+                        note.innerHTML = `
+                            <strong>Pegawai ini sudah memiliki jadwal pada ${escapeHtml(availability.date_label || '-')}</strong><br>
+                            ${escapeHtml(availability.summary || 'Konflik jadwal terdeteksi.')}
+                            ${detailHtml}
+                            ${actionHtml}
+                        `;
 
                         return;
                     }
@@ -784,8 +914,33 @@
 
             list.addEventListener('click', function (event) {
                 const removeButton = event.target.closest('[data-remove-assignment]');
+                const releaseButton = event.target.closest('[data-release-conflict]');
 
                 if (!removeButton) {
+                    if (!releaseButton) {
+                        return;
+                    }
+
+                    const row = releaseButton.closest('[data-assignment-row]');
+                    const select = row?.querySelector('[data-pegawai-select]');
+                    const note = row?.querySelector('[data-availability-note]');
+                    const availability = select ? availabilityMap[select.value] : null;
+                    const conflict = availability && Array.isArray(availability.conflicts) ? availability.conflicts[0] : null;
+
+                    if (!select || !conflict) {
+                        return;
+                    }
+
+                    openConflictModal({
+                        jadwalId: conflict.jadwal_id,
+                        pegawaiId: select.value,
+                        pegawaiName: releaseButton.dataset.conflictPegawaiName || availability.name || 'Pegawai',
+                        title: conflict.title || 'Kegiatan',
+                        timeLabel: conflict.time_label || '-',
+                        lokasi: conflict.lokasi || '-',
+                        note,
+                    });
+
                     return;
                 }
 
@@ -803,6 +958,18 @@
             planner.addEventListener('change', function (event) {
                 if (event.target.matches('[data-pegawai-select]')) {
                     refreshAssignmentNotes();
+                }
+            });
+
+            document.querySelectorAll('[data-conflict-close]').forEach((button) => {
+                button.addEventListener('click', closeConflictModal);
+            });
+
+            conflictConfirmButton?.addEventListener('click', releaseConflict);
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeConflictModal();
                 }
             });
 

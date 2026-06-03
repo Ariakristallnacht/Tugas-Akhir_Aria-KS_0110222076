@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Dashboard PJ Penjadwalan | Puskesmas Bunar';
-    $heading = 'Dashboard PJ Penjadwalan';
+    $title = 'Dashboard PJ| Puskesmas Bunar';
+    $heading = 'Dashboard';
 @endphp
 
 @section('content')
@@ -10,7 +10,7 @@
         <div class="pkm-dashboard-main">
             <div class="pkm-section-head">
                 <div>
-                    <h2 style="font-weight: bold">Dashboard PJ</h2>
+                    <h2 style="font-weight: bold">Dashboard</h2>
                 </div>
             </div>
 

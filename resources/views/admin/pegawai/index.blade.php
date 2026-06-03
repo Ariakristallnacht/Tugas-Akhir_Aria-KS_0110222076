@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Data Pegawai | Puskesmas Bunar';
-    $heading = 'Data Pegawai';
+    $title = 'Kelola Pegawai | Puskesmas Bunar';
+    $heading = 'Kelola Pegawai';
 @endphp
 
 @push('styles')

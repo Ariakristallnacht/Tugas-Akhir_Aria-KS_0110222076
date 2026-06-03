@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pegawai;
 use App\Models\Jadwal;
 use App\Models\PengajuanDinas;
 use Carbon\Carbon;
@@ -75,6 +76,17 @@ class MonitoringJadwalController extends Controller
             'items' => $filteredItems,
             'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $calendarItems, $referenceDate),
             'calendarMonthLabel' => $monthDate->translatedFormat('F Y'),
+            'activePegawaiForModal' => Pegawai::query()
+                ->where('is_aktif', true)
+                ->orderBy('nama')
+                ->get(['id', 'nama', 'jabatan'])
+                ->map(fn (Pegawai $pegawai) => [
+                    'id' => $pegawai->id,
+                    'nama' => $pegawai->nama,
+                    'jabatan' => $pegawai->jabatan,
+                ])
+                ->values()
+                ->all(),
             'calendarFilters' => [
                 'month' => $monthDate->format('Y-m'),
                 'previous_month' => $monthDate->copy()->subMonth()->format('Y-m'),
@@ -191,6 +203,7 @@ class MonitoringJadwalController extends Controller
             'subtitle' => $jadwal->lokasi,
             'description' => $jadwal->keterangan,
             'people' => $displayNames ?: 'Belum ada petugas',
+            'pegawai_ids' => $jadwal->pegawai->pluck('id')->values()->all(),
             'pj_initials' => $this->initials($firstPegawaiName),
             'date_label' => $startDate->translatedFormat('d M Y'),
             'time_label' => $this->formatTimeRange($jadwal->waktu_mulai, $jadwal->waktu_selesai),
@@ -221,6 +234,7 @@ class MonitoringJadwalController extends Controller
             'subtitle' => $dinas->tujuan,
             'description' => $dinas->keterangan,
             'people' => $dinas->pegawai?->nama ?? 'Pegawai tidak ditemukan',
+            'pegawai_ids' => [$dinas->pegawai_id],
             'pj_initials' => $this->initials($dinas->pegawai?->nama ?? 'PJ'),
             'date_label' => $startDate->equalTo($endDate)
                 ? $startDate->translatedFormat('d M Y')

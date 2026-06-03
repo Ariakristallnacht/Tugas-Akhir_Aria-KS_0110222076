@@ -33,6 +33,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('/search', SearchController::class)->name('search');
+    Route::get('/jadwal-kegiatan/export', [PegawaiJadwalKegiatanController::class, 'export'])->name('jadwal-kegiatan.export-global');
 
     Route::prefix('admin')
         ->name('admin.')
@@ -52,6 +53,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/', PjDashboardController::class)->name('dashboard');
             Route::get('/jadwal-kegiatan/referensi-ketersediaan', [PjJadwalKegiatanController::class, 'availability'])->name('jadwal-kegiatan.availability');
+            Route::post('/jadwal-kegiatan/lepas-bentrok', [PjJadwalKegiatanController::class, 'releaseFromConflict'])->name('jadwal-kegiatan.release-from-conflict');
             Route::resource('jadwal-kegiatan', PjJadwalKegiatanController::class)->except('show');
             Route::resource('kegiatan', PjKegiatanController::class)->except('show');
             Route::redirect('/laporan-kegiatan', '/pj/monitoring-laporan')->name('laporan-kegiatan.legacy');

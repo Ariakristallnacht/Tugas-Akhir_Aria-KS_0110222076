@@ -13,7 +13,7 @@
                     <h2>Edit Jadwal Kegiatan</h2>
                 </div>
             </div>
-
+            
             @include('admin.partials.flash')
 
             <form method="POST" action="{{ route('pj.jadwal-kegiatan.update', $jadwal) }}" class="pkm-form-stack">

@@ -1,8 +1,8 @@
 @extends('layouts.dashboard')
 
 @php
-    $title = 'Data Layanan | Puskesmas Bunar';
-    $heading = 'Data Layanan';
+    $title = 'Kelola Layanan | Puskesmas Bunar';
+    $heading = 'Kelola Layanan';
 @endphp
 
 @push('styles')
@@ -19,7 +19,7 @@
     <section class="pkm-dashboard-main">
         <div class="pkm-section-head">
             <div>
-                <h2 style="font-weight: bold">Kelola Layanan Poli</h2>
+                <h2 style="font-weight: bold">Kelola Layanan</h2>
             </div>
             <a href="{{ route('pj.kegiatan.create') }}" class="pkm-primary-button">
                 <i data-lucide="plus" class="size-4"></i>
