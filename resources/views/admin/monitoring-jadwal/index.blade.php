@@ -248,6 +248,7 @@
                                         data-date-label="{{ $day['date']->translatedFormat('l, d F Y') }}"
                                         data-total="{{ $day['count'] }}"
                                         data-items='@json($day['items'])'
+                                        data-assigned-pegawai-ids='@json($day['assigned_pegawai_ids'] ?? [])'
                                         aria-label="Lihat detail jadwal tanggal {{ $day['date']->translatedFormat('d F Y') }}"
                                     >
                                         <div class="pkm-calendar__date-row">
@@ -411,7 +412,9 @@
                     const items = JSON.parse(this.dataset.items || '[]');
                     const dateLabel = this.dataset.dateLabel || 'Tanggal dipilih';
                     const total = Number(this.dataset.total || 0);
-                    const assignedIds = new Set(items.reduce((carry, item) => carry.concat(Array.isArray(item.pegawai_ids) ? item.pegawai_ids : []), []).map(String));
+                    const assignedIds = new Set(
+                        JSON.parse(this.dataset.assignedPegawaiIds || '[]').map(String)
+                    );
                     const availablePegawai = activePegawai.filter((pegawai) => !assignedIds.has(String(pegawai.id)));
 
                     modalDate.textContent = dateLabel;

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Builder;
 
 class Pegawai extends Model
 {
@@ -73,5 +74,16 @@ class Pegawai extends Model
     public function laporanKegiatan(): HasMany
     {
         return $this->hasMany(LaporanKegiatan::class);
+    }
+
+    public function scopeSelectable(Builder $query): Builder
+    {
+        return $query
+            ->where('is_aktif', true)
+            ->where(function (Builder $nested): void {
+                $nested
+                    ->whereDoesntHave('user')
+                    ->orWhereHas('user.role', fn (Builder $roleQuery) => $roleQuery->whereNotIn('kode', ['admin', 'pj_penjadwalan']));
+            });
     }
 }

@@ -38,7 +38,7 @@ class MonitoringLaporanController extends Controller
             'exportRouteName' => $this->exportRouteName(),
             'showRouteName' => $this->showRouteName(),
             'filters' => $filters,
-            'pegawaiOptions' => Pegawai::orderBy('nama')->get(['id', 'nama']),
+            'pegawaiOptions' => Pegawai::selectable()->orderBy('nama')->get(['id', 'nama']),
             'reports' => $reports,
             'summary' => $summary,
         ];

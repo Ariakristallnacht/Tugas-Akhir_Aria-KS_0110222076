@@ -20,6 +20,11 @@
         $user = auth()->user();
         $roleCode = $user?->roleKode();
         $roleLabel = $user?->role?->nama ?? 'Pengguna';
+        $profileName = match ($roleCode) {
+            'admin' => 'Admin',
+            'pj_penjadwalan' => 'PJ Penjadwalan',
+            default => $user?->name ?? 'Pengguna',
+        };
         $dashboardHeading = match ($roleCode) {
             'admin' => 'Dashboard Admin',
             'pj_penjadwalan' => 'Dashboard PJ Penjadwalan',
@@ -72,7 +77,7 @@
                         <i data-lucide="stethoscope" class="size-5"></i>
                     </div>
                     <div>
-                        <div class="pkm-sidebar__profile-name">{{ $user?->name ?? 'Pengguna' }}</div>
+                        <div class="pkm-sidebar__profile-name">{{ $profileName }}</div>
                         <div class="pkm-sidebar__profile-role">{{ $roleLabel }}</div>
                     </div>
                 </div>

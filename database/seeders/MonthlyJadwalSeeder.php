@@ -9,6 +9,7 @@ use App\Models\LaporanKegiatan;
 use App\Models\Monitoring;
 use App\Models\Pegawai;
 use App\Models\Role;
+use App\Models\PengajuanDinas;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -133,6 +134,27 @@ class MonthlyJadwalSeeder extends Seeder
         'Petugas Administrasi',
     ];
 
+    private const DINAS_LUAR = [
+        [
+            'nama_kegiatan' => 'Supervisi Sanitasi Sekolah',
+            'deskripsi' => 'Pemantauan sarana sanitasi, air bersih, dan kebersihan lingkungan sekolah di wilayah kerja.',
+            'tujuan' => 'Sekolah wilayah Bunar',
+            'keterangan' => 'Kunjungan lapangan untuk supervisi sanitasi dan pendampingan tindak lanjut perbaikan.',
+        ],
+        [
+            'nama_kegiatan' => 'Investigasi Epidemiologi DBD',
+            'deskripsi' => 'Pelacakan kasus demam berdarah, asesmen lingkungan, dan koordinasi pemberantasan sarang nyamuk.',
+            'tujuan' => 'Wilayah binaan Bunar',
+            'keterangan' => 'Koordinasi lapangan untuk investigasi kasus dan edukasi PSN bersama kader.',
+        ],
+        [
+            'nama_kegiatan' => 'Pembinaan Posyandu Remaja',
+            'deskripsi' => 'Pendampingan kader dan edukasi kesehatan reproduksi pada kelompok remaja.',
+            'tujuan' => 'Posyandu Remaja Bunar',
+            'keterangan' => 'Pendampingan kegiatan posyandu remaja dan penguatan edukasi kesehatan.',
+        ],
+    ];
+
     public function run(): void
     {
         DB::transaction(function () {
@@ -182,6 +204,17 @@ class MonthlyJadwalSeeder extends Seeder
                 return [$item['nama_kegiatan'] => $kegiatan];
             });
 
+            collect(self::DINAS_LUAR)->each(function (array $item) {
+                Kegiatan::query()->updateOrCreate(
+                    ['nama_kegiatan' => $item['nama_kegiatan']],
+                    [
+                        'jenis' => 'dinas_luar',
+                        'deskripsi' => $item['deskripsi'],
+                        'is_aktif' => true,
+                    ]
+                );
+            });
+
             $startDate = Carbon::now()->startOfMonth()->startOfDay();
             $endDate = Carbon::now()->endOfMonth()->startOfDay();
 
@@ -191,20 +224,26 @@ class MonthlyJadwalSeeder extends Seeder
                 ->delete();
 
             $totalDays = $startDate->diffInDays($endDate) + 1;
+            $pegawaiPool = $pegawai->values();
+            $serviceSlots = count(self::LAYANAN);
 
             for ($dayIndex = 0; $dayIndex < $totalDays; $dayIndex++) {
                 $dayCursor = $startDate->copy()->addDays($dayIndex);
-                $dayPegawai = $this->ensureDailyPegawaiPool(
-                    $pegawai,
-                    count(self::LAYANAN),
+                $pegawaiPool = $this->ensureDailyPegawaiPool(
+                    $pegawaiPool,
+                    $serviceSlots + 1,
                     $pegawaiRole,
                     $dayCursor
                 );
 
+                $dayPegawai = $this->rotatePegawaiPool($pegawaiPool, $dayIndex);
+                $servicePegawai = $dayPegawai->take($serviceSlots)->values();
+                $dinasPegawai = $dayPegawai->get($serviceSlots);
+
                 foreach (self::LAYANAN as $serviceIndex => $service) {
                     $shift = self::SHIFT_TEMPLATES[$serviceIndex % count(self::SHIFT_TEMPLATES)];
                     $status = $dayCursor->isFuture() ? 'terjadwal' : 'selesai';
-                    $pegawaiItem = $dayPegawai[$serviceIndex];
+                    $pegawaiItem = $servicePegawai[$serviceIndex];
 
                     $jadwal = Jadwal::query()->create([
                         'kegiatan_id' => $kegiatanByName[$service['nama_kegiatan']]->id,
@@ -263,6 +302,46 @@ class MonthlyJadwalSeeder extends Seeder
                         'catatan_verifikasi' => 'Laporan sesuai data monitoring lapangan.',
                     ]);
                 }
+
+                if ($dinasPegawai) {
+                    $dinas = self::DINAS_LUAR[$dayIndex % count(self::DINAS_LUAR)];
+
+                    $pengajuan = PengajuanDinas::query()->create([
+                        'pegawai_id' => $dinasPegawai->id,
+                        'tanggal_pengajuan' => $dayCursor->copy()->subDays(2)->toDateString(),
+                        'tanggal_mulai' => $dayCursor->toDateString(),
+                        'tanggal_selesai' => $dayCursor->toDateString(),
+                        'tujuan' => $dinas['tujuan'],
+                        'kegiatan' => $dinas['nama_kegiatan'],
+                        'keterangan' => sprintf(
+                            '%s untuk tanggal %s di wilayah kerja Puskesmas Bunar.',
+                            $dinas['keterangan'],
+                            $dayCursor->translatedFormat('d F Y')
+                        ),
+                        'bukti_surat_path' => null,
+                        'bukti_surat_nama' => null,
+                        'bukti_surat_mime' => null,
+                        'status' => 'disetujui',
+                        'diverifikasi_oleh' => $adminVerifier->id,
+                        'diverifikasi_at' => $dayCursor->copy()->setTime(8, 0),
+                        'catatan_verifikasi' => 'Dinas luar dijadwalkan berdampingan dengan layanan harian.',
+                    ]);
+
+                    LaporanKegiatan::query()->create([
+                        'pegawai_id' => $dinasPegawai->id,
+                        'pengajuan_dinas_id' => $pengajuan->id,
+                        'tanggal' => $dayCursor->toDateString(),
+                        'laporan' => sprintf(
+                            'Pelaksanaan dinas luar %s tanggal %s berjalan lancar dan terdokumentasi.',
+                            $dinas['nama_kegiatan'],
+                            $dayCursor->translatedFormat('d F Y')
+                        ),
+                        'status_verifikasi' => 'diterima',
+                        'diverifikasi_oleh' => $adminVerifier->id,
+                        'diverifikasi_at' => $dayCursor->copy()->setTime(16, 0),
+                        'catatan_verifikasi' => 'Laporan dinas luar sesuai penugasan harian.',
+                    ]);
+                }
             }
         });
     }
@@ -285,6 +364,19 @@ class MonthlyJadwalSeeder extends Seeder
         }
 
         return $dayPegawai->take($requiredCount)->values();
+    }
+
+    private function rotatePegawaiPool(Collection $pegawai, int $offset): Collection
+    {
+        if ($pegawai->isEmpty()) {
+            return $pegawai;
+        }
+
+        $rotation = $offset % $pegawai->count();
+
+        return $pegawai->slice($rotation)
+            ->concat($pegawai->take($rotation))
+            ->values();
     }
 
     private function createPegawaiBaru(Role $pegawaiRole, Carbon $dayCursor, int $sequence): Pegawai
@@ -325,6 +417,7 @@ class MonthlyJadwalSeeder extends Seeder
         Pegawai::query()
             ->where('nama', 'like', 'Pegawai Tambahan%')
             ->orWhere('nama', 'like', 'Pegawai Baru%')
+            ->orWhere('nip', 'like', '99%')
             ->get()
             ->each
             ->delete();

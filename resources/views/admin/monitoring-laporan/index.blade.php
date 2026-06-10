@@ -44,7 +44,23 @@
             grid-template-columns: minmax(0, 1.55fr) minmax(180px, 0.9fr) minmax(180px, 0.82fr) minmax(180px, 0.85fr) minmax(140px, 0.68fr);
         }
 
-        @media (max-width: 1023px) {
+        @media (max-width: 1180px) {
+            .pkm-management-summary--single-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .pkm-monitoring-filter .pkm-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pkm-monitoring-filter .pkm-form-actions {
+                justify-content: stretch;
+            }
+
+            .pkm-monitoring-filter .pkm-form-actions > * {
+                flex: 1 1 0;
+            }
+
             .pkm-report-table-head {
                 align-items: stretch;
                 flex-direction: column;
@@ -53,6 +69,12 @@
             .pkm-report-search-inline {
                 width: 100%;
                 margin-left: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .pkm-management-summary--single-row {
+                grid-template-columns: 1fr;
             }
         }
     </style>

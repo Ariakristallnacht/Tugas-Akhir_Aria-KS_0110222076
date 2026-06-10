@@ -35,7 +35,7 @@ class LaporanKegiatanController extends Controller
 
         return view('pj.laporan-kegiatan.index', [
             'filters' => $filters,
-            'pegawaiOptions' => Pegawai::orderBy('nama')->get(['id', 'nama']),
+            'pegawaiOptions' => Pegawai::selectable()->orderBy('nama')->get(['id', 'nama']),
             'reports' => $reports,
             'summary' => [
                 'all' => $summaryReports->count(),
@@ -383,7 +383,7 @@ class LaporanKegiatanController extends Controller
         $pegawaiOptions = collect();
 
         if ($selectedJadwal?->pegawai) {
-            $pegawaiOptions = $selectedJadwal->pegawai->sortBy('nama')->values();
+            $pegawaiOptions = $selectedJadwal->pegawai->where('is_aktif', true)->sortBy('nama')->values();
         } elseif ($selectedPengajuan?->pegawai) {
             $pegawaiOptions = collect([$selectedPengajuan->pegawai]);
         }

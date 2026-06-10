@@ -56,13 +56,13 @@ class JadwalKegiatanController extends Controller
             ->sortBy(fn (array $item) => sprintf('%02d-%010d-%s', $item['phase_order'], $item['start_sort'], $item['key']))
             ->values();
 
-        $calendarItems = $this->filterCalendarItems(
-            $this->buildAgendaItems(
-                $monthDate->copy()->startOfMonth(),
-                $monthDate->copy()->endOfMonth(),
-                $referenceMoment
-            )
+        $calendarSourceItems = $this->buildAgendaItems(
+            $monthDate->copy()->startOfMonth(),
+            $monthDate->copy()->endOfMonth(),
+            $referenceMoment
         );
+
+        $calendarItems = $this->filterCalendarItems($calendarSourceItems);
 
         $planningDate = $request->filled('planning_date')
             ? Carbon::parse($request->string('planning_date'))->startOfDay()
@@ -86,10 +86,9 @@ class JadwalKegiatanController extends Controller
                 'approved_dinas' => $rangeItems->where('type', 'dinas_luar')->count(),
             ],
             'items' => $items,
-            'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $calendarItems, $referenceDate),
+            'calendarWeeks' => $this->buildCalendarWeeks($monthDate, $calendarItems, $referenceDate, $calendarSourceItems),
             'calendarMonthLabel' => $monthDate->translatedFormat('F Y'),
-            'activePegawaiForModal' => Pegawai::query()
-                ->where('is_aktif', true)
+            'activePegawaiForModal' => Pegawai::selectable()
                 ->orderBy('nama')
                 ->get(['id', 'nama', 'jabatan'])
                 ->map(fn (Pegawai $pegawai) => [
@@ -370,7 +369,7 @@ class JadwalKegiatanController extends Controller
                 ->orderBy('nama_kegiatan')
                 ->get()
                 ->values(),
-            'pegawaiOptions' => Pegawai::where('is_aktif', true)->orderBy('nama')->get(),
+            'pegawaiOptions' => Pegawai::selectable()->orderBy('nama')->get(),
             'statusOptions' => [
                 'draft' => 'Draft',
                 'terjadwal' => 'Terjadwal',
@@ -476,7 +475,7 @@ class JadwalKegiatanController extends Controller
             })
             ->all();
 
-        $activePegawaiCount = Pegawai::where('is_aktif', true)->count();
+        $activePegawaiCount = Pegawai::selectable()->count();
 
         return [
             'selected_date' => $selectedDate->toDateString(),
@@ -577,6 +576,7 @@ class JadwalKegiatanController extends Controller
             'subtitle' => $pengajuan->tujuan,
             'description' => $pengajuan->keterangan,
             'people' => $pengajuan->pegawai?->nama ?? 'Pegawai',
+            'pegawai_ids' => [$pengajuan->pegawai_id],
             'pj_initials' => $this->initials($pengajuan->pegawai?->nama ?? 'DL'),
             'date_label' => $startDate->isSameDay($endDate)
                 ? $startDate->translatedFormat('d M Y')
@@ -708,12 +708,18 @@ class JadwalKegiatanController extends Controller
         );
     }
 
-    private function buildCalendarWeeks(Carbon $monthDate, Collection $items, Carbon $referenceDate): array
+    private function buildCalendarWeeks(
+        Carbon $monthDate,
+        Collection $items,
+        Carbon $referenceDate,
+        ?Collection $assignedSourceItems = null
+    ): array
     {
         $start = $monthDate->copy()->startOfMonth()->startOfWeek(Carbon::MONDAY);
         $end = $monthDate->copy()->endOfMonth()->endOfWeek(Carbon::SUNDAY);
         $cursor = $start->copy();
         $weeks = [];
+        $assignedSourceItems ??= $items;
 
         while ($cursor->lte($end)) {
             $week = [];
@@ -723,6 +729,15 @@ class JadwalKegiatanController extends Controller
                 $dayItems = $items
                     ->filter(fn (array $item) => $currentDate->betweenIncluded($item['start_date'], $item['end_date']))
                     ->values();
+                $assignedPegawaiIds = $assignedSourceItems
+                    ->filter(fn (array $item) => $currentDate->betweenIncluded($item['start_date'], $item['end_date']))
+                    ->pluck('pegawai_ids')
+                    ->flatten()
+                    ->filter()
+                    ->map(fn ($pegawaiId) => (string) $pegawaiId)
+                    ->unique()
+                    ->values()
+                    ->all();
 
                 $week[] = [
                     'date' => $currentDate,
@@ -730,6 +745,7 @@ class JadwalKegiatanController extends Controller
                     'is_today' => $currentDate->isSameDay($referenceDate),
                     'count' => $dayItems->count(),
                     'items' => $dayItems->all(),
+                    'assigned_pegawai_ids' => $assignedPegawaiIds,
                     'preview_items' => $dayItems->take(2)->all(),
                     'layanan_count' => $dayItems->where('type', 'layanan')->count(),
                     'dinas_count' => $dayItems->where('type', 'dinas_luar')->count(),

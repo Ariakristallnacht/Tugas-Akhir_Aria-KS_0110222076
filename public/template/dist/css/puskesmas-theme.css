@@ -2321,15 +2321,22 @@ body {
     }
 
     .pkm-topbar {
-        flex-direction: column;
-        gap: 16px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 12px;
         padding-bottom: 18px;
     }
 
     .pkm-topbar__actions {
-        width: 100%;
-        flex-wrap: wrap;
-        justify-content: space-between;
+        width: auto;
+        display: grid;
+        grid-template-columns: auto auto;
+        justify-content: end;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+        flex: 0 0 auto;
     }
 
     .pkm-topbar__actions > form:not(.pkm-topbar__search) {
@@ -2337,8 +2344,8 @@ body {
     }
 
     .pkm-topbar__search {
+        display: none;
         min-width: 100%;
-        order: 3;
         padding: 12px 14px;
     }
 
@@ -2347,11 +2354,14 @@ body {
     }
 
     .pkm-topbar__headline {
-        width: 100%;
+        width: auto;
+        flex: 1 1 auto;
+        min-width: 0;
+        align-items: center;
     }
 
     .pkm-breadcrumb {
-        font-size: 0.88rem;
+        display: none;
     }
 
     .pkm-table__head,
@@ -2650,7 +2660,7 @@ body {
 
     .pkm-topbar__actions {
         gap: 10px;
-        justify-content: flex-start;
+        justify-content: end;
         align-items: center;
     }
 
@@ -2663,17 +2673,15 @@ body {
 
     .pkm-topbar__headline {
         display: grid;
-        grid-template-columns: 42px minmax(0, 1fr);
+        grid-template-columns: 42px 1fr;
         align-items: center;
         column-gap: 10px;
         row-gap: 8px;
+        width: auto;
     }
 
     .pkm-breadcrumb {
-        width: 100%;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        display: none;
     }
 
     .pkm-topbar__actions > .pkm-topbar__icon,
@@ -2801,11 +2809,12 @@ body {
     }
 
     .pkm-topbar__search {
+        display: none;
         padding: 10px 12px;
     }
 
     .pkm-breadcrumb {
-        font-size: 0.8rem;
+        display: none;
     }
 
     .pkm-breadcrumb__item:first-child,

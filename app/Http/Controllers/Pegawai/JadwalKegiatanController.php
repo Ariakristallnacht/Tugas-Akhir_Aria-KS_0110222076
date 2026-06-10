@@ -75,8 +75,7 @@ class JadwalKegiatanController extends Controller
             'items' => $filteredItems,
             'calendarWeeks' => $this->buildCalendarWeeks($calendarMonth, $calendarItems, $referenceDate),
             'calendarMonthLabel' => $calendarMonth->translatedFormat('F Y'),
-            'activePegawaiForModal' => Pegawai::query()
-                ->where('is_aktif', true)
+            'activePegawaiForModal' => Pegawai::selectable()
                 ->orderBy('nama')
                 ->get(['id', 'nama', 'jabatan'])
                 ->map(fn (\App\Models\Pegawai $pegawai) => [
@@ -472,6 +471,14 @@ class JadwalKegiatanController extends Controller
                 $dayItems = $items
                     ->filter(fn (array $item) => $currentDate->betweenIncluded($item['start_date'], $item['end_date']))
                     ->values();
+                $assignedPegawaiIds = $dayItems
+                    ->pluck('pegawai_ids')
+                    ->flatten()
+                    ->filter()
+                    ->map(fn ($pegawaiId) => (string) $pegawaiId)
+                    ->unique()
+                    ->values()
+                    ->all();
 
                 $week[] = [
                     'date' => $currentDate,
@@ -479,6 +486,7 @@ class JadwalKegiatanController extends Controller
                     'is_today' => $currentDate->isSameDay($referenceDate),
                     'count' => $dayItems->count(),
                     'items' => $dayItems->all(),
+                    'assigned_pegawai_ids' => $assignedPegawaiIds,
                     'preview_items' => $dayItems->take(2)->all(),
                     'layanan_count' => $dayItems->where('type', 'layanan')->count(),
                     'dinas_count' => $dayItems->where('type', 'dinas_luar')->count(),
