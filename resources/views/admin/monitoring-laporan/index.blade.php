@@ -14,6 +14,12 @@
             }
         }
 
+        .pkm-dashboard-main--monitoring-laporan {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
         .pkm-report-table-head {
             display: flex;
             align-items: center;
@@ -39,12 +45,58 @@
             color: #60748f;
         }
 
-        .pkm-table--monitoring-laporan .pkm-table__head,
-        .pkm-table--monitoring-laporan .pkm-table__row {
-            grid-template-columns: minmax(0, 1.55fr) minmax(180px, 0.9fr) minmax(180px, 0.82fr) minmax(180px, 0.85fr) minmax(140px, 0.68fr);
+        @media (min-width: 1181px) {
+            .pkm-table--monitoring-laporan .pkm-table__head,
+            .pkm-table--monitoring-laporan .pkm-table__row {
+                grid-template-columns: minmax(0, 1.55fr) minmax(180px, 0.9fr) minmax(180px, 0.82fr) minmax(180px, 0.85fr) minmax(140px, 0.68fr);
+            }
         }
 
         @media (max-width: 1180px) {
+            .pkm-table--monitoring-laporan.pkm-table {
+                gap: 12px;
+                border: 0;
+                background: transparent;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .pkm-table--monitoring-laporan .pkm-table__head {
+                display: none !important;
+            }
+
+            .pkm-table--monitoring-laporan .pkm-table__row {
+                display: grid;
+                grid-template-columns: 1fr !important;
+                gap: 10px;
+                padding: 16px;
+                border: 1px solid var(--pkm-border);
+                border-radius: 18px;
+                box-shadow: 0 10px 28px rgba(58, 78, 113, 0.06);
+                background: #fff;
+            }
+
+            .pkm-table--monitoring-laporan .pkm-table__row > div {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                min-width: 0;
+                align-items: flex-start !important;
+            }
+
+            .pkm-table--monitoring-laporan .pkm-table__row > div::before {
+                content: attr(data-label);
+                font-size: 0.74rem;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                color: #8b9ab0;
+                display: block;
+                margin-bottom: 2px;
+            }
+        }
+
+        @media (max-width: 1024px) {
             .pkm-management-summary--single-row {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
@@ -72,16 +124,68 @@
             }
         }
 
+        @media (max-width: 820px) {
+            .pkm-dashboard-main--monitoring-laporan {
+                gap: 20px;
+            }
+
+            .pkm-management-summary--single-row {
+                grid-template-columns: 1fr;
+            }
+
+            .pkm-monitoring-filter .pkm-form-actions {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .pkm-monitoring-filter .pkm-form-actions > * {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+
+            .pkm-table-card {
+                overflow: hidden;
+            }
+        }
+
+        @media (max-width: 790px) {
+            .pkm-dashboard-main--monitoring-laporan {
+                gap: 10px;
+            }
+
+            .pkm-management-summary--single-row {
+                grid-template-columns: 1fr;
+            }
+
+            .pkm-monitoring-filter .pkm-form-actions {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .pkm-monitoring-filter .pkm-form-actions > * {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+
+            .pkm-table-card {
+                overflow: hidden;
+            }
+        }
+
         @media (max-width: 640px) {
             .pkm-management-summary--single-row {
                 grid-template-columns: 1fr;
+            }
+
+            .pkm-dashboard-main--monitoring-laporan {
+                gap: 18px;
             }
         }
     </style>
 @endpush
 
 @section('content')
-    <section class="pkm-dashboard-main">
+    <section class="pkm-dashboard-main pkm-dashboard-main--monitoring-laporan">
         <div class="pkm-section-head">
             <div>
                 <h2 style="font-weight: bold">Monitoring Laporan Kegiatan</h2>

@@ -14,6 +14,13 @@
             }
         }
 
+        .pkm-dashboard-main--jadwal-kegiatan {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
         .pkm-monitoring-item__actions {
             display: flex;
             align-items: center;
@@ -112,10 +119,125 @@
             height: 0.9rem;
         }
 
+        @media (max-width: 1024px) {
+            .pkm-monitoring-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .pkm-monitoring-calendar {
+                grid-column: auto;
+                order: 2;
+            }
+
+            .pkm-monitoring-list {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pkm-dashboard-main--jadwal-kegiatan {
+                gap: 18px;
+            }
+
+            .pkm-topbar {
+                gap: 12px;
+                align-items: center;
+            }
+
+            .pkm-topbar__headline {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .pkm-topbar__actions {
+                display: flex !important;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 8px;
+                flex-wrap: nowrap;
+                min-width: 0;
+            }
+
+            .pkm-topbar__login,
+            .pkm-topbar__avatar {
+                flex: 0 0 auto;
+            }
+
+            .pkm-section-head,
+            .pkm-card__head {
+                align-items: flex-start;
+            }
+
+            .pkm-monitoring-layout,
+            .pkm-monitoring-list,
+            .pkm-monitoring-calendar {
+                min-width: 0;
+            }
+
+            .pkm-monitoring-list,
+            .pkm-monitoring-calendar > .pkm-card,
+            .pkm-calendar {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .pkm-calendar {
+                overflow-x: auto;
+                overflow-y: hidden;
+                margin-inline: -2px;
+                padding-bottom: 6px;
+            }
+
+            .pkm-calendar__weekdays,
+            .pkm-calendar__grid {
+                min-width: 0;
+                width: 100%;
+            }
+
+            .pkm-calendar__grid {
+                gap: 4px;
+            }
+
+            .pkm-calendar__day {
+                min-height: 84px;
+                padding: 8px;
+                border-radius: 14px;
+            }
+
+            .pkm-calendar__weekdays span {
+                font-size: 0.62rem;
+            }
+        }
+
         @media (max-width: 640px) {
+            .pkm-dashboard-main--jadwal-kegiatan {
+                gap: 16px;
+            }
+
             .pkm-calendar-head {
                 grid-template-columns: 1fr;
-                justify-items: center;
+                justify-items: stretch;
+            }
+
+            .pkm-calendar-head__main {
+                width: 100%;
+            }
+
+            .pkm-calendar-head__actions {
+                width: 100%;
+                justify-content: stretch;
+                flex-direction: column;
+            }
+
+            .pkm-calendar-head__actions > * {
+                flex: 1 1 auto;
+                min-width: 0;
+                width: 100%;
+            }
+
+            .pkm-calendar__weekdays,
+            .pkm-calendar__grid {
+                min-width: 0;
             }
 
             .pkm-monitoring-item__actions {
@@ -123,11 +245,41 @@
                 padding-bottom: 2px;
             }
         }
+
+        @media (max-width: 480px) {
+            .pkm-topbar {
+                gap: 8px;
+            }
+
+            .pkm-topbar__actions {
+                gap: 6px;
+            }
+
+            .pkm-topbar__login {
+                padding-inline: 12px;
+            }
+
+            .pkm-topbar__avatar {
+                width: 40px;
+                height: 40px;
+            }
+
+            .pkm-calendar__weekdays,
+            .pkm-calendar__grid {
+                gap: 4px;
+            }
+
+            .pkm-calendar__day {
+                min-height: 72px;
+                padding: 6px;
+                border-radius: 12px;
+            }
+        }
     </style>
 @endpush
 
 @section('content')
-    <section class="pkm-dashboard-main">
+    <section class="pkm-dashboard-main pkm-dashboard-main--jadwal-kegiatan">
         <div class="pkm-section-head">
             <div>
                 <h2 style="font-weight: bold">Kelola Jadwal Kegiatan</h2>

@@ -59,17 +59,17 @@
 
     <div class="pkm-pagination">
         @if ($reports->onFirstPage())
-            <span class="pkm-pagination__muted">Sebelumnya</span>
+            <span class="pkm-pagination__muted" aria-hidden="true"><i data-lucide="chevron-left" class="size-4"></i></span>
         @else
-            <a href="{{ $reports->previousPageUrl() }}" class="pkm-secondary-button"><i data-lucide="chevron-left" class="size-4"></i><span>Sebelumnya</span></a>
+            <a href="{{ $reports->previousPageUrl() }}" class="pkm-secondary-button" aria-label="Sebelumnya"><i data-lucide="chevron-left" class="size-4"></i></a>
         @endif
 
-        <span>Halaman {{ $reports->currentPage() }} dari {{ $reports->lastPage() }}</span>
+        <span class="pkm-pagination__page">{{ $reports->currentPage() }} / {{ $reports->lastPage() }}</span>
 
         @if ($reports->hasMorePages())
-            <a href="{{ $reports->nextPageUrl() }}" class="pkm-secondary-button"><span>Berikutnya</span><i data-lucide="chevron-right" class="size-4"></i></a>
+            <a href="{{ $reports->nextPageUrl() }}" class="pkm-secondary-button" aria-label="Berikutnya"><i data-lucide="chevron-right" class="size-4"></i></a>
         @else
-            <span class="pkm-pagination__muted">Berikutnya</span>
+            <span class="pkm-pagination__muted" aria-hidden="true"><i data-lucide="chevron-right" class="size-4"></i></span>
         @endif
     </div>
 @endif

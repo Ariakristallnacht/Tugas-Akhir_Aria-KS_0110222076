@@ -7,6 +7,13 @@
 
 @push('styles')
     <style>
+        .pkm-dashboard-main--pegawai-directory {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
         @media (min-width: 1024px) {
             .pkm-table--pegawai-directory .pkm-table__head,
             .pkm-table--pegawai-directory .pkm-table__row {
@@ -34,11 +41,96 @@
                 flex-wrap: nowrap;
             }
         }
+
+        @media (max-width: 1023px) {
+            .pkm-dashboard-main--pegawai-directory {
+                gap: 20px;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__head,
+            .pkm-table--pegawai-directory .pkm-table__row {
+                grid-template-columns: 1fr;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__head {
+                display: none;
+            }
+
+            .pkm-table--pegawai-directory {
+                gap: 12px;
+                border: 0;
+                background: transparent;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row {
+                gap: 10px;
+                padding: 16px;
+                border: 1px solid var(--pkm-border);
+                border-radius: 18px;
+                box-shadow: 0 10px 28px rgba(58, 78, 113, 0.06);
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row > div {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                min-width: 0;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row > div::before {
+                content: attr(data-label);
+                font-size: 0.74rem;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                color: #8b9ab0;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row > [data-label="Status"],
+            .pkm-table--pegawai-directory .pkm-table__row > [data-label="Aksi"] {
+                align-items: flex-start;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row > [data-label="Aksi"] .pkm-row-actions {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row > [data-label="Aksi"] .pkm-row-actions > * {
+                flex: 1 1 220px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .pkm-dashboard-main--pegawai-directory {
+                gap: 18px;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row {
+                padding: 14px;
+            }
+
+            .pkm-table--pegawai-directory .pkm-table__row strong,
+            .pkm-table--pegawai-directory .pkm-table__row small {
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            }
+
+            .pkm-table--pegawai-directory .pkm-row-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .pkm-table--pegawai-directory .pkm-row-actions > * {
+                width: 100%;
+            }
+        }
     </style>
 @endpush
 
 @section('content')
-    <section class="pkm-dashboard-main">
+    <section class="pkm-dashboard-main pkm-dashboard-main--pegawai-directory">
         <div class="pkm-section-head">
             <div>
                 <h2 style="font-weight: bold">Kelola Pegawai</h2>
@@ -145,23 +237,21 @@
 
                 <div class="pkm-pagination">
                     @if ($pegawaiList->onFirstPage())
-                        <span class="pkm-pagination__muted">Sebelumnya</span>
+                        <span class="pkm-pagination__muted" aria-hidden="true"><i data-lucide="chevron-left" class="size-4"></i></span>
                     @else
-                        <a href="{{ $pegawaiList->previousPageUrl() }}" class="pkm-secondary-button">
+                        <a href="{{ $pegawaiList->previousPageUrl() }}" class="pkm-secondary-button" aria-label="Sebelumnya">
                             <i data-lucide="chevron-left" class="size-4"></i>
-                            <span>Sebelumnya</span>
                         </a>
                     @endif
 
-                    <span>Halaman {{ $pegawaiList->currentPage() }} dari {{ $pegawaiList->lastPage() }}</span>
+                    <span class="pkm-pagination__page">{{ $pegawaiList->currentPage() }} / {{ $pegawaiList->lastPage() }}</span>
 
                     @if ($pegawaiList->hasMorePages())
-                        <a href="{{ $pegawaiList->nextPageUrl() }}" class="pkm-secondary-button">
-                            <span>Berikutnya</span>
+                        <a href="{{ $pegawaiList->nextPageUrl() }}" class="pkm-secondary-button" aria-label="Berikutnya">
                             <i data-lucide="chevron-right" class="size-4"></i>
                         </a>
                     @else
-                        <span class="pkm-pagination__muted">Berikutnya</span>
+                        <span class="pkm-pagination__muted" aria-hidden="true"><i data-lucide="chevron-right" class="size-4"></i></span>
                     @endif
                 </div>
             @endif

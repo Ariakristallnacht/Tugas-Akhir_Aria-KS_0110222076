@@ -7,6 +7,13 @@
 
 @push('styles')
     <style>
+        .pkm-dashboard-main--pegawai-laporan {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
         @media (min-width: 1280px) {
             .pkm-management-summary--single-row {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -27,6 +34,10 @@
         }
 
         @media (max-width: 1023px) {
+            .pkm-dashboard-main--pegawai-laporan {
+                gap: 20px;
+            }
+
             .pkm-report-table-head {
                 align-items: stretch;
                 flex-direction: column;
@@ -36,12 +47,86 @@
                 width: 100%;
                 margin-left: 0;
             }
+
+            .pkm-table--laporan .pkm-table__head,
+            .pkm-table--laporan .pkm-table__row {
+                grid-template-columns: 1fr;
+            }
+
+            .pkm-table--laporan .pkm-table__head {
+                display: none;
+            }
+
+            .pkm-table--laporan {
+                gap: 12px;
+                border: 0;
+                background: transparent;
+            }
+
+            .pkm-table--laporan .pkm-table__row {
+                gap: 10px;
+                padding: 16px;
+                border: 1px solid var(--pkm-border);
+                border-radius: 18px;
+                box-shadow: 0 10px 28px rgba(58, 78, 113, 0.06);
+            }
+
+            .pkm-table--laporan .pkm-table__row > div {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                min-width: 0;
+            }
+
+            .pkm-table--laporan .pkm-table__row > div::before {
+                content: attr(data-label);
+                font-size: 0.74rem;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                color: #8b9ab0;
+            }
+
+            .pkm-table--laporan .pkm-table__row > [data-label="Aksi"] .pkm-row-actions {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .pkm-table--laporan .pkm-table__row > [data-label="Aksi"] .pkm-row-actions > * {
+                flex: 1 1 220px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .pkm-dashboard-main--pegawai-laporan {
+                gap: 18px;
+            }
+
+            .pkm-table--laporan .pkm-table__row {
+                padding: 14px;
+            }
+
+            .pkm-table--laporan .pkm-table__row strong,
+            .pkm-table--laporan .pkm-table__row small {
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            }
+
+            .pkm-table--laporan .pkm-row-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .pkm-table--laporan .pkm-row-actions > * {
+                width: 100%;
+            }
         }
     </style>
 @endpush
 
 @section('content')
-    <section class="pkm-dashboard-main">
+    <section class="pkm-dashboard-main pkm-dashboard-main--pegawai-laporan">
         <div class="pkm-section-head">
             <div>
                 <h2 style="font-weight: bold">Laporan Kegiatan</h2>
@@ -169,17 +254,17 @@
 
                 <div class="pkm-pagination">
                     @if ($reports->onFirstPage())
-                        <span class="pkm-pagination__muted">Sebelumnya</span>
+                        <span class="pkm-pagination__muted" aria-hidden="true"><i data-lucide="chevron-left" class="size-4"></i></span>
                     @else
-                        <a href="{{ $reports->previousPageUrl() }}" class="pkm-secondary-button"><i data-lucide="chevron-left" class="size-4"></i><span>Sebelumnya</span></a>
+                        <a href="{{ $reports->previousPageUrl() }}" class="pkm-secondary-button" aria-label="Sebelumnya"><i data-lucide="chevron-left" class="size-4"></i></a>
                     @endif
 
-                    <span>Halaman {{ $reports->currentPage() }} dari {{ $reports->lastPage() }}</span>
+                    <span class="pkm-pagination__page">{{ $reports->currentPage() }} / {{ $reports->lastPage() }}</span>
 
                     @if ($reports->hasMorePages())
-                        <a href="{{ $reports->nextPageUrl() }}" class="pkm-secondary-button"><span>Berikutnya</span><i data-lucide="chevron-right" class="size-4"></i></a>
+                        <a href="{{ $reports->nextPageUrl() }}" class="pkm-secondary-button" aria-label="Berikutnya"><i data-lucide="chevron-right" class="size-4"></i></a>
                     @else
-                        <span class="pkm-pagination__muted">Berikutnya</span>
+                        <span class="pkm-pagination__muted" aria-hidden="true"><i data-lucide="chevron-right" class="size-4"></i></span>
                     @endif
                 </div>
             @endif
