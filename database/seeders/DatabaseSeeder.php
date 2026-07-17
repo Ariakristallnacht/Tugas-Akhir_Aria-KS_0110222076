@@ -46,6 +46,8 @@ class DatabaseSeeder extends Seeder
         $this->call(DefaultRoleAccountSeeder::class);
 
         $this->call(MarchAprilJadwalSeeder::class);
+
+        $this->call(JulyAugustJadwalSeeder::class);
     }
 
     /**
